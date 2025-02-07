@@ -1,0 +1,32 @@
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+main {
+    width: 100vw;
+    height: fit-content;
+    position: relative;
+    background-color: white;
+}
+.container{
+    position: relative;
+    z-index: 2;
+}
+
+.backgroundImage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    z-index: 1;
+    background-repeat: repeat;
+}
+/*Section1, .Section2, .Section3, .Section4, .Section5, .Section6 {*/
+/*    position: relative;*/
+/*    z-index: 2;*/
+/*}*/

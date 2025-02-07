@@ -1,0 +1,53 @@
+.container {
+    padding: 20px;
+    padding-top: 0px;
+}
+
+.title {
+    margin-bottom: 24px ;
+    font-size: 24px !important;
+    color: var(--primary-color) !important;
+    font-weight: bold !important;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 24px;
+}
+
+@media (min-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.imagePopup{
+    width: 200px;
+}
+
+.cardCover {
+    position: relative;
+}
+
+.cardImage {
+    border-radius: 10px 10px 0px 0px;
+    height: 192px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.heartIcon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: #ff4d4f;
+    font-size: 20px;
+    cursor: pointer;
+}
