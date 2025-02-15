@@ -1,0 +1,42 @@
+@import "@/styles/global.css";
+.borderButton{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--gradient-colors);
+    border-radius: 40px;
+    padding: 2px;
+}
+.gradientButton {
+    position: relative;
+    display: inline-block;
+    padding: 10px 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    text-transform: uppercase;
+    color: #37796F; /* Màu chữ */
+    border: none; /* Không cần viền */
+    background: white; /* Nền trong suốt */
+    border-radius: 40px; /* Bo góc */
+    cursor: pointer;
+    z-index: 1;
+}
+
+/*.gradientButton::before {*/
+/*    content: '';*/
+/*    position: absolute;*/
+/*    top: 0;*/
+/*    right: 0;*/
+/*    bottom: 0;*/
+/*    left: 0;*/
+/*    border-radius: 40px;*/
+/*    padding: 2px;*/
+/*    background-image: var(--gradient-colors);*/
+/*    background: none;*/
+/*    mask-composite: exclude;*/
+/*}*/
+
+.gradientButton:hover {
+    color: #FFB410; /* Thay đổi màu chữ khi hover */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Hiệu ứng hover */
+}

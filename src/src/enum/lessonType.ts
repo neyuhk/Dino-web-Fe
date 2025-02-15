@@ -1,0 +1,6 @@
+export const LESSON_STATUS = {
+    DRAFT: 'DRAFT',
+    PUBLISHED: 'PUBLISHED',
+    ARCHIVED: 'ARCHIVED',
+    DEFAULT: 'DEFAULT',
+}

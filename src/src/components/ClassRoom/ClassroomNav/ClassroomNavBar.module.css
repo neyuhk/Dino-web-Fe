@@ -1,0 +1,36 @@
+.header {
+    background: linear-gradient(135deg, #6FBCC2, #4A90E2);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo h1 {
+    font-family: 'Oswald', sans-serif;
+    color: white;
+    margin: 0;
+}
+
+.nav {
+    display: flex;
+    gap: 2rem;
+}
+
+.navLink {
+    color: white;
+    text-decoration: none;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+.navLink:hover {
+    opacity: 0.8;
+}

@@ -1,0 +1,102 @@
+/* post.module.css */
+.container {
+    background-color: white;
+    border-radius: 40px;
+    padding: 1.5rem;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.avatar {
+    object-fit: cover;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+}
+
+.authorInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.authorName {
+    font-weight: 600;
+}
+
+.time {
+    font-size: 0.875rem;
+    color: #6B7280;
+}
+
+.content {
+    margin-bottom: 1rem;
+}
+
+.text {
+    color: black;
+    margin-bottom: 1rem;
+}
+
+.image {
+    width: 100%;
+    max-width: 50%;
+    border-radius: 0.5rem;
+    @media (max-width: 768px) {
+        /*display: block;*/
+        /*margin: auto;*/
+    }
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.actionButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+.actionCount {
+    font-size: 0.875rem;
+    color: #6B7280;
+}
+
+.likeActive {
+    color: #EF4444;
+}
+
+.commentActive{
+    color: #65f470;
+}
+
+.repostActive {
+    color: #3B82F6;
+}
+
+.actionIcon {
+    color: #6B7280;
+}
+.commentSection {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+
+}
+
+.commentSectionExpanded {
+    max-height: 1000px;
+    margin-top: 1rem;
+    padding-top: 1rem;
+}

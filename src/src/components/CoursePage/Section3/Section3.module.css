@@ -1,0 +1,177 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
+
+.section3 {
+    display: flex;
+    /*min-height: 100vh;*/
+    background-color: var(--background-primary);
+}
+
+.imageContainer {
+    flex: 1.5;
+    height: 100%;
+}
+
+.image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.content {
+    flex: 2;
+    padding: 4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2rem;
+}
+
+.title {
+    margin: 0px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 4rem;
+    font-weight: 700;
+    color: var(--text-color);
+    text-align: left;
+    width: 100%;
+}
+
+.description {
+    text-align: left;
+    width: 100%;
+    font-size: 1.5rem;
+}
+
+.description p {
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+.highlightContainer {
+    width: 100%;
+    text-align: left;
+}
+
+.highlight {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+    font-size: 1.6rem;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+.countdown {
+    width: 100%;
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.timeBox {
+    background-color: #F3C5C5;
+    border-radius: 40px;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+    min-width: 20%;
+}
+
+.timeValue {
+    background-color: white;
+    color: black;
+    border-radius: 20px;
+    padding: 1rem;
+    font-size: 2rem;
+    font-weight: 700;
+    width: 80%;
+    text-align: center;
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease-in-out;
+}
+
+.timeValue.flip {
+    transform: rotateX(360deg);
+    animation: flipAnimation 0.5s ease-in-out;
+}
+/*@keyframes flipAnimation {*/
+/*    0% {*/
+/*        transform: rotateX(0);*/
+/*    }*/
+/*    100% {*/
+/*        transform: rotateX(360deg);*/
+/*    }*/
+/*}*/
+.flip {
+    transform: rotateX(90deg);
+    opacity: 0.5;
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+.timeLabel {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    color: black;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .section3 {
+        flex-direction: row;
+    }
+
+    .imageContainer {
+        flex: 0.4;
+    }
+
+    .content {
+        flex: 0.6;
+        padding: 3rem;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .timeBox {
+        min-width: 100px;
+        padding: 1.5rem 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .section3 {
+        flex-direction: column;
+    }
+
+    .imageContainer {
+        height: 50vh;
+    }
+
+    .content {
+        align-items: center;
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .description, .highlightContainer {
+        text-align: center;
+    }
+
+    .countdown {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .timeBox {
+        min-width: 90px;
+        padding: 1rem;
+    }
+
+    .timeValue {
+        font-size: 1.5rem;
+        min-width: 60px;
+    }
+}

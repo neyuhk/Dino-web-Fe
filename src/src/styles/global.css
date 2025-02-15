@@ -1,0 +1,62 @@
+/* Reset default styles */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Oswald:wght@200..700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body styling */
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Image styling */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ButtonComponent styling */
+button {
+    border: none;
+    outline: none;
+    font-family: inherit;
+}
+
+/* Variables are not supported in CSS directly, so we will replace them with actual values */
+:root {
+    --primary-color: #387971;
+    --secondary-color: #D6ECD7;
+    --background-color: #FFFFFF;
+    --background-primary: #F6F6F6;
+    --background-transparent: rgba(233, 235, 239, 0.62);
+    --gradient-colors: linear-gradient(to right, #FFB410 0%, #FFABCD 50%, #6FBCC2 75%, #877AEF 100%);
+    --text-color: #37796F;
+}
+
+:root {
+    --font-primary: "Oswald", sans-serif;
+    --font-secondary: "Montserrat", sans-serif;
+}
+
+/* Usage of variables in CSS */
+.some-class {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+}
+
+.some-other-class {
+    background-color: var(--background-color);
+}
+.title-gradian{
+    background: var(--gradient-colors);
+    -webkit-background-clip: text;
+    /*background-clip: text;*/
+    -webkit-text-fill-color: transparent;
+    color: var(--primary-color);
+}
