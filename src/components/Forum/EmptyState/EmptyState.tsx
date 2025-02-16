@@ -5,6 +5,8 @@ import styles from './EmptyState.module.css';
 
 interface EmptyStateProps {
     selectedMenu: string;
+    isError?: boolean;
+    errorMessage?: string;
 }
 
 interface StateContent {
@@ -12,9 +14,16 @@ interface StateContent {
     subMessage: string;
     image: string;
 }
-
-const EmptyState: React.FC<EmptyStateProps> = ({ selectedMenu }) => {
+const EmptyState: React.FC<EmptyStateProps> = ({ selectedMenu, isError = false, errorMessage }) => {
     const getEmptyStateContent = (): StateContent => {
+        if (isError) {
+            return {
+                message: 'Đã xảy ra lỗi',
+                subMessage: errorMessage || 'Không thể tải dữ liệu. Vui lòng thử lại sau.',
+                image: 'https://i.pinimg.com/originals/88/4f/6b/884f6bbb75ed5e1446d3b6151b53b3cf.gif' // Đường dẫn tới ảnh minh họa lỗi
+            };
+        }
+
         switch (selectedMenu) {
             case 'home':
                 return {
@@ -81,7 +90,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({ selectedMenu }) => {
                     {content.subMessage}
                 </p>
 
-                {selectedMenu === 'me' && (
+                {selectedMenu === 'me' && !isError && (
                     <button className={styles.createButton}>
                         <PlusCircle size={18} />
                         Tạo bài viết đầu tiên
