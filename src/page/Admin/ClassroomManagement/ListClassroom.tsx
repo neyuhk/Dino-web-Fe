@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { Space, Table, Input, Button, Modal, Form, message, Tooltip } from 'antd'
 import type { TableProps } from 'antd'
 import { getClassroomList, addClassroom, deleteClassroom, editClassroom } from '../../../services/classroom.ts'
-import { Classroom } from '../../../model/model.ts'
+// import { Classroom } from '../../../model/model.ts'
 import moment from 'moment'
 import { Link } from 'react-router-dom'
 import { AlignLeftOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import { Classroom } from '../../../model/classroom.ts'
 
 const { Search } = Input
 

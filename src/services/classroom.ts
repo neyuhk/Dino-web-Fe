@@ -1,6 +1,7 @@
-import { Assignment, Course, Lesson, Submission, User } from '../model/classroom.ts'
+import { Assignment, Lesson, Submission, User } from '../model/classroom.ts'
 import { CLASSROOM_API, COURSE_API } from '../constants/api.ts'
 import http from './http/http.ts'
+// import { Course } from '../model/model.ts'
 
 export const getClassroomList = async () => {
     return (await http.get(CLASSROOM_API.GET_CLASSROOMS)).data
@@ -35,48 +36,34 @@ export const mockUsers: User[] = [
     },
 ];
 
-export const mockCourses: Course[] = [
-    {
-        id: '1',
-        title: 'Lập trình Python cơ bản',
-        description: 'Khóa học Python từ cơ bản đến nâng cao với nhiều bài tập thực hành',
-        thumbnail: '/images/python-course.jpg',
-        teacherId: '2',
-        totalLessons: 10,
-        status: 'active',
-        createdAt: new Date('2024-01-01'),
-        updatedAt: new Date('2024-01-01'),
-    },
-];
+// export const mockLessons: Lesson[] = [
+//     {
+//         id: '1',
+//         courseId: '1',
+//         title: 'Giới thiệu về Python',
+//         description: 'Bài học đầu tiên về ngôn ngữ lập trình Python',
+//         videoUrl: 'https://example.com/videos/python-intro',
+//         duration: 3600, // seconds
+//         order: 1,
+//         createdAt: new Date('2024-01-01'),
+//         updatedAt: new Date('2024-01-01'),
+//     },
+// ];
 
-export const mockLessons: Lesson[] = [
-    {
-        id: '1',
-        courseId: '1',
-        title: 'Giới thiệu về Python',
-        description: 'Bài học đầu tiên về ngôn ngữ lập trình Python',
-        videoUrl: 'https://example.com/videos/python-intro',
-        duration: 3600, // seconds
-        order: 1,
-        createdAt: new Date('2024-01-01'),
-        updatedAt: new Date('2024-01-01'),
-    },
-];
-
-export const mockAssignments: Assignment[] = [
-    {
-        id: '1',
-        courseId: '1',
-        lessonId: '1',
-        title: 'Bài tập về cấu trúc điều kiện',
-        description: 'Làm các bài tập về if-else trong Python',
-        type: 'coding',
-        dueDate: new Date('2025-01-20'),
-        totalPoints: 10,
-        createdAt: new Date('2024-01-01'),
-        updatedAt: new Date('2024-01-01'),
-    },
-];
+// export const mockAssignments: Assignment[] = [
+//     {
+//         id: '1',
+//         courseId: '1',
+//         lessonId: '1',
+//         title: 'Bài tập về cấu trúc điều kiện',
+//         description: 'Làm các bài tập về if-else trong Python',
+//         type: 'coding',
+//         dueDate: new Date('2025-01-20'),
+//         totalPoints: 10,
+//         createdAt: new Date('2024-01-01'),
+//         updatedAt: new Date('2024-01-01'),
+//     },
+// ];
 
 export const mockSubmissions: Submission[] = [
     {

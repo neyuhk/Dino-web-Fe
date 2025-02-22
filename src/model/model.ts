@@ -23,30 +23,7 @@ export interface User {
     createdAt: string;
     updatedAt: string;
     birthday: Date;
-}
-
-export interface Course {
-    _id: string;
-    title: string;
-    description: string;
-    images: string[];
-    start_date: string;
-    end_date: string;
-    certification: string;
-    createdAt: string;
-    updatedAt: string;
-}
-
-export interface Lesson {
-    _id: string;
-    title: string;
-    description: string;
-    video_url: string;
-    images: string[];
-    body: string;
-    course_id: Course;
-    createdAt: string;
-    updatedAt: string;
+    phonenumber: string;
 }
 
 export interface CourseReq {

@@ -93,6 +93,7 @@ const ListCourseManagement: React.FC = () => {
             } else {
                 await addCourse(formData)
             }
+
             const courses = await getCourses()
             setData(courses.data)
             setFilteredData(courses.data)

@@ -18,8 +18,8 @@ import {
 import { useParams } from 'react-router-dom'
 import moment from 'moment'
 import { getClassroomById } from '../../../services/classroom.ts'
-import { Classroom, Course } from '../../../model/model.ts'
 import { AlignLeftOutlined, DeleteOutlined, EditOutlined, UserOutlined } from '@ant-design/icons'
+import { Classroom, Course } from '../../../model/classroom.ts'
 
 const { Title, Paragraph, Text } = Typography
 const { Search } = Input

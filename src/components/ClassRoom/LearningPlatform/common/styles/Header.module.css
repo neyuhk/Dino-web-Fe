@@ -1,0 +1,66 @@
+.header {
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.nav {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    color: #1e40af;
+    font-weight: bold;
+}
+
+.menu {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.menuItem {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    color: #4b5563;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.menuItem:hover {
+    background: #f3f4f6;
+    color: #1e40af;
+}
+
+.menuItemActive {
+    background: #1e40af;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .menu {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .menuItem {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .teacherCard {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .studentGrid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+}

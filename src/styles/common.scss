@@ -37,3 +37,30 @@ a {
     object-fit: cover;
     z-index: 2;
 }
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 1.5rem;
+    color: #64748b;
+}
+
+.loadingSpinner {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    box-shadow: var(--card-shadow);
+    animation: pulse 2s infinite;
+}
+
+.loadingIcon {
+    color: #FF6B6B;
+    animation: bounce 2s infinite;
+}

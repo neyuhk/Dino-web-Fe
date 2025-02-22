@@ -31,6 +31,7 @@ import ProfilePage from '../pages/commons/ProfilePage.tsx'
 import ForumPage from '../pages/commons/ForumPage.tsx'
 import ListClassroomManagement from '../page/Admin/ClassroomManagement/ListClassroom.tsx'
 import ClassroomDetailPage from '../page/Admin/ClassroomManagement/ClassroomDetail.tsx'
+import ClassroomDetail from '../components/ClassRoom/ClassroomDetail/ClassroomDetail.tsx'
 
 export const router = [
     {
@@ -98,8 +99,16 @@ export const router = [
         },
     },
     {
-        path: '/classroom',
+        path: PATHS.CLASSROOM,
         component: ClassRoom,
+        layout: DefaultLayout,
+        meta: {
+            requiresAuth: false,
+        },
+    },
+    {
+        path: PATHS.CLASSROOM_DETAIL,
+        component: ClassroomDetail,
         layout: DefaultLayout,
         meta: {
             requiresAuth: false,
