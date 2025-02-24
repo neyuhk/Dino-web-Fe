@@ -1,0 +1,183 @@
+.pageContainer {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    padding: 1rem;
+}
+
+.header {
+    max-width: 900px;
+    margin: 0 auto 2rem;
+    padding: 1rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}
+
+.exerciseInfo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #1a1a1a;
+}
+
+.exerciseInfo h1 {
+    font-size: 1.5rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+.exerciseInfo p {
+    margin: 0.25rem 0 0;
+    color: #666;
+}
+
+.backButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border: none;
+    border-radius: 0.75rem;
+    background-color: white;
+    color: #1a1a1a;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.backButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.progressContainer {
+    max-width: 900px;
+    margin: 0 auto 2rem;
+    height: 6px;
+    background-color: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progressBar {
+    height: 100%;
+    background-color: #4C6EF5;
+    transition: width 0.3s ease;
+}
+
+.mainContent {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.loadingContainer,
+.errorContainer,
+.completionContainer {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.loadingSpinner {
+    animation: spin 1s linear infinite;
+    color: #4C6EF5;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.errorIcon {
+    color: #FF6B6B;
+    margin-bottom: 1.5rem;
+}
+
+.errorContent {
+    max-width: 400px;
+}
+
+.errorContainer h2,
+.completionContainer h2 {
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem;
+    color: #1a1a1a;
+}
+
+.errorContainer p,
+.completionContainer p {
+    color: #666;
+    margin: 0 0 2rem;
+}
+
+.completionImage {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    margin-bottom: 2rem;
+    border-radius: 1rem;
+}
+
+@media (max-width: 480px) {
+    .pageContainer {
+        padding: 0.5rem;
+    }
+
+    .header {
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .exerciseInfo h1 {
+        font-size: 1.25rem;
+    }
+
+    .backButton {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .progressContainer {
+        margin-bottom: 1rem;
+    }
+
+    .loadingContainer,
+    .errorContainer,
+    .completionContainer {
+        padding: 1rem;
+        border-radius: 1rem;
+    }
+
+    .completionImage {
+        width: 150px;
+        height: 150px;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .loadingSpinner,
+    .backButton,
+    .progressBar {
+        transition: none;
+        animation: none;
+    }
+}

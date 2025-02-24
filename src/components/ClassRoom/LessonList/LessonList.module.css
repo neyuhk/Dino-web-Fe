@@ -1,0 +1,353 @@
+.container {
+    /*max-width: 1200px;*/
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+}
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    text-align: center;
+}
+
+.loadingSpinner {
+    animation: spin 2s linear infinite;
+}
+
+.loadingIcon {
+    color: #4CAF50;
+}
+
+.errorContainer {
+    text-align: center;
+    padding: 40px;
+    color: #f44336;
+}
+
+.errorIcon {
+    margin-bottom: 16px;
+}
+
+.retryButton {
+    margin-top: 16px;
+    padding: 8px 16px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.retryButton:hover {
+    background-color: #d32f2f;
+}
+
+.tabContainer {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    /*border-bottom: 1px solid #e0e0e0;*/
+    padding-bottom: 12px;
+}
+
+.tabButton {
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-weight: 500;
+    color: #666;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.tabButton:hover {
+    color: #4CAF50;
+}
+
+.activeTab {
+    color: #4CAF50;
+}
+
+.activeTab::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #4CAF50;
+}
+
+.lessonList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.lessonCard {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.lessonCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.lessonHeader {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    background: white;
+    transition: background-color 0.3s;
+}
+
+.lessonHeader:hover {
+    background-color: #f5f5f5;
+}
+
+.lessonInfo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+}
+
+.lessonIcon {
+    color: #4CAF50;
+}
+
+.lessonTitle {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.exerciseDescription {
+    color: #333;
+}
+
+.lessonMeta {
+    margin: 4px 0 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.completedIcon {
+    color: #4CAF50;
+}
+
+.exerciseBadge {
+    background-color: #ff5722;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    animation: pulse 2s infinite;
+}
+
+.expandIcon {
+    color: #666;
+    transition: transform 0.3s;
+}
+
+.expanded {
+    transform: rotate(90deg);
+}
+
+.lessonDetails {
+    padding: 16px;
+    border-top: 1px solid #e0e0e0;
+    background-color: #f9f9f9;
+}
+
+.lessonDescription {
+    margin: 0 0 16px;
+    color: #666;
+    line-height: 1.6;
+}
+
+.exerciseSection {
+    margin-top: 16px;
+}
+
+.exerciseSection h4 {
+    margin: 0 0 12px;
+    color: #333;
+}
+
+.exerciseList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.exerciseItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.exerciseInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.exerciseTitle {
+    font-weight: 500;
+    color: #333;
+}
+
+.exerciseScore {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.exerciseStatus {
+    font-size: 0.9rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: #ffebee;
+    color: #f44336;
+}
+
+.exerciseStatus.completed {
+    background-color: #e8f5e9;
+    color: #4CAF50;
+}
+
+.averageScore {
+    margin-top: 16px;
+    padding: 12px;
+    background-color: #e8f5e9;
+    border-radius: 8px;
+    color: #2e7d32;
+    text-align: center;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 12px;
+    }
+
+    .tabContainer {
+        flex-wrap: wrap;
+    }
+
+    .lessonInfo {
+        gap: 12px;
+    }
+
+    .exerciseBadge {
+        font-size: 0.75rem;
+        padding: 3px 6px;
+    }
+
+    .lessonTitle {
+        font-size: 1rem;
+    }
+
+    .exerciseItem {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .exerciseStatus {
+        align-self: flex-start;
+    }
+}
+
+
+.loadingContainer {
+    height: 100vh;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 1.5rem;
+    color: #64748b;
+}
+
+.loadingSpinner {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    box-shadow: var(--card-shadow);
+    animation: pulse 2s infinite;
+}
+
+.loadingIcon {
+    color: #FF6B6B;
+    animation: bounce 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 20px rgba(255, 107, 107, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+    }
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-15px);
+    }
+    60% {
+        transform: translateY(-7px);
+    }
+}
+._emptyState_xcaqu_263{
+    background-color: white;
+}

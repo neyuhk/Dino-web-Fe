@@ -12,7 +12,7 @@ const Header = () => {
             <nav className={styles.nav}>
                 <Link to="/lectures" className={styles.navLink}>Bài giảng</Link>
                 <Link to="/exercises" className={styles.navLink}>Bài tập</Link>
-                <Link to="/grades" className={styles.navLink}>Điểm số</Link>
+                <Link to="/learningChallenge" className={styles.navLink}>Điểm số</Link>
             </nav>
         </header>
     );

@@ -342,15 +342,6 @@
     gap: 1.5rem;
     color: #64748b;
 }
-.loadingContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 60vh;
-    gap: 1.5rem;
-    color: #64748b;
-}
 
 .loadingSpinner {
     width: 80px;

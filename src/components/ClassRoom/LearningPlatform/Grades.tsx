@@ -1,4 +1,4 @@
-// Grades.tsx
+// LearningChallenge.tsx
 import React from 'react';
 import styles from './LearningPlatform.module.css';
 

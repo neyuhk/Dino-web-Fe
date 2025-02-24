@@ -38,11 +38,11 @@ const ClassroomDetailPage: React.FC = () => {
     };
 
     const handleCardClick = (coursesId: string) => {
-        console.log('coursesId',coursesId);
-        navigate(`${PATHS.CLASSROOM_DETAIL}`, { state: { coursesId } });
+        console.log('class room',coursesId);
+        navigate(`${PATHS.CLASSROOM_LESSON}`, { state: { coursesId } });
     };
 
-    if(!user || classroomId == null){
+    if(!user){
         return (
             <RequireAuth></RequireAuth>
         );
@@ -61,7 +61,7 @@ const ClassroomDetailPage: React.FC = () => {
     if (!classroom) {
         return (
             <div className={styles.notificationContainer}>
-                <img src="/images/empty-state.png" alt="Thông báo" className={styles.image} />
+                <img src="https://i.pinimg.com/originals/62/c3/79/62c379ae3baad2a6f3810a8ad1a19d47.gif" alt="Thông báo" className={styles.image} />
                 <h2 className={styles.title}>Không có dữ liệu</h2>
                 <p className={styles.description}>
                     Hiện tại chưa có khóa học nào trong lớp này. Hãy quay lại sau hoặc kiểm tra lại thông tin!

@@ -1,11 +1,28 @@
-//Classroom
-
 
 import { User } from './model.ts'
 
+export interface Exercise {
+    id: string;
+    type: "quiz" | "test";
+    time: number;
+    title: string;
+    description: string;
+    score?: number;
+    isCompleted: boolean;
+    submittedAt?: string;
+}
+
+export interface Quiz{
+    id: string;
+    typeAnswer: 'multiple_choice' | 'one_choice';
+    question: string;
+    answer: string[];
+    image: string;
+    index: number;
+}
 
 export interface Lesson {
-    _id: string;
+    id: string;
     title: string;
     description: string;
     video_url: string;
@@ -14,6 +31,14 @@ export interface Lesson {
     course_id: Course;
     createdAt: string;
     updatedAt: string;
+
+    exercises: Exercise[];
+    order: number;
+    duration: number; // Thời lượng bài học (phút)
+    isCompleted: boolean;
+    progress: number; // Phần trăm hoàn thành
+    averageScore?: number; // Điểm trung bình các bài tập
+    lastAccessedAt?: string;
 }
 
 export interface Assignment {
