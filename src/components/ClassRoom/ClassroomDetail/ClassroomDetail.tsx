@@ -6,7 +6,7 @@ import { Classroom } from '../../../model/classroom.ts'
 import { getClassroomById } from '../../../services/classroom.ts'
 import { useSelector } from 'react-redux'
 import { PATHS } from '../../../router/path.ts'
-import RequireAuth from '../../RequireAuth/RequireAuth.tsx'
+import RequireAuth from '../../commons/RequireAuth/RequireAuth.tsx'
 
 const ClassroomDetailPage: React.FC = () => {
     const location = useLocation();

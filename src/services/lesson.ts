@@ -1,156 +1,51 @@
-import { COURSE_API, LESSON_API } from '../constants/api.ts'
+import { COURSE_API, EXERCISE_API, FORUM_API, LESSON_API } from '../constants/api.ts'
 import http from '@/services/http/http'
 import httpFile from '@/services/http/httpFile'
-import { Lesson, Quiz } from '../model/classroom.ts'
+import { Lesson, Quiz, Student, SubmitAnswerReq } from '../model/classroom.ts'
+import httpAuth from './http/httpAuth.ts'
 
-// export const getLessonByCourseId = async (id: string) => {
-//     return (await http.get(LESSON_API.GET_LESSONS_COURSE_ID+id)).data
-// }
-
-export const getLessonByCourseId = async (courseId: string): Promise<Lesson[]> => {
-    return [
-        {
-            id: 'lesson-1',
-            title: 'Introduction to Arduino',
-            description: 'Learn the basics of Arduino and how it works.',
-            video_url: 'https://example.com/arduino-intro.mp4',
-            images: ['https://example.com/lesson1-img1.jpg'],
-            body: 'Detailed content about Arduino basics...',
-            course_id: { id: courseId, title: 'Arduino Basics' },
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            exercises: [
-                {
-                    id: 'exercise-1',
-                    type: 'quiz',
-                    title: 'Blink LED',
-                    description: 'Write a program to blink an LED on Arduino.',
-                    isCompleted: false,
-                    time: 60, // Thời gian làm bài 60 giây cho từng câu quiz
+export const getLessonByCourseId = async (id:string) => {
+    return (await http.get(LESSON_API.GET_LESSONS_COURSE_ID + id)).data
+}
+export const addLesson = async (courseId: string, lessonData: FormData) => {
+    try {
+        // Make sure to configure httpAuth to NOT transform the request data
+        // This is critical when sending FormData
+        const response = await httpAuth.post(
+            `${LESSON_API.CREATE_LESSON}${courseId}`,
+            lessonData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
                 },
-                {
-                    id: 'exercise-2',
-                    type: 'quiz',
-                    title: 'Basic Circuit',
-                    description: 'Identify the components in a basic circuit.',
-                    isCompleted: false,
-                    time: 90, // 90 giây cho bài quiz này
-                },
-            ],
-            order: 1,
-            duration: 30,
-            isCompleted: false,
-            progress: 0,
-            averageScore: undefined,
-            lastAccessedAt: undefined,
-        },
-        {
-            id: 'lesson-2',
-            title: 'Working with Sensors',
-            description: 'Understand how to use sensors with Arduino.',
-            video_url: 'https://example.com/arduino-sensors.mp4',
-            images: ['https://example.com/lesson2-img1.jpg'],
-            body: 'Guide on how to connect and use different sensors...',
-            course_id: { id: courseId, title: 'Arduino Basics' },
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            exercises: [
-                {
-                    id: 'exercise-3',
-                    type: 'test',
-                    title: 'Read Temperature',
-                    description: 'Read and display temperature from a sensor.',
-                    score: 10,
-                    isCompleted: true,
-                    submittedAt: new Date().toISOString(),
-                    time: 300, // Thời gian 300 giây cho toàn bộ bài test
-                },
-            ],
-            order: 2,
-            duration: 45,
-            isCompleted: true,
-            progress: 100,
-            averageScore: 10,
-            lastAccessedAt: new Date().toISOString(),
-        },
-    ];
+                transformRequest: (data) => data, // Don't transform the FormData
+            }
+        );
+        return response;
+    } catch (error) {
+        console.error('Error in addLesson service:', error);
+        throw error;
+    }
 };
 
+export const addQuiz = async (payload: any) => {
+    return (await httpFile.post(EXERCISE_API.ADD_QUIZ, payload)).data
+}
 
-export const addLesson = async (courseId: string, lesson: any) => {
-    console.log(courseId)
-    console.log(lesson.entries())
-    return await httpFile.post(LESSON_API.CREATE_LESSON+courseId, lesson);
+export const deleteQuiz = async (id: string) => {
+    return (await http.delete(EXERCISE_API.DELETE_QUIZ + id)).data
+}
+
+export const newExercise = async (body: any) => {
+    return (await http.post(EXERCISE_API.NEW_EXERCISE, body)).data
+}
+
+export  const getQuiz = async (id: string) => {
+    return (await http.get(EXERCISE_API.GET_QUIZ_BY_EXERCISE_ID + id)).data
 }
 
 export const getQuizByExerciseId = async (exerciseId: string) => {
-    return [
-        {
-            id: 'quiz1',
-            typeAnswer: 'one_choice' as "multiple_choice" | "one_choice",
-            question: '2 + 3 bằng bao nhiêu?',
-            answer: ["4", "Ba", "Năm", "Sáu"],
-            image: '',
-            index: 0,
-        },
-        {
-            id: 'quiz2',
-            typeAnswer: 'one_choice' as "multiple_choice" | "one_choice",
-            question: 'Hành tinh nào được gọi là Hành tinh Đỏ?',
-            answer: ["Trái Đất", "Sao Hỏa", "Sao Mộc", "Sao Kim"],
-            image: '',
-            index: 1,
-        },
-        {
-            id: 'quiz3',
-            typeAnswer: 'multiple_choice' as "multiple_choice" | "one_choice",
-            question: 'Những loài động vật nào có thể bay?',
-            answer: ["Đại bàng", "Chim cánh cụt", "Dơi", "Cá heo"],
-            image: '',
-            index: 2,
-        },
-        {
-            id: 'quiz4',
-            typeAnswer: 'one_choice' as "multiple_choice" | "one_choice",
-            question: 'Trên Trái Đất có bao nhiêu châu lục?',
-            answer: ["5", "6", "7", "8"],
-            image: '',
-            index: 3,
-        },
-        {
-            id: 'quiz5',
-            typeAnswer: 'one_choice' as "multiple_choice" | "one_choice",
-            question: 'Ai là tác giả của vở kịch "Romeo và Juliet"?',
-            answer: ["Shakespeare", "Hemingway", "Tolstoy", "Dickens"],
-            image: '',
-            index: 4,
-        },
-        {
-            id: 'quiz6',
-            typeAnswer: 'multiple_choice' as "multiple_choice" | "one_choice",
-            question: 'Những ngôn ngữ lập trình nào dưới đây là đúng?',
-            answer: ["Python", "Java", "HTML", "CSS"],
-            image: '',
-            index: 5,
-        },
-        {
-            id: 'quiz7',
-            typeAnswer: 'one_choice' as "multiple_choice" | "one_choice",
-            question: 'Thủ đô của Nhật Bản là gì?',
-            answer: ["Seoul", "Bắc Kinh", "Tokyo", "Bangkok"],
-            image: '',
-            index: 6,
-        },
-        {
-            id: 'quiz8',
-            typeAnswer: 'one_choice' as "multiple_choice" | "one_choice",
-            question: 'Đại dương nào lớn nhất trên Trái Đất?',
-            answer: ["Đại Tây Dương", "Ấn Độ Dương", "Thái Bình Dương", "Bắc Băng Dương"],
-            image: '',
-            index: 7,
-        }
-    ];
-
+    return (await http.get(EXERCISE_API.GET_QUIZ_BY_EXERCISE_ID + exerciseId)).data
 }
 
 export const getNextQuiz = async (index: number) => {
@@ -225,6 +120,300 @@ export const getNextQuiz = async (index: number) => {
     // return quizzes;
 };
 
-export const getAnsweredQuiz = async (quizId: string) => {
-    return "1000"
+export const getAnsweredQuiz = async (submitAnswerReq : SubmitAnswerReq) => {
+    return (await http.post(EXERCISE_API.GET_ANSWER_QUIZ, submitAnswerReq)).data
 }
+
+
+// services/student.ts
+
+// const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+
+// For now, we'll use mock data since the API doesn't exist yet
+export const getStudentsByCourseId = async (courseId: string) => {
+    // Simulate API call with mock data
+    return mockStudents
+};
+
+export const addStudentToCourse = async (courseId: string, studentData: Partial<Student>) => {
+    // Simulate API call
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            // In a real API, this would add the student to the database
+            resolve({
+                data: {
+                    ...studentData,
+                    _id: `s${Math.floor(1000 + Math.random() * 9000)}`,
+                    courses: [courseId],
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                },
+                status: 201,
+                statusText: 'Created'
+            });
+        }, 800);
+    });
+};
+
+export const removeStudentFromCourse = async (courseId: string, studentId: string) => {
+    // Simulate API call
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            // In a real API, this would remove the student from the course
+            resolve({
+                data: { message: 'Student removed successfully' },
+                status: 200,
+                statusText: 'OK'
+            });
+        }, 800);
+    });
+};
+
+export const getStudentRankings = async (courseId: string) => {
+    // Simulate API call with mock data
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            const rankedStudents = [...mockStudents]
+                .filter(student => student.courses.includes(courseId))
+                .sort((a, b) => (b.averageScore || 0) - (a.averageScore || 0))
+                .map((student, index) => ({
+                    ...student,
+                    rank: index + 1
+                }));
+
+            resolve({
+                data: rankedStudents,
+                status: 200,
+                statusText: 'OK'
+            });
+        }, 800);
+    });
+};
+
+export const mockStudents: Student[] = [
+    {
+        _id: 's1001',
+        email: 'nguyen.minh@example.com',
+        username: 'minhng',
+        name: 'Nguyễn Văn Minh',
+        avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
+        role: 'student',
+        createdAt: '2023-10-15T08:30:00.000Z',
+        updatedAt: '2024-02-28T14:20:00.000Z',
+        birthday: new Date('2002-05-12'),
+        phonenumber: '0912345678',
+        studentId: 'ST2023001',
+        enrollmentDate: '2023-09-01',
+        courses: ['course001', 'course002'],
+        progress: [
+            {
+                courseId: 'course001',
+                completedLessons: ['l001', 'l002', 'l003'],
+                completionPercentage: 75,
+                lastAccessDate: '2024-03-07T10:15:00.000Z'
+            }
+        ],
+        grades: [
+            {
+                courseId: 'course001',
+                lessonId: 'l001',
+                exerciseId: 'ex001',
+                score: 9.5,
+                maxScore: 10,
+                submittedAt: '2024-02-20T09:30:00.000Z'
+            }
+        ],
+        attendance: [
+            {
+                date: '2024-03-06',
+                status: 'present'
+            },
+            {
+                date: '2024-03-07',
+                status: 'present'
+            }
+        ],
+        rank: 1,
+        averageScore: 9.2
+    },
+    {
+        _id: 's1002',
+        email: 'le.thuy@example.com',
+        username: 'thuyle',
+        name: 'Lê Thị Thúy',
+        avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
+        role: 'student',
+        createdAt: '2023-10-16T09:45:00.000Z',
+        updatedAt: '2024-02-27T15:30:00.000Z',
+        birthday: new Date('2003-08-23'),
+        phonenumber: '0923456789',
+        studentId: 'ST2023002',
+        enrollmentDate: '2023-09-01',
+        courses: ['course001'],
+        progress: [
+            {
+                courseId: 'course001',
+                completedLessons: ['l001', 'l002'],
+                completionPercentage: 50,
+                lastAccessDate: '2024-03-06T14:20:00.000Z'
+            }
+        ],
+        grades: [
+            {
+                courseId: 'course001',
+                lessonId: 'l001',
+                exerciseId: 'ex001',
+                score: 8.5,
+                maxScore: 10,
+                submittedAt: '2024-02-21T10:15:00.000Z'
+            }
+        ],
+        attendance: [
+            {
+                date: '2024-03-06',
+                status: 'present'
+            },
+            {
+                date: '2024-03-07',
+                status: 'late'
+            }
+        ],
+        rank: 3,
+        averageScore: 8.5
+    },
+    {
+        _id: 's1003',
+        email: 'tran.duc@example.com',
+        username: 'ductran',
+        name: 'Trần Văn Đức',
+        avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
+        role: 'student',
+        createdAt: '2023-10-14T11:20:00.000Z',
+        updatedAt: '2024-02-26T16:45:00.000Z',
+        birthday: new Date('2002-11-05'),
+        phonenumber: '0934567890',
+        studentId: 'ST2023003',
+        enrollmentDate: '2023-09-01',
+        courses: ['course001', 'course002'],
+        progress: [
+            {
+                courseId: 'course001',
+                completedLessons: ['l001', 'l002', 'l003', 'l004'],
+                completionPercentage: 90,
+                lastAccessDate: '2024-03-07T09:40:00.000Z'
+            }
+        ],
+        grades: [
+            {
+                courseId: 'course001',
+                lessonId: 'l001',
+                exerciseId: 'ex001',
+                score: 9.0,
+                maxScore: 10,
+                submittedAt: '2024-02-22T11:00:00.000Z'
+            }
+        ],
+        attendance: [
+            {
+                date: '2024-03-06',
+                status: 'present'
+            },
+            {
+                date: '2024-03-07',
+                status: 'present'
+            }
+        ],
+        rank: 2,
+        averageScore: 9.0
+    },
+    {
+        _id: 's1004',
+        email: 'pham.anh@example.com',
+        username: 'anhpham',
+        name: 'Phạm Thị Anh',
+        avatar: 'https://randomuser.me/api/portraits/women/4.jpg',
+        role: 'student',
+        createdAt: '2023-10-18T10:30:00.000Z',
+        updatedAt: '2024-02-25T14:15:00.000Z',
+        birthday: new Date('2003-02-15'),
+        phonenumber: '0945678901',
+        studentId: 'ST2023004',
+        enrollmentDate: '2023-09-02',
+        courses: ['course001'],
+        progress: [
+            {
+                courseId: 'course001',
+                completedLessons: ['l001'],
+                completionPercentage: 30,
+                lastAccessDate: '2024-03-05T16:25:00.000Z'
+            }
+        ],
+        grades: [
+            {
+                courseId: 'course001',
+                lessonId: 'l001',
+                exerciseId: 'ex001',
+                score: 7.5,
+                maxScore: 10,
+                submittedAt: '2024-02-23T13:45:00.000Z'
+            }
+        ],
+        attendance: [
+            {
+                date: '2024-03-06',
+                status: 'absent'
+            },
+            {
+                date: '2024-03-07',
+                status: 'present'
+            }
+        ],
+        rank: 4,
+        averageScore: 7.5
+    },
+    {
+        _id: 's1005',
+        email: 'hoang.nam@example.com',
+        username: 'namhoang',
+        name: 'Hoàng Đức Nam',
+        avatar: 'https://randomuser.me/api/portraits/men/5.jpg',
+        role: 'student',
+        createdAt: '2023-10-17T12:40:00.000Z',
+        updatedAt: '2024-02-24T17:30:00.000Z',
+        birthday: new Date('2002-07-28'),
+        phonenumber: '0956789012',
+        studentId: 'ST2023005',
+        enrollmentDate: '2023-09-02',
+        courses: ['course001', 'course002'],
+        progress: [
+            {
+                courseId: 'course001',
+                completedLessons: ['l001', 'l002'],
+                completionPercentage: 60,
+                lastAccessDate: '2024-03-06T11:35:00.000Z'
+            }
+        ],
+        grades: [
+            {
+                courseId: 'course001',
+                lessonId: 'l001',
+                exerciseId: 'ex001',
+                score: 8.0,
+                maxScore: 10,
+                submittedAt: '2024-02-24T15:20:00.000Z'
+            }
+        ],
+        attendance: [
+            {
+                date: '2024-03-06',
+                status: 'late'
+            },
+            {
+                date: '2024-03-07',
+                status: 'present'
+            }
+        ],
+        rank: 5,
+        averageScore: 8.0
+    }
+];

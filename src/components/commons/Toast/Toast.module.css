@@ -1,0 +1,131 @@
+.toastContainer {
+    position: fixed;
+    display: flex;
+    align-items: flex-start;
+    max-width: 360px;
+    width: calc(100% - 32px);
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    right: 16px;
+    bottom: 16px;
+    animation: slideIn 0.3s ease-out forwards;
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 480px) {
+    .toastContainer {
+        bottom: 24px;
+        right: 50%;
+        transform: translateX(50%);
+        width: calc(100% - 48px);
+    }
+}
+
+.iconContainer {
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.content {
+    flex: 1;
+}
+
+.title {
+    margin: 0 0 4px 0;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+.message {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    opacity: 0.9;
+}
+
+.closeButton {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.closeButton:hover {
+    opacity: 1;
+}
+
+/* Toast types */
+.success {
+    background-color: #e7f9ed;
+    border-left: 4px solid #34d399;
+    color: #065f46;
+}
+
+.success .icon {
+    color: #34d399;
+}
+
+.error {
+    background-color: #fee2e2;
+    border-left: 4px solid #ef4444;
+    color: #991b1b;
+}
+
+.error .icon {
+    color: #ef4444;
+}
+
+.info {
+    background-color: #e0f2fe;
+    border-left: 4px solid #3b82f6;
+    color: #1e40af;
+}
+
+.info .icon {
+    color: #3b82f6;
+}
+
+.warning {
+    background-color: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    color: #92400e;
+}
+
+.warning .icon {
+    color: #f59e0b;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    @keyframes slideIn {
+        from {
+            transform: translateX(50%) translateY(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(50%) translateY(0);
+            opacity: 1;
+        }
+    }
+}

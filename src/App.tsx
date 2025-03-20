@@ -2,6 +2,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { router } from './router'
 import DefaultLayout from './layouts/DefaultLayout.tsx'
 import NotFound from './pages/commons/NotFound.tsx'
+import './styles/global.css';
+import './styles/common.scss'
 
 function App() {
     return (

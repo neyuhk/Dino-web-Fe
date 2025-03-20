@@ -1,49 +1,353 @@
-.logo {
-    width: 145px;
-    height: 92px;
-    gap: 0;
-    opacity: 0;
-}
-
-.image-logo {
+/* Modern Header Styles */
+.modern-header {
+    background-color: var(--primary-color);
+    position: sticky;
+    top: 0;
     width: 100%;
-    height: 100%;
+    z-index: 1000;
+    height: 64px;
+    display: flex;
+    align-items: center;
 }
 
-.header-content {
+.header-container {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
     height: 100%;
 }
 
-.user-info {
+/* Logo */
+.logo {
     display: flex;
     align-items: center;
+    text-decoration: none;
+    height: 64px;
+}
+
+.logo h2 {
+    color: white;
+    margin: 0;
+    font-family: var(--font-primary, 'Oswald', sans-serif);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    font-size: 1.75rem;
+}
+
+/* Navigation */
+.nav-menu {
+    display: flex;
+    gap: 8px;
+    margin: 0 24px;
+}
+
+.nav-item {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    font-family: var(--font-secondary, 'Montserrat', sans-serif);
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 6px 16px;
+    border-radius: 6px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    /* Đặt sẵn transform để tránh việc phải tạo lớp mới */
+    transform: translateY(0);
+}
+
+.nav-item::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 16px;
+    right: 16px;
+    height: 2px;
+    background-color: white;
+    border-radius: 1px;
+    transform: scaleX(0);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+}
+
+.nav-item:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-item.active {
+    color: white;
+    font-weight: 600;
+    transform: translateY(-2px);
+    box-shadow: none;
+}
+
+.nav-item.active::after {
+    transform: scaleX(1);
+}
+
+/* User section */
+.auth-section {
+    display: flex;
+    align-items: center;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 24px;
+    transition: all 0.2s ease;
 }
 
-.username {
-    margin-left: 10px;
+.user-profile:hover {
+    background-color: rgba(255, 255, 255, 0.15);
 }
 
-.header-menu {
+.user-name {
+    font-size: 0.9rem;
+    color: white;
+    font-weight: 500;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sign-in-btn {
+    background-color: white;
+    color: var(--primary-color);
+    text-decoration: none;
+    padding: 8px 20px;
+    border-radius: 24px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.sign-in-btn:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Mobile menu toggle */
+.mobile-toggle {
+    display: none;
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.mobile-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Logout Modal */
+.logout-confirmation .ant-modal-content {
+    border-radius: 12px;
+    padding: 0;
+}
+
+.logout-modal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 24px;
+    text-align: center;
+}
+
+.modal-icon {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(56, 121, 113, 0.1);
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.modal-icon svg {
+    width: 32px;
+    height: 32px;
+    color: var(--primary-color);
+}
+
+.logout-modal h3 {
+    font-family: var(--font-primary, 'Oswald', sans-serif);
+    margin: 0 0 10px;
+    color: #333;
+    font-size: 1.5rem;
+}
+
+.logout-modal p {
+    color: #666;
+    margin-bottom: 24px;
+    font-size: 1rem;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.cancel-btn {
     flex: 1;
-    minWidth: 0;
-    background: rgb(55, 121, 111);
+    border: 1px solid #ddd;
+    background: white;
+}
+
+.confirm-btn {
+    flex: 1;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.confirm-btn:hover {
+    background-color: #2d6961;
+    border-color: #2d6961;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .mobile-toggle {
+        display: block;
+        order: 1;
+    }
+
+    .logo {
+        order: 2;
+    }
+
+    .auth-section {
+        order: 3;
+    }
+
+    .nav-menu {
+        position: fixed;
+        top: 64px;
+        left: 0;
+        width: 100%;
+        background-color: var(--primary-color);
+        flex-direction: column;
+        padding: 16px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transform: translateY(-100%);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        gap: 12px;
+        margin: 0;
+        height: auto;
+        max-height: calc(100vh - 64px);
+        overflow-y: auto;
+        z-index: 999;
+    }
+
+    .nav-menu.visible {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .nav-item {
+        padding: 12px 16px;
+        width: 100%;
+    }
+
+    .nav-item.active::after {
+        left: 16px;
+        right: 16px;
+    }
+
+    .user-name {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-container {
+        padding: 0 16px;
+    }
+
+    .logo h2 {
+        font-size: 1.5rem;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .logo {
+        height: 56px;
+    }
+
+    .nav-menu {
+        top: 56px;
+    }
+}
+
+
+/* Hiệu ứng cho header khi đang chuyển trang */
+.modern-header.transitioning {
+    opacity: 100%;
+    transition: opacity 0s ease;
+}
+
+/* Hiệu ứng cho toàn bộ trang */
+body {
+    transition: opacity 0.3s ease;
+}
+
+body.page-transitioning {
+    opacity: 0.8;
+}
+
+/* Thêm hiệu ứng cho các liên kết trong header */
+.nav-item {
+    position: relative;
     transition: color 0.3s ease;
 }
 
-.header-menu a :hover{
-    background: #237955 !important;
-    color: #cccccc !important;
+.nav-item::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: white;
+    transition: width 0.3s ease;
 }
 
-.white-text {
-    color: #ffffff !important;
+.nav-item:hover::after,
+.nav-item.active::after {
+    width: 100%;
 }
 
-.black-text {
-    color: #000000 !important;
+/* Hiệu ứng cho các trang */
+.page-content {
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

@@ -1,0 +1,939 @@
+/* CourseStudents.module.css */
+
+.container {
+    background-color: var(--background-color);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    font-family: var(--font-secondary);
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* Header and Title */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.title {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    font-weight: 600;
+    font-family: var(--font-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.studentCount {
+    font-size: 1rem;
+    color: var(--gray-medium);
+    margin-left: 8px;
+    font-weight: normal;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Search */
+.searchContainer {
+    position: relative;
+}
+
+.searchInput {
+    padding: 10px 16px 10px 40px;
+    border-radius: 8px;
+    border: 1px solid var(--gray-light);
+    font-size: 0.9rem;
+    width: 250px;
+    outline: none;
+    transition: all 0.3s ease;
+    background-color: var(--background-primary);
+    color: var(--text-color);
+}
+
+.searchInput:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(56, 121, 113, 0.2);
+}
+
+.searchIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-medium);
+    font-size: 0.9rem;
+}
+
+/* Add Button */
+.addButton {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.addButton:hover {
+    background-color: #2d6359;
+    transform: translateY(-2px);
+}
+
+.buttonIcon {
+    font-size: 0.8rem;
+}
+
+/* Empty State */
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    background-color: var(--background-primary);
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.emptyStateIcon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    opacity: 0.7;
+}
+
+.emptyState h3 {
+    color: var(--text-color);
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.emptyState p {
+    color: var(--gray-dark);
+    margin-bottom: 20px;
+    max-width: 400px;
+}
+
+/* Student Table */
+.studentTable {
+    border: 1px solid var(--gray-light);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.tableHeader {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr 1.5fr 1fr;
+    background-color: var(--background-primary);
+    font-weight: 600;
+    padding: 12px 20px;
+    color: var(--text-color);
+}
+
+.headerCell {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.headerCellCenter{
+    display: flex;
+    justify-content: center;
+}
+
+.score{
+    display: flex;
+    justify-content: center;
+}
+
+.headerCell:hover {
+    color: var(--primary-color);
+}
+
+.sortIcon {
+    margin-left: 4px;
+    font-size: 0.8rem;
+    transition: transform 0.2s ease;
+}
+
+.sortDesc {
+    transform: rotate(180deg);
+}
+
+.tableBody {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.tableRow {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr 1.5fr 1fr;
+    padding: 14px 20px;
+    border-top: 1px solid var(--gray-light);
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.tableRow:hover {
+    background-color: var(--background-primary);
+}
+
+/* Student Cell */
+.studentCell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.avatarContainer {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatarPlaceholder {
+    width: 100%;
+    height: 100%;
+    background-color: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.studentInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.studentName {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.studentEmail {
+    font-size: 0.8rem;
+    color: var(--gray-dark);
+}
+
+.cell {
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.score{
+    display: flex;
+    justify-content: center;
+}
+
+/* Progress Bar */
+.progressContainer {
+    width: 100%;
+    height: 8px;
+    background-color: var(--gray-light);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.progressBar {
+    height: 100%;
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+.progressText {
+    position: absolute;
+    right: -25px;
+    top: -2px;
+    font-size: 0.8rem;
+    color: var(--text-color);
+}
+
+/* Score Labels */
+.scoreLabel {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.highScore {
+    background-color: rgba(72, 187, 120, 0.2);
+    color: #38a169;
+}
+
+.mediumScore {
+    background-color: rgba(237, 137, 54, 0.2);
+    color: #dd6b20;
+}
+
+.lowScore {
+    background-color: rgba(229, 62, 62, 0.2);
+    color: #e53e3e;
+}
+
+/* Action Buttons */
+.actionsCell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.viewButton {
+    padding: 6px 10px;
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    border: none;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.viewButton:hover {
+    background-color: #c5e0c6;
+}
+
+.removeButton {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background-color: rgba(229, 62, 62, 0.1);
+    color: #e53e3e;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.removeButton:hover {
+    background-color: rgba(229, 62, 62, 0.2);
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--gray-dark);
+}
+
+.paginationInfo {
+    font-size: 0.9rem;
+}
+
+.paginationControls {
+    display: flex;
+    gap: 8px;
+}
+
+.paginationButton {
+    padding: 6px 12px;
+    border: 1px solid var(--gray-light);
+    background-color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.paginationButton:hover:not(:disabled) {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.paginationButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.activePage {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Loading State */
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: var(--text-color);
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(56, 121, 113, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error State */
+.errorContainer {
+    padding: 24px;
+    background-color: rgba(229, 62, 62, 0.1);
+    border-radius: 8px;
+    color: #e53e3e;
+    text-align: center;
+}
+
+.errorMessage {
+    margin-bottom: 16px;
+    font-weight: 500;
+}
+
+.retryButton {
+    background-color: #e53e3e;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.retryButton:hover {
+    background-color: #c53030;
+}
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background-color: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.modalTitle {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+    font-family: var(--font-primary);
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    color: var(--gray-dark);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    padding: 16px 24px;
+    border-top: 1px solid var(--gray-light);
+    gap: 12px;
+}
+
+.cancelButton {
+    padding: 8px 16px;
+    background-color: white;
+    border: 1px solid var(--gray-light);
+    border-radius: 4px;
+    color: var(--gray-dark);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+    background-color: var(--gray-light);
+}
+
+.confirmButton {
+    padding: 8px 16px;
+    background-color: #e53e3e;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.confirmButton:hover {
+    background-color: #c53030;
+}
+
+.submitButton {
+    padding: 8px 16px;
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.submitButton:hover {
+    background-color: #2d6359;
+}
+
+.modalMessage {
+    padding: 16px 24px;
+    color: var(--text-color);
+}
+
+/* Add Form */
+.addForm {
+    padding: 16px 24px;
+}
+
+.formGroup {
+    margin-bottom: 16px;
+}
+
+.formLabel {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.formInput {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--gray-light);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.formInput:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(56, 121, 113, 0.2);
+}
+
+.formActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+/* Student Detail Modal */
+.detailModal {
+    max-width: 700px;
+}
+
+.studentDetailContent {
+    padding: 24px;
+}
+
+.studentDetailHeader {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.detailAvatarContainer {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.detailAvatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.detailAvatarPlaceholder {
+    width: 100%;
+    height: 100%;
+    background-color: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.studentDetailInfo {
+    flex: 1;
+}
+
+.detailName {
+    font-size: 1.4rem;
+    color: var(--text-color);
+    margin: 0 0 8px 0;
+    font-family: var(--font-primary);
+}
+
+.detailMeta {
+    color: var(--gray-dark);
+    font-size: 0.9rem;
+}
+
+.detailMeta p {
+    margin: 4px 0;
+}
+
+.detailTabs {
+    display: flex;
+    border-bottom: 1px solid var(--gray-light);
+    margin-bottom: 20px;
+}
+
+.detailTabButton {
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    color: var(--gray-dark);
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+}
+
+.activeTab {
+    color: var(--primary-color);
+}
+
+.activeTab:after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--primary-color);
+}
+
+.detailSection {
+    margin-bottom: 24px;
+}
+
+.detailSectionTitle {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    margin-bottom: 16px;
+    font-family: var(--font-primary);
+}
+
+.detailProgressContainer {
+    margin-bottom: 24px;
+}
+
+.detailProgressOuter {
+    width: 100%;
+    height: 10px;
+    background-color: var(--gray-light);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.detailProgressInner {
+    height: 100%;
+    background-color: var(--primary-color);
+    border-radius: 5px;
+}
+
+.detailProgressLabel {
+    font-size: 0.9rem;
+    color: var(--gray-dark);
+}
+
+.detailStatsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.detailStatCard {
+    background-color: var(--background-primary);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+}
+
+.detailStatValue {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 4px;
+    font-family: var(--font-primary);
+}
+
+.detailStatLabel {
+    font-size: 0.85rem;
+    color: var(--gray-dark);
+}
+
+/* Dropdown Menu */
+.dropdownContainer {
+    position: relative;
+}
+
+.dropdownButton {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dropdownMenu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border: 1px solid var(--gray-light);
+    border-radius: 8px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+    display: none;
+    flex-direction: column;
+    width: 150px;
+    z-index: 100;
+    margin-top: 4px;
+}
+
+.dropdownContainer:hover .dropdownMenu {
+    display: flex;
+}
+
+.dropdownItem {
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+    color: var(--text-color);
+}
+
+.dropdownItem:hover {
+    background-color: var(--background-primary);
+}
+
+/* Responsive styles */
+@media screen and (max-width: 1024px) {
+    .tableHeader, .tableRow {
+        grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr 0.8fr;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .actions {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .searchContainer {
+        width: 100%;
+    }
+
+    .searchInput {
+        width: 100%;
+    }
+
+    .tableHeader, .tableRow {
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+    }
+
+    .headerCell:nth-child(5),
+    .headerCell:nth-child(6),
+    .tableRow > div:nth-child(5),
+    .tableRow > div:nth-child(6) {
+        display: none;
+    }
+
+    .studentDetailHeader {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .detailStatsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .tableHeader, .tableRow {
+        grid-template-columns: 2fr 1fr;
+    }
+
+    .headerCell:nth-child(3),
+    .headerCell:nth-child(4),
+    .tableRow > div:nth-child(3),
+    .tableRow > div:nth-child(4) {
+        display: none;
+    }
+
+    .pagination {
+        flex-direction: column;
+        gap: 16px;
+        align-items: center;
+    }
+
+    .detailStatsGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Giữ nguyên CSS cũ và chỉ bổ sung phần hiển thị trên điện thoại */
+/* ✅ Bổ sung cho màn hình điện thoại */
+@media screen and (max-width: 768px) {
+    .studentTable {
+        display: block;
+    }
+
+    .tableHeader {
+        display: none; /* Ẩn tiêu đề bảng trên mobile */
+    }
+
+    .tableBody {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .tableRow {
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 12px;
+        padding: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .studentTable{
+        border: none;
+    }
+
+    .expanded {
+        background-color: #f9f9f9;
+        box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .expandedDetails {
+        display: flex;
+        flex-direction: column;
+        padding-top: 12px;
+        gap: 8px;
+    }
+
+    .actionsCell {
+        display: flex;
+        justify-content: space-between;
+        padding-top: 8px;
+    }
+
+    .viewButton, .removeButton {
+        flex: 1;
+        padding: 8px;
+        font-size: 14px;
+        border: none;
+        cursor: pointer;
+        border-radius: 6px;
+        transition: background 0.3s;
+    }
+
+    .viewButton {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .viewButton:hover {
+        background-color: #388E3C;
+    }
+
+    .removeButton {
+        background-color: #F44336;
+        color: white;
+        margin-left: 8px;
+    }
+
+    .removeButton:hover {
+        background-color: #D32F2F;
+    }
+}

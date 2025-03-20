@@ -14,6 +14,7 @@ export const PATHS = {
     //courses
     COURSES: '/courses',
 
+
     //forum
     FORUM: '/forum',
 
@@ -28,7 +29,14 @@ export const PATHS = {
     CLASSROOM: '/classroom',
     CLASSROOM_DETAIL: '/classroom/detail',
     CLASSROOM_LESSON: '/classroom/courses',
+    CLASSROOM_LESSON_DETAIL: '/classroom/courses/lesson/:id',
     CLASSROOM_LEARNING: '/classroom/courses/learning',
+
+    //teacher
+    TEACHER_COURSES: '/classroom/courses/:courseId',
+    TEACHER_LESSON: '/classroom/courses/:courseId/lesson/:lessonId',
+    TEACHER_NEW_EXERCISE: '/classroom/courses/:courseId/lesson/:lessonId/new_exercise',
+    TEACHER_EXERCISE_DETAIL: '/classroom/courses/:courseId/lesson/:lessonId/:exerciseId'
 
 }
 

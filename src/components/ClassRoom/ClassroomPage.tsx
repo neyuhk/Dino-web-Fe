@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { PATHS } from '../../router/path.ts'
 import { Classroom, Course } from '../../model/classroom.ts'
-import RequireAuth from '../RequireAuth/RequireAuth.tsx'
+import RequireAuth from '../commons/RequireAuth/RequireAuth.tsx'
 
 interface ClassroomListProps {
     classrooms: Classroom;

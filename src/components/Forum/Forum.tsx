@@ -61,6 +61,7 @@ const ForumPage: React.FC = () => {
     }, [selectedMenu]);
 
     const handleMenuClick = (menuId: string) => {
+        console.log("menuId", menuId);
         if (menuId === 'class') {
             setIsClassExpanded(!isClassExpanded);
             if (window.innerWidth < 768) {
@@ -227,7 +228,7 @@ const ForumPage: React.FC = () => {
                     ) : hasError ? ( // Kiểm tra lỗi trước tiên
                         <EmptyState
                             selectedMenu={selectedMenu}
-                            isError={true} // Đặt cờ lỗi
+                            isError={false} // Đặt cờ lỗi true nhows suwra laij
                             errorMessage="Không thể tải dữ liệu. Vui lòng thử lại." // Thông báo lỗi tùy chỉnh
                         />
                     ) : forumList.length > 0 ? ( // Hiển thị danh sách bài viết nếu có dữ liệu

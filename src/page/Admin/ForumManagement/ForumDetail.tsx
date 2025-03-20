@@ -20,6 +20,7 @@ const ForumDetailPage: React.FC = () => {
             try {
                 const forumResponse = await getForumById(forumId ? forumId : '');
                 setForumData(forumResponse.data);
+                console.log('fetchdata forum',forumData);
                 setLoading(false);
             } catch (error) {
                 console.error('Failed to fetch forum data:', error);

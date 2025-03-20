@@ -1,0 +1,358 @@
+.container {
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    max-width: 1200px;
+}
+
+.header {
+    margin-bottom: 24px;
+}
+
+.backButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+    margin-bottom: 16px;
+}
+
+.backButton:hover {
+    color: #4CAF50;
+}
+
+.titleContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    margin-top: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.titleInfo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.lessonIcon {
+    color: #4CAF50;
+}
+
+.lessonTitle {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.completedIcon {
+    color: #4CAF50;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.lessonInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.lessonMeta {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0;
+}
+
+.lessonDescription {
+    line-height: 1.6;
+    color: #444;
+    margin: 0;
+}
+
+/* Video container styles - prioritized as per requirements */
+.videoContainer {
+    margin: 16px 0 24px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.videoContainer h3 {
+    margin: 0 0 12px;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.video {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.video iframe,
+.video video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Image gallery - more compact as per requirements */
+.imagesContainer {
+    margin: 16px 0;
+}
+
+.imagesContainer h3 {
+    margin: 0 0 12px;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.imageGallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.lessonImage {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.lessonImage:hover {
+    transform: scale(1.03);
+}
+
+.lessonBody {
+    line-height: 1.8;
+    color: #333;
+}
+
+.lessonBody h3 {
+    margin: 0 0 16px;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+/* Exercise section styles - focused on as per requirements */
+.exerciseSection {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.exerciseSection h2 {
+    margin: 0 0 16px;
+    color: #333;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.exerciseList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.exerciseItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 16px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border-left: 4px solid #4CAF50;
+}
+
+.exerciseItem:hover:not(.exerciseExpired) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.exerciseExpired {
+    opacity: 0.7;
+    background-color: #f5f5f5;
+    border-left: 4px solid #9e9e9e;
+    cursor: not-allowed;
+}
+
+.exerciseInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.exerciseTitle {
+    font-weight: 600;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.exerciseDescription {
+    color: #555;
+    font-size: 0.95rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.exerciseDeadline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 4px;
+}
+
+.deadlineIcon {
+    color: #ff9800;
+}
+
+.deadlineExpired {
+    color: #f44336;
+    font-weight: 500;
+}
+
+.exerciseScore {
+    font-size: 0.95rem;
+    color: #555;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.exerciseStatus {
+    font-size: 0.85rem;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background-color: #ffebee;
+    color: #f44336;
+    font-weight: 500;
+    white-space: nowrap;
+    margin-left: 16px;
+}
+
+.exerciseStatus.completed {
+    background-color: #e8f5e9;
+    color: #4CAF50;
+}
+
+.exerciseStatus.expired {
+    background-color: #f5f5f5;
+    color: #9e9e9e;
+}
+
+.averageScore {
+    margin-top: 24px;
+    padding: 16px;
+    background-color: #e8f5e9;
+    border-radius: 8px;
+    color: #2e7d32;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.errorContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    text-align: center;
+    color: #f44336;
+}
+
+.noExercisesContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    background-color: white;
+    border-radius: 8px;
+    margin-top: 32px;
+    border: 1px dashed #e0e0e0;
+}
+
+.noExercisesImage {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border-radius: 50%;
+    margin-bottom: 16px;
+}
+
+.noExercisesIcon {
+    color: #9e9e9e;
+}
+
+.noExercisesTitle {
+    margin: 0 0 8px;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.noExercisesDescription {
+    margin: 0;
+    color: #666;
+    max-width: 400px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 16px;
+    }
+
+    .titleInfo {
+        gap: 12px;
+    }
+
+    .lessonTitle {
+        font-size: 1.3rem;
+    }
+
+    .exerciseItem {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .exerciseStatus {
+        margin-left: 0;
+        margin-top: 12px;
+        align-self: flex-start;
+    }
+
+    .imageGallery {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+}

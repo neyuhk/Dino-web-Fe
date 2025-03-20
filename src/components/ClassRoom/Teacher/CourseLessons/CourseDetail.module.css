@@ -1,0 +1,374 @@
+/* CourseDetail.module.css */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    min-height: 90vh;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.backButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: var(--font-secondary);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.backButton:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.title {
+    flex-grow: 1;
+    color: var(--primary-color);
+    font-size: 2rem;
+    font-weight: 700;
+    position: relative;
+    text-align: center;
+    margin: 0;
+}
+
+.title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: var(--gradient-colors);
+    border-radius: 2px;
+}
+
+/* Course info section */
+.courseInfo {
+    display: flex;
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 32px;
+    border: 1px solid var(--secondary-color);
+}
+
+.courseImageContainer {
+    width: 300px;
+    height: 200px;
+    overflow: hidden;
+}
+
+.courseImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.courseDetails {
+    flex-grow: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.courseDescription {
+    color: #6b7280;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.courseStats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.statsItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.statsLabel {
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.statsValue {
+    font-size: 1rem;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.progressContainer {
+    margin-top: auto;
+}
+
+.progressLabel {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.progressBar {
+    height: 8px;
+    background-color: var(--background-primary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: var(--gradient-colors);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+    gap: 16px;
+}
+
+.tabButton {
+    background-color: var(--background-primary);
+    color: var(--text-color);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.tabButton:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+.tabButton.active {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.tabContent {
+    background-color: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    min-height: 400px;
+}
+
+/* Loading state */
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 500px;
+    font-size: 1.2rem;
+    color: var(--text-color);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+/* Student List styles */
+.studentListContainer {
+    width: 100%;
+}
+
+.sectionTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--secondary-color);
+}
+
+.studentsList {
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--secondary-color);
+}
+
+.studentsHeader {
+    display: flex;
+    background-color: var(--background-primary);
+    padding: 12px 16px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.studentHeaderId {
+    width: 20%;
+}
+
+.studentHeaderName {
+    width: 50%;
+}
+
+.studentHeaderActions {
+    width: 30%;
+    text-align: right;
+}
+
+.studentItem {
+    display: flex;
+    padding: 12px 16px;
+    border-top: 1px solid var(--secondary-color);
+    transition: background-color 0.2s ease;
+}
+
+.studentItem:hover {
+    background-color: var(--background-primary);
+}
+
+.studentId {
+    width: 20%;
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.studentName {
+    width: 50%;
+    font-weight: 500;
+}
+
+.studentActions {
+    width: 30%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.actionButton {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.actionButton:hover {
+    background-color: var(--primary-color-dark, #2563eb);
+    transform: translateY(-1px);
+}
+
+/* Empty state styles */
+.emptyStateContainer {
+    padding: 40px;
+    text-align: center;
+}
+
+.emptyStateMessage {
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+    .courseInfo {
+        flex-direction: column;
+    }
+
+    .courseImageContainer {
+        width: 100%;
+        height: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 16px;
+    }
+
+    .title {
+        font-size: 1.6rem;
+    }
+
+    .tabs {
+        flex-wrap: wrap;
+    }
+
+    .tabButton {
+        flex: 1;
+        font-size: 0.9rem;
+        padding: 10px 16px;
+    }
+
+    .studentActions {
+        flex-direction: column;
+    }
+
+    .actionButton {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .header {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .backButton {
+        margin-right: 0;
+        align-self: flex-start;
+    }
+
+    .courseStats {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .studentsHeader,
+    .studentItem {
+        font-size: 0.9rem;
+    }
+
+    .studentHeaderActions,
+    .studentActions {
+        width: 20%;
+    }
+
+    .studentHeaderName,
+    .studentName {
+        width: 60%;
+    }
+}

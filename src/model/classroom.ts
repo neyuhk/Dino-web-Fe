@@ -2,42 +2,44 @@
 import { User } from './model.ts'
 
 export interface Exercise {
-    id: string;
-    type: "quiz" | "test";
+    _id: string;
+    type: "quiz" | "test" | "file";
     time: number;
     title: string;
     description: string;
     score?: number;
     isCompleted: boolean;
     submittedAt?: string;
+    endDate: Date;
 }
 
 export interface Quiz{
-    id: string;
-    typeAnswer: 'multiple_choice' | 'one_choice';
+    _id: string;
+    type_answer: 'multiple_choice' | 'one_choice';
     question: string;
-    answer: string[];
+    answers: string[];
+    correct_answer: string[];
     image: string;
     index: number;
 }
 
 export interface Lesson {
-    id: string;
+    _id: string;
     title: string;
     description: string;
     video_url: string;
     images: string[];
     body: string;
-    course_id: Course;
+    course_id: string;
     createdAt: string;
     updatedAt: string;
 
     exercises: Exercise[];
     order: number;
-    duration: number; // Thời lượng bài học (phút)
+    duration: number;
     isCompleted: boolean;
-    progress: number; // Phần trăm hoàn thành
-    averageScore?: number; // Điểm trung bình các bài tập
+    progress: number;
+    averageScore?: number;
     lastAccessedAt?: string;
 }
 
@@ -78,6 +80,7 @@ export interface Teacher {
 
 export interface Course {
     _id: string;
+    teacherId: string;
     title: string;
     description: string;
     images: string[];
@@ -87,6 +90,7 @@ export interface Course {
     createdAt: string;
     updatedAt: string;
     progress: number;
+    students: User[];
 }
 
 export interface Classroom {
@@ -101,79 +105,42 @@ export interface Classroom {
     students: User[];
 }
 
+// Add this to your model/classroom.ts file
+// Make sure to import the User interface
 
-// export const mockUsers: User[] = [
-//     {
-//         id: '1',
-//         name: 'Nguyễn Văn A',
-//         email: 'nguyenvana@example.com',
-//         role: 'student',
-//         createdAt: new Date('2024-01-01'),
-//         updatedAt: new Date('2024-01-01'),
-//     },
-//     {
-//         id: '2',
-//         name: 'Trần Thị B',
-//         email: 'tranthib@example.com',
-//         role: 'teacher',
-//         createdAt: new Date('2024-01-01'),
-//         updatedAt: new Date('2024-01-01'),
-//     },
-// ];
+export interface Student extends User {
+    studentId: string;
+    enrollmentDate: string;
+    courses: string[];
+    progress: {
+        courseId: string;
+        completedLessons: string[];
+        completionPercentage: number;
+        lastAccessDate: string;
+    }[];
+    grades: {
+        courseId: string;
+        lessonId: string;
+        exerciseId: string;
+        score: number;
+        maxScore: number;
+        submittedAt: string;
+    }[];
+    attendance: {
+        date: string;
+        status: 'present' | 'absent' | 'late';
+    }[];
+    rank?: number;
+    averageScore?: number;
+}
 
-// export const mockCourses: Course[] = [
-//     {
-//         _id: '1',
-//         title: 'Lập trình Python cơ bản',
-//         description: 'Khóa học Python từ cơ bản đến nâng cao với nhiều bài tập thực hành',
-//         images: ['/images/python-course.jpg'],
-//         teacherId: '2',
-//         totalLessons: 10,
-//         status: 'active',
-//         createdAt: new Date('2024-01-01'),
-//         updatedAt: new Date('2024-01-01'),
-//     },
-// ];
+export interface SubmitAnswerReq{
+    questionId: string;
+    exerciseId: string;
+    lessonId: string;
+    userId: string;
+    answer: string[]
+}
 
-// export const mockLessons: Lesson[] = [
-//     {
-//         id: '1',
-//         courseId: '1',
-//         title: 'Giới thiệu về Python',
-//         description: 'Bài học đầu tiên về ngôn ngữ lập trình Python',
-//         videoUrl: 'https://example.com/videos/python-intro',
-//         duration: 3600, // seconds
-//         order: 1,
-//         createdAt: new Date('2024-01-01'),
-//         updatedAt: new Date('2024-01-01'),
-//     },
-// ];
+// Mock data for students
 
-// export const mockAssignments: Assignment[] = [
-//     {
-//         id: '1',
-//         courseId: '1',
-//         lessonId: '1',
-//         title: 'Bài tập về cấu trúc điều kiện',
-//         description: 'Làm các bài tập về if-else trong Python',
-//         type: 'coding',
-//         dueDate: new Date('2025-01-20'),
-//         totalPoints: 10,
-//         createdAt: new Date('2024-01-01'),
-//         updatedAt: new Date('2024-01-01'),
-//     },
-// ];
-
-export const mockSubmissions: Submission[] = [
-    {
-        id: '1',
-        assignmentId: '1',
-        studentId: '1',
-        content: 'def check_number(n):\n    if n > 0:\n        return "Positive"\n    return "Non-positive"',
-        status: 'graded',
-        score: 9.5,
-        feedback: 'Bài làm tốt, cần cải thiện phần định dạng code',
-        submittedAt: new Date('2024-01-15'),
-        gradedAt: new Date('2024-01-16'),
-    },
-];

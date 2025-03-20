@@ -35,7 +35,16 @@ import ClassroomDetail from '../components/ClassRoom/ClassroomDetail/ClassroomDe
 import LessonList from '../components/ClassRoom/LessonList/LessonList.tsx'
 import HeaderOnlyLayout from '../layouts/HeaderOnlyLayout.tsx'
 import LearningChallengePage from '../pages/commons/LearningChallengePage.tsx'
-import LearningChallenge from '../components/ClassRoom/LearningChallenge/LearningChallenge.tsx'
+import LearningChallenge from '../components/ClassRoom/LessonList/LessonDetail/LearningChallenge/LearningChallenge.tsx'
+import TestLayout from '../layouts/TestLayout.tsx'
+import CourseLessons from '../components/ClassRoom/Teacher/CourseLessons/CourseLessons.tsx'
+import CourseDetail from '../components/ClassRoom/Teacher/CourseLessons/CourseDetail.tsx'
+import LessonDetail from '../components/ClassRoom/Teacher/LessonDetail/LessonDetail.tsx'
+import ExerciseForm from '../components/ClassRoom/Teacher/LessonDetail/ExerciseForm/ExerciseForm.tsx'
+import ExamplePage from '../components/ClassRoom/Teacher/LessonDetail/ExerciseForm/ExampleUsage.tsx'
+import ExerciseDetail from '../components/ClassRoom/Teacher/LessonDetail/ExerciseDetail/ExerciseDetail.tsx'
+import LessonStudentDetail from '../components/ClassRoom/LessonList/LessonDetail/LessonStudentDetail.tsx'
+
 
 export const router = [
     {
@@ -127,6 +136,14 @@ export const router = [
         },
     },
     {
+        path: PATHS.CLASSROOM_LESSON_DETAIL,
+        component: LessonStudentDetail,
+        layout: HeaderOnlyLayout,
+        meta: {
+            requiresAuth: false,
+        },
+    },
+    {
         path: PATHS.CLASSROOM_LEARNING,
         component: LearningChallenge,
         layout: HeaderOnlyLayout,
@@ -174,7 +191,39 @@ export const router = [
             requiresAuth: false,
         },
     },
-
+    //teacher
+    {
+        path: PATHS.TEACHER_COURSES,
+        component: CourseDetail,
+        layout: HeaderOnlyLayout,
+        meta: {
+            requiresAuth: false,
+        }
+    },
+    {
+        path: PATHS.TEACHER_LESSON,
+        component: LessonDetail,
+        layout: HeaderOnlyLayout,
+        meta: {
+            requiresAuth: false,
+        }
+    },
+    {
+        path: PATHS.TEACHER_NEW_EXERCISE,
+        component: ExamplePage,
+        layout: HeaderOnlyLayout,
+        meta: {
+            requiresAuth: false,
+        }
+    },
+    {
+        path: PATHS.TEACHER_EXERCISE_DETAIL,
+        component: ExerciseDetail,
+        layout: HeaderOnlyLayout,
+        meta: {
+            requiresAuth: false,
+        }
+    },
 
     //admin
     {

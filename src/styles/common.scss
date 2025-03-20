@@ -64,3 +64,23 @@ a {
     color: #FF6B6B;
     animation: bounce 2s infinite;
 }
+
+.backButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: var(--font-secondary);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.backButton:hover {
+    background-color: var(--primary-color);
+    color: white;
+}

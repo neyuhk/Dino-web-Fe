@@ -1,0 +1,392 @@
+/* TeacherClassroom.module.css */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    min-height: 90vh;
+}
+
+.title {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 32px;
+    font-size: 2.2rem;
+    font-weight: 700;
+    position: relative;
+}
+
+.title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: var(--gradient-colors);
+    border-radius: 2px;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+    gap: 16px;
+}
+
+.tabButton {
+    background-color: var(--background-primary);
+    color: var(--text-color);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.tabButton:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+.tabButton.active {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Courses Grid */
+.coursesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.courseCard {
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--secondary-color);
+}
+
+.courseCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
+}
+
+.courseImageContainer {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+}
+
+.courseImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.courseCard:hover .courseImage {
+    transform: scale(1.05);
+}
+
+.courseContent {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.courseTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.courseDescription {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+    line-height: 1.6;
+    flex-grow: 1;
+}
+
+.courseStats {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.statsItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.statsLabel {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.statsValue {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.progressContainer {
+    margin-top: auto;
+}
+
+.progressLabel {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-color);
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.progressBar {
+    height: 8px;
+    background-color: var(--background-primary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: var(--gradient-colors);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* Empty state styles */
+.emptyStateContainer {
+    padding: 40px;
+    text-align: center;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin: 0 auto;
+    max-width: 600px;
+}
+
+.emptyStateContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.emptyStateImage {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    margin-bottom: 16px;
+}
+
+.emptyStateTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 8px;
+}
+
+.emptyStateMessage {
+    color: #6b7280;
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+/* Class Teacher Section */
+.classTeacherContainer {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    border: 2px solid var(--primary-color);
+}
+
+.classTeacherHeader {
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--secondary-color);
+    padding-bottom: 16px;
+}
+
+.classTeacherTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+}
+
+.classTeacherDesc {
+    color: #6b7280;
+    font-size: 1rem;
+}
+
+.studentManagementSection {
+    padding: 24px;
+    background-color: var(--background-primary);
+    border-radius: 8px;
+    min-height: 300px;
+}
+
+.sectionPlaceholder {
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+    padding: 40px 0;
+}
+
+/* Animation for cards */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.courseCard {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.courseCard:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.courseCard:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.courseCard:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+/* Responsive Design */
+@media (min-width: 1200px) {
+    .coursesGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .coursesGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .coursesGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .tabButton {
+        padding: 10px 20px;
+    }
+}
+
+@media (max-width: 767px) {
+    .container {
+        padding: 16px;
+    }
+
+    .title {
+        font-size: 1.8rem;
+        margin-bottom: 24px;
+    }
+
+    .coursesGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .courseImageContainer {
+        height: 160px;
+    }
+
+    .courseTitle {
+        font-size: 1.1rem;
+    }
+
+    .tabs {
+        flex-wrap: wrap;
+    }
+
+    .tabButton {
+        flex: 1;
+        font-size: 0.9rem;
+        padding: 8px 12px;
+        min-width: 0;
+    }
+
+    .emptyStateImage {
+        width: 120px;
+        height: 120px;
+    }
+
+    .emptyStateTitle {
+        font-size: 1.3rem;
+    }
+
+    .emptyStateMessage {
+        font-size: 0.9rem;
+    }
+
+    .classTeacherTitle {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 12px;
+    }
+
+    .title {
+        font-size: 1.6rem;
+    }
+
+    .tabButton {
+        padding: 8px;
+        font-size: 0.85rem;
+    }
+
+    .emptyStateContainer {
+        padding: 24px 16px;
+    }
+
+    .studentManagementSection {
+        padding: 16px;
+    }
+}

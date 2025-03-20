@@ -1,4 +1,5 @@
 export const toolbox = {
+
     kind: 'categoryToolbox',
     contents: [
         {
@@ -99,6 +100,52 @@ export const toolbox = {
                 },
             ],
         },
+        {
+            kind: 'category',
+            name: 'Arduino',
+            categorystyle: 'arduino_category',
+            contents: [
+                { kind: 'block', type: 'simulate_led' },
+
+                { kind: 'block', type: 'inout_pin_mode' },
+                { kind: 'block', type: 'inout_digital_write' },
+                { kind: 'block', type: 'inout_digital_read' },
+                { kind: 'block', type: 'inout_analog_write' },
+                { kind: 'block', type: 'inout_analog_read' },
+                { kind: 'block', type: 'inout_buildin_led' },
+                { kind: 'block', type: 'base_delay' },
+                { kind: 'block', type: 'base_map' },
+                { kind: 'block', type: 'inout_tone' },
+                { kind: 'block', type: 'inout_notone' },
+                { kind: 'block', type: 'inout_highlow' },
+                { kind: 'block', type: 'servo_move' },
+                { kind: 'block', type: 'servo_read_degrees' },
+                { kind: 'block', type: 'serial_print' },
+                { kind: 'block', type: 'millis' },
+                { kind: 'block', type: 'delay_microseconds' },
+                { kind: 'block', type: 'serial_println' },
+                { kind: 'block', type: 'add_text' },
+                { kind: 'block', type: 'log_text' },
+              { kind: 'block', type: 'colour_picker' },
+              { kind: 'block', type: 'colour_random' },
+              { kind: 'block', type: 'colour_rgb' },
+              { kind: 'block', type: 'colour_blend' },
+              { kind: 'block', type: 'controls_if' },
+              { kind: 'block', type: 'logic_compare' },
+              { kind: 'block', type: 'logic_operation' },
+              { kind: 'block', type: 'logic_negate' },
+              { kind: 'block', type: 'logic_boolean' },
+              { kind: 'block', type: 'logic_null' },
+              { kind: 'block', type: 'logic_ternary' },
+              { kind: 'block', type: 'controls_repeat' },
+              { kind: 'block', type: 'controls_repeat_ext' },
+              { kind: 'block', type: 'controls_whileUntil' },
+              { kind: 'block', type: 'controls_for' },
+              { kind: 'block', type: 'controls_forEach' },
+              { kind: 'block', type: 'controls_flow_statements' },
+            ],
+          },
+          
         {
             kind: 'category',
             name: 'Math',
@@ -638,4 +685,5 @@ export const toolbox = {
             custom: 'PROCEDURE',
         },
     ],
+    
 }

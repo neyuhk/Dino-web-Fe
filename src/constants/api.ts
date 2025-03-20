@@ -44,6 +44,15 @@ export const LESSON_API = {
     DELETE_LESSON: '/lesson/:id',
 }
 
+export const EXERCISE_API = {
+    NEW_EXERCISE: '/exercise',
+    GET_QUIZ: '/quiz',
+    ADD_QUIZ: '/quiz',
+    DELETE_QUIZ: '/quiz/delete/',
+    GET_QUIZ_BY_EXERCISE_ID: '/quiz/exercise/',
+    GET_ANSWER_QUIZ: '/quiz/answer',
+}
+
 export const COMMENT_API = {
     GET_COMMENTS: '/comment/all-comments/',
 
@@ -76,3 +85,4 @@ export const CLASSROOM_API = {
     GET_CLASSROOM_BY_TEACHER_ID: '/classroom/teacher/',
     GET_CLASSROOM_BY_COURSE_ID: '/classroom/course/',
 }
+

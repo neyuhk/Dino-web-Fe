@@ -16,6 +16,7 @@ interface StateContent {
 }
 const EmptyState: React.FC<EmptyStateProps> = ({ selectedMenu, isError = false, errorMessage }) => {
     const getEmptyStateContent = (): StateContent => {
+        console.log('selectedMenu', selectedMenu);
         if (isError) {
             return {
                 message: 'Đã xảy ra lỗi',

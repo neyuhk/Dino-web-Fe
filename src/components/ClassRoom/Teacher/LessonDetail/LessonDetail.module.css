@@ -1,0 +1,427 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    font-family: var(--font-secondary);
+    color: var(--text-color);
+    background-color: var(--background-color);
+}
+
+.header {
+    gap: 1rem;
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.title {
+    font-family: var(--font-primary);
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    font-size: 1.2rem;
+    color: var(--gray-medium);
+}
+
+.lessonInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    background-color: var(--background-primary);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.lessonMedia {
+    width: 100%;
+}
+
+.videoContainer {
+    position: relative;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    width: 100%;
+}
+
+.videoFrame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.imageContainer {
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+}
+
+.lessonImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.placeholderContainer {
+    width: 100%;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--gray-light);
+}
+
+.mediaPlaceholder {
+    color: var(--gray-dark);
+    font-size: 1.2rem;
+}
+
+.lessonDetails {
+    padding: 1.5rem;
+}
+
+.lessonMetadata {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.metadataItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.metadataLabel {
+    font-size: 0.9rem;
+    color: var(--gray-dark);
+}
+
+.metadataValue {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.progressContainer {
+    margin-top: 1rem;
+}
+
+.progressLabel {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--gray-dark);
+}
+
+.progressBar {
+    height: 8px;
+    background-color: var(--gray-light);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: var(--gradient-colors);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.tabs {
+    display: flex;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.tabButton {
+    padding: 0.75rem 1.5rem;
+    background: none;
+    border: none;
+    font-family: var(--font-primary);
+    font-size: 1rem;
+    color: var(--gray-dark);
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+}
+
+.tabButton:hover {
+    color: var(--primary-color);
+}
+
+.tabButton.active {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.tabButton.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--gradient-colors);
+    border-radius: 3px 3px 0 0;
+}
+
+.tabContent {
+    background-color: var(--background-primary);
+    border-radius: 8px;
+    padding: 1.5rem;
+    min-height: 300px;
+}
+
+.lessonContent {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.sectionTitle {
+    font-family: var(--font-primary);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.sectionTitle::after {
+    content: '';
+    position: absolute;
+    bottom: -0.5rem;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: var(--gradient-colors);
+    border-radius: 3px;
+}
+
+.lessonDescription {
+    line-height: 1.6;
+}
+
+.bodyHtml {
+    line-height: 1.8;
+}
+
+.bodyHtml h1, .bodyHtml h2, .bodyHtml h3 {
+    font-family: var(--font-primary);
+    color: var(--primary-color);
+}
+
+.bodyHtml img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin: 1rem 0;
+}
+
+.exercisesContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.exercisesHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.addExerciseButton {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.addExerciseButton:hover {
+    background-color: #2d635c;
+}
+
+.exercisesList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.exerciseItem {
+    background-color: var(--background-color);
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s;
+}
+
+.exerciseItem:hover {
+    transform: translateY(-2px);
+}
+
+.exerciseTitle {
+    font-family: var(--font-primary);
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: 0 0 0.5rem 0;
+}
+
+.exerciseDescription {
+    color: var(--gray-dark);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.exerciseStats {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.completionContainer {
+    margin-top: 0.5rem;
+}
+
+.completionLabel {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--gray-dark);
+}
+
+.completionBar {
+    height: 8px;
+    background-color: var(--gray-light);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.completionFill {
+    height: 100%;
+    background: var(--gradient-colors);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.exerciseActions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.actionButton {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background-color 0.2s;
+}
+
+.actionButton:hover {
+    background-color: #c0e0c0;
+}
+
+.actionButtonDelete {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background-color 0.2s;
+}
+
+.actionButtonDelete:hover {
+    background-color: #fecaca;
+}
+
+.emptyStateContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 0;
+    text-align: center;
+}
+
+.emptyStateMessage {
+    color: var(--gray-dark);
+    margin-bottom: 1.5rem;
+}
+
+.emptyStateButton {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.emptyStateButton:hover {
+    background-color: #2d635c;
+}
+
+/* Responsive design */
+@media (min-width: 768px) {
+    .lessonInfo {
+        flex-direction: row;
+    }
+
+    .lessonMedia {
+        width: 60%;
+    }
+
+    .lessonDetails {
+        width: 40%;
+    }
+
+    .exerciseItem {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .exerciseInfo {
+        flex: 1;
+    }
+
+    .exerciseStats {
+        width: 40%;
+    }
+}

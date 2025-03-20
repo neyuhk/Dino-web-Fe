@@ -1,0 +1,202 @@
+.overlayContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 1rem;
+    backdrop-filter: blur(4px);
+}
+
+.confirmationPopup {
+    background-color: white;
+    border-radius: 1.25rem;
+    padding: 2.5rem;
+    max-width: 550px;
+    width: 100%;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.confirmationPopup h2 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 1.75rem;
+    color: #1a1a1a;
+    font-size: 1.75rem;
+    font-weight: 700;
+    position: relative;
+    padding-bottom: 0.75rem;
+}
+
+.confirmationPopup h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background-color: #4C6EF5;
+    border-radius: 3px;
+}
+
+.exerciseDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 1rem;
+}
+
+.detailItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.detailItem svg {
+    color: #4C6EF5;
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+}
+
+.detailItem div {
+    flex: 1;
+}
+
+.detailItem h3 {
+    font-size: 1rem;
+    margin: 0 0 0.375rem 0;
+    color: #555;
+    font-weight: 600;
+}
+
+.detailItem p {
+    margin: 0;
+    color: #1a1a1a;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.confirmationActions {
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+}
+
+.confirmButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.75rem;
+    border: none;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 160px;
+}
+
+.confirmYes {
+    background-color: #4C6EF5;
+    color: white;
+    box-shadow: 0 4px 12px rgba(76, 110, 245, 0.25);
+}
+
+.confirmYes:hover {
+    background-color: #3b5bdb;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(76, 110, 245, 0.35);
+}
+
+.confirmNo {
+    background-color: #f1f3f5;
+    color: #495057;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.confirmNo:hover {
+    background-color: #e9ecef;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 640px) {
+    .confirmationPopup {
+        padding: 1.75rem;
+        border-radius: 1rem;
+    }
+
+    .confirmationPopup h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .exerciseDetails {
+        padding: 1.25rem;
+        gap: 1rem;
+    }
+
+    .confirmationActions {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .confirmButton {
+        width: 100%;
+        min-width: unset;
+    }
+}
+
+@media (max-width: 480px) {
+    .overlayContainer {
+        padding: 0.75rem;
+    }
+
+    .confirmationPopup {
+        padding: 1.5rem;
+    }
+
+    .confirmationPopup h2 {
+        font-size: 1.35rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .exerciseDetails {
+        padding: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .detailItem {
+        gap: 0.75rem;
+    }
+
+    .detailItem h3 {
+        font-size: 0.95rem;
+    }
+
+    .detailItem p {
+        font-size: 1rem;
+    }
+
+    .confirmButton {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.95rem;
+    }
+}

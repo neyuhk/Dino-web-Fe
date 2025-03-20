@@ -30,14 +30,62 @@ button {
 
 /* Variables are not supported in CSS directly, so we will replace them with actual values */
 :root {
-    --primary-color: #387971;
+    /* 🌿 Primary Colors */
+    --primary-color: #387971; /* Màu chủ đạo */
+    --primary-dark: #2C5E57; /* Đậm hơn */
+    --primary-light: #5B9E92; /* Nhạt hơn */
+
+    /* 🌿 Secondary Colors */
     --secondary-color: #D6ECD7;
-    --background-color: #FFFFFF;
-    --background-primary: #F6F6F6;
-    --background-transparent: rgba(233, 235, 239, 0.62);
+    --secondary-dark: #B4D1B7;
+    --secondary-light: #E9F7EB;
+
+    /* 🎨 Background Colors */
+    --background-color: #FFFFFF; /* Nền trắng */
+    --background-primary: #F6F6F6; /* Màu nền chính */
+    --background-secondary: #E8F0F2; /* Nền phụ nhẹ nhàng */
+    --background-transparent: rgba(233, 235, 239, 0.62); /* Trong suốt nhẹ */
+
+    /* 🎨 Gradient Colors */
     --gradient-colors: linear-gradient(to right, #FFB410 0%, #FFABCD 50%, #6FBCC2 75%, #877AEF 100%);
-    --text-color: #37796F;
+
+    /* 🖋️ Text Colors */
+    --text-color: #37796F; /* Văn bản chính */
+    --text-dark: #264C47; /* Đậm hơn */
+    --text-light: #75A99E; /* Nhạt hơn */
+    --text-secondary: #6B8B85;
+    --text-lighter: #ffffff;
+
+    /* ⚫ Neutral Grays */
+    --gray-lightest: #F9FAFB;
+    --gray-lighter: #E5E7EB;
+    --gray-light: #D1D5DB;
+    --gray-medium: #9CA3AF;
+    --gray-dark: #6B7280;
+    --gray-darker: #4B5563;
+    --gray-darkest: #374151;
+
+    /* ✅ Success Colors */
+    --success-color: #4CAF50;
+    --success-dark: #388E3C;
+    --success-light: #C8E6C9;
+
+    /* ⚠️ Warning Colors */
+    --warning-color: #FFB410;
+    --warning-dark: #E89C00;
+    --warning-light: #FFECB3;
+
+    /* ❌ Error Colors */
+    --error-color: #F44336;
+    --error-dark: #D32F2F;
+    --error-light: #FFCDD2;
+
+    /* 🔷 Info Colors */
+    --info-color: #2196F3;
+    --info-dark: #1976D2;
+    --info-light: #BBDEFB;
 }
+
 
 :root {
     --font-primary: "Oswald", sans-serif;

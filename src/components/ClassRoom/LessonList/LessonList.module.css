@@ -47,6 +47,25 @@
     background-color: #d32f2f;
 }
 
+.backButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+    margin-bottom: 16px;
+}
+
+.backButton:hover {
+    color: #4CAF50;
+}
+
+
 .tabContainer {
     display: flex;
     gap: 12px;
@@ -167,9 +186,20 @@
 }
 
 .lessonDetails {
-    padding: 16px;
     border-top: 1px solid #e0e0e0;
     background-color: #f9f9f9;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out, padding 0.3s ease-in-out;
+    padding: 0 16px;
+    opacity: 0;
+}
+
+.detailsExpanded {
+    max-height: 2000px; /* Large enough to contain content */
+    padding: 16px;
+    opacity: 1;
+    transition: max-height 0.5s ease-in-out, padding 0.3s ease-in-out, opacity 0.3s ease-in-out;
 }
 
 .lessonDescription {
@@ -201,6 +231,30 @@
     background: white;
     border-radius: 8px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.exerciseItem:not(.exerciseExpired) {
+    cursor: pointer;
+}
+
+.exerciseExpired {
+    opacity: 0.7;
+    background-color: #f5f5f5;
+    border: 1px dashed #ccc;
+    cursor: not-allowed;
+    position: relative;
+}
+
+.exerciseExpired::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(240, 240, 240, 0.5);
+    pointer-events: none;
 }
 
 .exerciseInfo {
@@ -212,6 +266,23 @@
 .exerciseTitle {
     font-weight: 500;
     color: #333;
+}
+
+.exerciseDeadline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.deadlineIcon {
+    color: #ff9800;
+}
+
+.deadlineExpired {
+    color: #f44336;
+    font-weight: 500;
 }
 
 .exerciseScore {
@@ -230,6 +301,12 @@
 .exerciseStatus.completed {
     background-color: #e8f5e9;
     color: #4CAF50;
+}
+
+.exerciseStatus.expired {
+    background-color: #f5f5f5;
+    color: #9e9e9e;
+    border: 1px solid #e0e0e0;
 }
 
 .averageScore {

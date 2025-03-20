@@ -4,7 +4,7 @@ import Section1 from '../../components/ProjectsPage/Section1/Section1.tsx'
 import Section2 from '../../components/ProjectsPage/Section2/Section2.tsx'
 import Section3 from '../../components/ProjectsPage/Section3/Section3.tsx'
 import { useSelector } from 'react-redux'
-import RequireAuth from '../../components/RequireAuth/RequireAuth.tsx'
+import RequireAuth from '../../components/commons/RequireAuth/RequireAuth.tsx'
 
 const ProjectsPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = React.useState('');

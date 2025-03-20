@@ -5,7 +5,7 @@ import Section2 from '../../components/CoursePage/Section2/Section2.tsx'
 import Section3 from '../../components/CoursePage/Section3/Section3.tsx'
 import Section4 from '../../components/CoursePage/Section4/Section4.tsx'
 import { useSelector } from 'react-redux'
-import RequireAuth from '../../components/RequireAuth/RequireAuth.tsx'
+import RequireAuth from '../../components/commons/RequireAuth/RequireAuth.tsx'
 
 const CoursePage: React.FC = () => {
     const { user } = useSelector((state: any) => state.auth);
