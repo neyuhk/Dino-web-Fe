@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Layout, Typography, Modal, Button, Input, Dropdown, Menu, Space, Avatar, MenuProps } from 'antd'
-import { DownOutlined, UserOutlined } from '@ant-design/icons'
+import { Layout, Typography, Modal, Input, Dropdown, Menu, Space, Avatar, MenuProps } from 'antd'
+import { DownOutlined, UserOutlined, SaveOutlined, UploadOutlined, FileOutlined, EditOutlined, PlayCircleOutlined } from '@ant-design/icons'
 import * as Blockly from 'blockly'
 import { blocks } from '../../Blockly/blocks/defineBlock.ts'
 import { forBlock } from '../../Blockly/generators/customBlock.ts'
@@ -30,6 +30,26 @@ const BlocklyPage: React.FC = () => {
     const [isFileActive, setIsFileActive] = useState(false)
     const [currentProject, setCurrentProject] = useState<Project>()
     const { isAuthenticated, user } = useSelector((state: any) => state.auth)
+    const [ledState, setLedState] = useState('off')
+
+    // Attach simulateLED function to window so it's available in generated code.
+    useEffect(() => {
+        (window as any).simulateLED = (state: string): void => {
+            const ledElement = document.getElementById('simulated-led')
+            if (ledElement) {
+                if (state === 'HIGH') {
+                    ledElement.style.backgroundColor = 'yellow'
+                    ledElement.classList.add('on')
+                    setLedState('on')
+                } else {
+                    ledElement.style.backgroundColor = '#333'
+                    ledElement.classList.remove('on')
+                    setLedState('off')
+                }
+            }
+            console.log('LED state:', state)
+        }
+    }, [])
 
     useEffect(() => {
         const initializeWorkspace = async () => {
@@ -51,7 +71,6 @@ const BlocklyPage: React.FC = () => {
                     }
                 } else {
                     load(newWorkspace)
-
                 }
 
                 const runCode = () => {
@@ -61,7 +80,7 @@ const BlocklyPage: React.FC = () => {
                 }
 
                 newWorkspace.addChangeListener((e: Blockly.Events.Abstract) => {
-                    if (e.isUiEvent || e.type == Blockly.Events.FINISHED_LOADING || newWorkspace.isDragging()) return
+                    if (e.isUiEvent || e.type === Blockly.Events.FINISHED_LOADING || newWorkspace.isDragging()) return
                     runCode()
                 })
                 newWorkspace.addChangeListener((e: Blockly.Events.Abstract) => {
@@ -101,27 +120,27 @@ const BlocklyPage: React.FC = () => {
         }
     }
 
-   const saveCodeBlockToDB = async () => {
-    if (workspace) {
-        const javascriptCode = javascriptGenerator.workspaceToCode(workspace)
-        const jsonCode = JSON.stringify(Blockly.serialization.workspaces.save(workspace), null, 2)
-        const xml = Blockly.Xml.workspaceToDom(workspace)
-        const xmlCode = Blockly.Xml.domToPrettyText(xml)
+    const saveCodeBlockToDB = async () => {
+        if (workspace) {
+            const javascriptCode = javascriptGenerator.workspaceToCode(workspace)
+            const jsonCode = JSON.stringify(Blockly.serialization.workspaces.save(workspace), null, 2)
+            const xml = Blockly.Xml.workspaceToDom(workspace)
+            const xmlCode = Blockly.Xml.domToPrettyText(xml)
 
-        const payload = {
-            javascriptCode,
-            jsonCode,
-            xmlCode,
-        }
+            const payload = {
+                javascriptCode,
+                jsonCode,
+                xmlCode,
+            }
 
-        try {
-            await saveCodeBlock(payload)
-            console.log('Code block saved successfully')
-        } catch (e) {
-            console.error('Error saving code block', e)
+            try {
+                await saveCodeBlock(payload)
+                console.log('Code block saved successfully')
+            } catch (e) {
+                console.error('Error saving code block', e)
+            }
         }
     }
-}
 
     const downloadXML = () => {
         if (workspace) {
@@ -190,7 +209,6 @@ const BlocklyPage: React.FC = () => {
     }
 
     const uploadXML = (event: React.ChangeEvent<HTMLInputElement>) => {
-        // Handle file upload logic here
         console.log('file change')
         if (workspace && event.target.files?.length) {
             const file = event.target.files[0]
@@ -204,22 +222,21 @@ const BlocklyPage: React.FC = () => {
             reader.readAsText(file)
         }
     }
+
     const loadFromJSON = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (workspace && event.target.files?.length) {
-        const file = event.target.files[0]
-        const reader = new FileReader()
-        reader.onload = (e) => {
-            const jsonText = e.target?.result as string
-            const json = JSON.parse(jsonText)
-            console.log(jsonText)
-            Blockly.serialization.workspaces.load(json, workspace)
+        if (workspace && event.target.files?.length) {
+            const file = event.target.files[0]
+            const reader = new FileReader()
+            reader.onload = (e) => {
+                const jsonText = e.target?.result as string
+                const json = JSON.parse(jsonText)
+                console.log(jsonText)
+                Blockly.serialization.workspaces.load(json, workspace)
+            }
+            reader.readAsText(file)
         }
-        reader.readAsText(file)
     }
-}
 
-
-    // Update the file input change handler
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
         if (file) {
@@ -235,38 +252,36 @@ const BlocklyPage: React.FC = () => {
         }
     }
 
- const handleSaveProject = async () => {
-    if (workspace) {
-        try {
-            const json = Blockly.serialization.workspaces.save(workspace)
-            const jsonString = JSON.stringify(json, null, 2)
-            console.log(currentProject)
-            if (projectId) {
-                const project = {
-                    ...currentProject,
-                    name: projectName,
-                    block: jsonString,
+    const handleSaveProject = async () => {
+        if (workspace) {
+            try {
+                const json = Blockly.serialization.workspaces.save(workspace)
+                const jsonString = JSON.stringify(json, null, 2)
+                console.log(currentProject)
+                if (projectId) {
+                    const project = {
+                        ...currentProject,
+                        name: projectName,
+                        block: jsonString,
+                    }
+                    await updateProject(project, projectId)
+                    console.log('Project updated successfully')
+                } else {
+                    const project = {
+                        name: projectName,
+                        block: jsonString,
+                        createdBy: user._id
+                    }
+                    await createProject(project)
+                    console.log('Project saved successfully')
                 }
-                await updateProject(project, projectId)
-                console.log('Project updated successfully')
+            } catch (e) {
+                console.error('Error saving project', e)
             }
-            else {
-                const project = {
-                    name: projectName,
-                    block: jsonString,
-                    createdBy: user._id
-                }
-                await createProject(project)
-                console.log('Project saved successfully')
-            }
-        } catch (e) {
-            console.error('Error saving project', e)
+        } else {
+            console.error('Workspace not found')
         }
     }
-    else {
-        console.error('Workspace not found')
-    }
-}
 
     const handleRestore = () => {
         // Handle restore logic here
@@ -302,22 +317,38 @@ const BlocklyPage: React.FC = () => {
     const taptinn: MenuProps['items'] = [
         {
             key: '1',
-            label: 'Save Project',
+            label: (
+                <span>
+          <SaveOutlined /> Save Project
+        </span>
+            ),
             onClick: handleSaveProject,
         },
         {
             key: '2',
-            label: 'Load file(xml or json)',
+            label: (
+                <span>
+          <UploadOutlined /> Load File (XML or JSON)
+        </span>
+            ),
             onClick: handleUploadClick,
         },
         {
             key: '3',
-            label: 'Save XML File',
+            label: (
+                <span>
+          <FileOutlined /> Save XML File
+        </span>
+            ),
             onClick: downloadXML,
         },
         {
             key: '4',
-            label: 'Save JSON File',
+            label: (
+                <span>
+          <FileOutlined /> Save JSON File
+        </span>
+            ),
             onClick: saveAsJSON,
         },
     ]
@@ -325,29 +356,49 @@ const BlocklyPage: React.FC = () => {
     const chinhsuaa: MenuProps['items'] = [
         {
             key: '1',
-            label: 'Undo',
+            label: (
+                <span>
+          <EditOutlined /> Undo
+        </span>
+            ),
             onClick: handleRestore,
         },
         {
             key: '2',
-            label: 'Redo',
+            label: (
+                <span>
+          <EditOutlined /> Redo
+        </span>
+            ),
         },
     ]
 
     const hoatdong: MenuProps['items'] = [
         {
             key: '1',
-            label: 'Log code',
+            label: (
+                <span>
+          <FileOutlined /> Log Code
+        </span>
+            ),
             onClick: handleLogCode,
         },
         {
             key: '2',
-            label: 'Execute code',
+            label: (
+                <span>
+          <PlayCircleOutlined /> Execute Code
+        </span>
+            ),
             onClick: executeCode,
         },
         {
             key: '3',
-            label: 'Save code as TXT',
+            label: (
+                <span>
+          <FileOutlined /> Save Code as TXT
+        </span>
+            ),
             onClick: saveCodeAsTxt,
         },
         {
@@ -357,104 +408,134 @@ const BlocklyPage: React.FC = () => {
         },
     ]
 
+    // Send the workspace file to the Python backend
+    const sendFileToPythonBackend = async () => {
+        if (workspace) {
+            // Generate JSON representation of the workspace
+            const jsonWorkspace = Blockly.serialization.workspaces.save(workspace);
+            const jsonText = JSON.stringify(jsonWorkspace, null, 2);
+
+            // Prepare FormData for the JSON format
+            const jsonFormData = new FormData();
+            jsonFormData.append("file", new Blob([jsonText], { type: "application/json" }), "workspace.json");
+
+            try {
+                // Send the JSON file to the backend
+                const response = await fetch("http://127.0.0.1:5001/upload-json", {
+                    method: "POST",
+                    body: jsonFormData,
+                });
+
+                // Process the response
+                const result = await response.json();
+                console.log("JSON Response:", result);
+                // Optionally, display a success notification to the user
+            } catch (error) {
+                console.error("Error sending JSON file to Python backend:", error);
+            }
+        } else {
+            console.error("Workspace is not initialized.");
+        }
+    }
+
     return (
         <Layout style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-            <Header style={{
-                textAlign: 'center',
-                color: '#fff',
-                height: 64,
-                paddingInline: 48,
-                lineHeight: '64px',
-                backgroundColor: '#37796F',
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <Link to={'/'} style={{ color: 'rgb(242, 101, 38)' }}>
-                        {/*<img src="/path/to/logo.png" alt="Logo" style={{ marginRight: '16px' }} />*/}
-                        <Title level={3} style={{ color: 'rgb(242, 101, 38)', paddingRight: '20px' }}>Blockly</Title>
-                    </Link>
-                    <div style={{ marginRight: '16px' }}>
+            <Header className="header-blockly">
+                <div className="header-content">
+                    <div className="logo-title">
+                        <Link to={'/'}>
+                            <Title level={3}>Blockly</Title>
+                        </Link>
+                    </div>
+
+                    <div className="menu-section">
                         <Dropdown menu={{ items: taptinn }} trigger={['click']} onOpenChange={handleMenuClick}>
-                            <a className={`white-text `} onClick={(e) => e.preventDefault()}>
+                            <a className="dropdown-menu white-text" onClick={(e) => e.preventDefault()}>
                                 <Space>
                                     File
                                     <DownOutlined />
                                 </Space>
                             </a>
                         </Dropdown>
-                    </div>
-                    <div style={{ marginRight: '16px' }}>
+
                         <Dropdown menu={{ items: chinhsuaa }} trigger={['click']} onOpenChange={handleMenuClick}>
-                            <a className={`white-text`} onClick={(e) => e.preventDefault()}>
+                            <a className="dropdown-menu white-text" onClick={(e) => e.preventDefault()}>
                                 <Space>
                                     Edit
                                     <DownOutlined />
                                 </Space>
                             </a>
                         </Dropdown>
-                    </div>
-                    <div style={{ marginRight: '16px' }}>
+
                         <Dropdown menu={{ items: hoatdong }} trigger={['click']} onOpenChange={handleMenuClick}>
-                            <a className={`white-text`} onClick={(e) => e.preventDefault()}>
+                            <a className="dropdown-menu white-text" onClick={(e) => e.preventDefault()}>
                                 <Space>
                                     Action
                                     <DownOutlined />
                                 </Space>
                             </a>
                         </Dropdown>
+
+                        <Input
+                            className="project-name-input"
+                            placeholder="Project Name"
+                            value={projectName}
+                            onChange={(e) => setProjectName(e.target.value)}
+                            style={{ width: '200px' }}
+                        />
                     </div>
-                    <Input
-                        placeholder="ProjectItem Name"
-                        value={projectName}
-                        onChange={(e) => setProjectName(e.target.value)}
-                        style={{ width: '200px' }}
-                    />
+
                     <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange} />
-                    <div style={{ marginLeft: 'auto' }}>
+
+                    <div>
                         {isAuthenticated ? (
                             <Dropdown overlay={userMenu} trigger={['click']}>
-                                <div
-                                    className="user-info"
-                                    onClick={(e) => e.preventDefault()}
-                                >
+                                <div className="user-info">
                                     <Avatar icon={<UserOutlined />} />
                                     <span className="username">{user.username}</span>
                                 </div>
                             </Dropdown>
                         ) : (
-                            <div>chua dnag nhap</div>
+                            <Link to="/login" className="white-text">Đăng nhập</Link>
                         )}
                     </div>
                 </div>
             </Header>
-            <Content style={{ flex: 1, overflow: 'auto' }}>
-                <div>
-                    <div id="pageContainer">
-                        <div id="outputPane">
-                            <pre id="generatedCode"><code style={{ textAlign: 'left' }}></code></pre>
-                            <button style={{ marginTop: '16px' }} id="executeCodeButton" onClick={() => {
-                                executeCode()
-                            }}>Execute Code (test)
-                            </button>
-                            <button style={{ marginTop: '16px' }} id="saveCodeBlockToDB" onClick={() => {
-                                saveCodeBlockToDB().then(r => console.log(r))
-                            }}>Save code to DB
-                            </button>
-                            <pre id="generatedXML"><code style={{ textAlign: 'left' }}></code></pre>
-                            <div id="output"></div>
-                        </div>
-                        <div id="blocklyDiv" ref={blocklyDiv}></div>
+
+            <Content style={{ flex: 1, overflow: 'hidden' }}>
+                <div id="pageContainer">
+                    <div id="outputPane">
+                        <h3>Dịch khối thành mã nguồn</h3>
+                        <pre id="generatedCode"><code></code></pre>
+
+                        {/*<h3>LED Simulator</h3>*/}
+                        {/*<div id="simulated-led" className={ledState}></div>*/}
+
+                        <button id="executeButton" onClick={executeCode}>
+                            <PlayCircleOutlined /> Chạy và xem kết quả
+                        </button>
+
+                        <button id="sendFileButton" onClick={sendFileToPythonBackend}>
+                            <SaveOutlined /> Lưu tệp của bạn vào hệ thống
+                        </button>
+
+                        <h3>Output</h3>
+                        <div id="output"></div>
                     </div>
-                    <Modal
-                        title="Confirm"
-                        visible={isModalVisible}
-                        onOk={handleOk}
-                        onCancel={handleCancel}
-                        okText="Agree"
-                        cancelText="Cancel"
-                    >
-                        <p>Are you sure you want to clear the workspace?</p>
-                    </Modal>
+
+                    <div id="blocklyDiv" ref={blocklyDiv}></div>
                 </div>
+
+                <Modal
+                    title="Xác nhận"
+                    visible={isModalVisible}
+                    onOk={handleOk}
+                    onCancel={handleCancel}
+                    okText="Đồng ý"
+                    cancelText="Hủy bỏ"
+                >
+                    <p>Bạn có chắc chắn muốn xóa không gian làm việc?</p>
+                </Modal>
             </Content>
         </Layout>
     )

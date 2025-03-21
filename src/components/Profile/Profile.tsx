@@ -129,7 +129,12 @@ const Profile: React.FC = () => {
     return (
         <div className={styles.profileContainer}>
             <header className={styles.header}>
-                <div className={styles.avatar}></div>
+                <div className={styles.avatar}>
+                    <img
+                        src={user.avatar? user.avatar:'https://i.pinimg.com/474x/20/c0/0f/20c00f0f135c950096a54b7b465e45cc.jpg'}
+                        className={styles.avatar}
+                        />
+                </div>
                 <div className={styles.userInfo}>
                     <h1 className={styles.userName}>{user.username}</h1>
                     <p className={styles.userEmail}>{user.email}</p>
