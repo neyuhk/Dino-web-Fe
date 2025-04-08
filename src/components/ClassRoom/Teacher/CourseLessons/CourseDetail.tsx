@@ -5,22 +5,9 @@ import CourseLessons from './CourseLessons';
 import Toast from '../../../commons/Toast/Toast.tsx'
 import CourseStudents from './CourseStudents.tsx'
 import { useSelector } from 'react-redux'
-import RequireAuth from '../../../commons/RequireAuth/RequireAuth.tsx' // Component này bạn đã có sẵn
-
-interface Course {
-    _id: string;
-    teacherId: string;
-    title: string;
-    description: string;
-    images: string[];
-    start_date: string;
-    end_date: string;
-    certification: string;
-    createdAt: string;
-    updatedAt: string;
-    progress: number;
-    students: Array<{ id: string; name: string }>;
-}
+import RequireAuth from '../../../commons/RequireAuth/RequireAuth.tsx'
+import { User } from '../../../../model/model.ts'
+import { getStudentByCourseId } from '../../../../services/course.ts'
 
 interface ToastMessage {
     show: boolean;
@@ -38,6 +25,7 @@ const CourseDetail: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'lessons' | 'students'>('lessons');
     const [loading, setLoading] = useState<boolean>(true);
     const { user } = useSelector((state: any) => state.auth);
+    const [listStudent, setListStudent] = useState<User[]>([]);
 
     if(!user){
         return (
@@ -56,8 +44,17 @@ const CourseDetail: React.FC = () => {
         const fetchCourseDetail = async () => {
             try {
                 setLoading(true);
-                if(course)
+
+                // Fetch students for this course
+                if (courseId) {
+                    const students = await getStudentByCourseId(courseId);
+                    setListStudent(students.data);
+                    console.log("lisst student", listStudent)
+                }
+
+                if(course) {
                     setLoading(false);
+                }
 
                 setToast({
                     show: true,
@@ -67,7 +64,7 @@ const CourseDetail: React.FC = () => {
                     image: '/images/success.png'
                 });
 
-                // Ẩn toast sau 3 giây
+                // Hide toast after 3 seconds
                 setTimeout(() => {
                     setToast(prev => ({ ...prev, show: false }));
                 }, 3000);
@@ -88,9 +85,8 @@ const CourseDetail: React.FC = () => {
     }, [courseId]);
 
     const handleBack = () => {
-        navigate(-1); // Quay lại trang trước đó
+        navigate(-1); // Go back to previous page
     };
-
 
     const hideToast = () => {
         setToast(prev => ({ ...prev, show: false }));
@@ -99,6 +95,15 @@ const CourseDetail: React.FC = () => {
     if (loading) {
         return <div className={styles.loadingContainer}>Đang tải...</div>;
     }
+
+    // Format date function
+    const formatDate = (dateString: string) => {
+        if (!dateString) return 'N/A';
+        if (dateString === 'unlimited') return 'Không giới hạn';
+
+        const date = new Date(dateString);
+        return date.toLocaleDateString('vi-VN');
+    };
 
     return (
         <div className={styles.container}>
@@ -113,7 +118,7 @@ const CourseDetail: React.FC = () => {
                 <div className={styles.courseInfo}>
                     <div className={styles.courseImageContainer}>
                         <img
-                            src={course.images[0] || '/images/default-course.jpg'}
+                            src={(course.images && course.images[0]) || '/images/default-course.jpg'}
                             alt={course.title}
                             className={styles.courseImage}
                         />
@@ -123,31 +128,34 @@ const CourseDetail: React.FC = () => {
                         <div className={styles.courseStats}>
                             <div className={styles.statsItem}>
                                 <span className={styles.statsLabel}>Số học sinh:</span>
-                                <span className={styles.statsValue}>{course.students.length}</span>
+                                <span className={styles.statsValue}>{listStudent.length}</span>
                             </div>
                             <div className={styles.statsItem}>
                                 <span className={styles.statsLabel}>Thời gian:</span>
                                 <span className={styles.statsValue}>
-                  {new Date(course.start_date).toLocaleDateString('vi-VN')} -
-                                    {new Date(course.end_date).toLocaleDateString('vi-VN')}
-                </span>
+                                    {formatDate(course.start_date)} - {course.end_date === 'unlimited' ? 'Không giới hạn' : formatDate(course.end_date)}
+                                </span>
                             </div>
-                            <div className={styles.statsItem}>
-                                <span className={styles.statsLabel}>Chứng chỉ:</span>
-                                <span className={styles.statsValue}>{course.certification}</span>
-                            </div>
+                            {course.certification && (
+                                <div className={styles.statsItem}>
+                                    <span className={styles.statsLabel}>Chứng chỉ:</span>
+                                    <span className={styles.statsValue}>{course.certification}</span>
+                                </div>
+                            )}
                         </div>
-                        <div className={styles.progressContainer}>
-                            <div className={styles.progressLabel}>
-                                Tiến độ: {course.progress}%
+                        {course.progress !== undefined && (
+                            <div className={styles.progressContainer}>
+                                <div className={styles.progressLabel}>
+                                    Tiến độ: {course.progress}%
+                                </div>
+                                <div className={styles.progressBar}>
+                                    <div
+                                        className={styles.progressFill}
+                                        style={{ width: `${course.progress}%` }}
+                                    />
+                                </div>
                             </div>
-                            <div className={styles.progressBar}>
-                                <div
-                                    className={styles.progressFill}
-                                    style={{ width: `${course.progress}%` }}
-                                />
-                            </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             )}
@@ -171,9 +179,12 @@ const CourseDetail: React.FC = () => {
             {/* Tab content */}
             <div className={styles.tabContent}>
                 {activeTab === 'lessons' ? (
-                    <CourseLessons courseId={courseId? courseId : ''} />
+                    <CourseLessons courseId={courseId ? courseId : ''} />
                 ) : (
-                    <CourseStudents courseId={courseId? courseId : ''} />
+                    <CourseStudents
+                        courseId={courseId ? courseId : ''}
+                        students={listStudent}
+                    />
                 )}
             </div>
 

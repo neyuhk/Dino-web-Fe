@@ -422,21 +422,19 @@ forBlock['controls_flow_statements'] = function (
   return code;
 };
 forBlock['simulate_led'] = function (
-  block: Blockly.Block,
-  generator: Blockly.CodeGenerator,
+    block: Blockly.Block,
+    generator: Blockly.CodeGenerator,
 ) {
-  const state = block.getFieldValue('STATE');
-  // Provide the simulateLED function definition only once.
-  const simLEDFunc = generator.provideFunction_(
-    'simulateLED',
-    `function ${generator.FUNCTION_NAME_PLACEHOLDER_}(state) {
-  const ledElement = document.getElementById('simulated-led');
-  if (ledElement) {
-    // When state is 'HIGH', set the LED element's background to yellow; otherwise, black.
-    ledElement.style.backgroundColor = state === 'HIGH' ? 'yellow' : 'black';
-  }
-  console.log('LED state:', state);
-}`
-  );
-  return `${simLEDFunc}('${state}');\n`;
+    const state = block.getFieldValue('STATE');
+    const simLEDFunc = generator.provideFunction_(
+        'simulateLED',
+        `function ${generator.FUNCTION_NAME_PLACEHOLDER_}(state) {
+            const ledElement = document.getElementById('simulated-led');
+            if (ledElement) {
+                ledElement.style.backgroundColor = state === 'HIGH' ? 'yellow' : 'black';
+            }
+            console.log('LED state:', state);
+        }`
+    );
+    return `${simLEDFunc}('${state}');\n`;
 };

@@ -1,7 +1,7 @@
 // src/layouts/BlocklyLayout.tsx
 import { Layout } from 'antd'
 import React from 'react'
-import HeaderBlocklyComponent from '@/components/commons/HeaderBlocklyComponent.tsx'
+import HeaderBlocklyComponent from '../components/commons/HeaderBlocklyComponent.tsx'
 
 const { Header, Content } = Layout
 

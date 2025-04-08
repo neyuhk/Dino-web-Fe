@@ -9,8 +9,6 @@ export const getLessonByCourseId = async (id:string) => {
 }
 export const addLesson = async (courseId: string, lessonData: FormData) => {
     try {
-        // Make sure to configure httpAuth to NOT transform the request data
-        // This is critical when sending FormData
         const response = await httpAuth.post(
             `${LESSON_API.CREATE_LESSON}${courseId}`,
             lessonData,
@@ -28,6 +26,10 @@ export const addLesson = async (courseId: string, lessonData: FormData) => {
     }
 };
 
+export const editLesson = async (lessonId: string ,data: any) => {
+    return (await httpFile.put(LESSON_API.UPDATE_LESSON + lessonId, data)).data;
+}
+
 export const addQuiz = async (payload: any) => {
     return (await httpFile.post(EXERCISE_API.ADD_QUIZ, payload)).data
 }
@@ -40,6 +42,15 @@ export const newExercise = async (body: any) => {
     return (await http.post(EXERCISE_API.NEW_EXERCISE, body)).data
 }
 
+export const deleteExercise = async (id: string) => {
+    return (await http.delete(EXERCISE_API.DELETE_EXERCISE + id)).data
+}
+
+export const deleteLesson = async (id: string) => {
+    return (await httpAuth.delete(LESSON_API.DELETE_LESSON + id)).data
+}
+
+
 export  const getQuiz = async (id: string) => {
     return (await http.get(EXERCISE_API.GET_QUIZ_BY_EXERCISE_ID + id)).data
 }
@@ -48,92 +59,13 @@ export const getQuizByExerciseId = async (exerciseId: string) => {
     return (await http.get(EXERCISE_API.GET_QUIZ_BY_EXERCISE_ID + exerciseId)).data
 }
 
-export const getNextQuiz = async (index: number) => {
-    return [
-        {
-            id: 'quiz1',
-            typeAnswer: 'one_choice' as "multiple_choice" | "one_choice",
-            question: '2 + 3 bằng bao nhiêu?',
-            answer: ["4", "Ba", "Năm", "Sáu"],
-            image: '',
-            index: 0,
-        },
-        {
-            id: 'quiz2',
-            typeAnswer: 'one_choice' as "multiple_choice" | "one_choice",
-            question: 'Hành tinh nào được gọi là Hành tinh Đỏ?',
-            answer: ["Trái Đất", "Sao Hỏa", "Sao Mộc", "Sao Kim"],
-            image: '',
-            index: 1,
-        },
-        {
-            id: 'quiz3',
-            typeAnswer: 'multiple_choice' as "multiple_choice" | "one_choice",
-            question: 'Những loài động vật nào có thể bay?',
-            answer: ["Đại bàng", "Chim cánh cụt", "Dơi", "Cá heo"],
-            image: '',
-            index: 2,
-        },
-        {
-            id: 'quiz4',
-            typeAnswer: 'one_choice' as "multiple_choice" | "one_choice",
-            question: 'Trên Trái Đất có bao nhiêu châu lục?',
-            answer: ["5", "6", "7", "8"],
-            image: '',
-            index: 3,
-        },
-        {
-            id: 'quiz5',
-            typeAnswer: 'one_choice' as "multiple_choice" | "one_choice",
-            question: 'Ai là tác giả của vở kịch "Romeo và Juliet"?',
-            answer: ["Shakespeare", "Hemingway", "Tolstoy", "Dickens"],
-            image: '',
-            index: 4,
-        },
-        {
-            id: 'quiz6',
-            typeAnswer: 'multiple_choice' as "multiple_choice" | "one_choice",
-            question: 'Những ngôn ngữ lập trình nào dưới đây là đúng?',
-            answer: ["Python", "Java", "HTML", "CSS"],
-            image: '',
-            index: 5,
-        },
-        {
-            id: 'quiz7',
-            typeAnswer: 'one_choice' as "multiple_choice" | "one_choice",
-            question: 'Thủ đô của Nhật Bản là gì?',
-            answer: ["Seoul", "Bắc Kinh", "Tokyo", "Bangkok"],
-            image: '',
-            index: 6,
-        },
-        {
-            id: 'quiz8',
-            typeAnswer: 'one_choice' as "multiple_choice" | "one_choice",
-            question: 'Đại dương nào lớn nhất trên Trái Đất?',
-            answer: ["Đại Tây Dương", "Ấn Độ Dương", "Thái Bình Dương", "Bắc Băng Dương"],
-            image: '',
-            index: 7,
-        }
-    ];
-
-
-    // return quizzes;
-};
+export const getQuizForTeacher = async (exerciseId: string) => {
+    return (await http.get(EXERCISE_API.GET_EXERCISE_FOR_TEACHER + exerciseId)).data
+}
 
 export const getAnsweredQuiz = async (submitAnswerReq : SubmitAnswerReq) => {
     return (await http.post(EXERCISE_API.GET_ANSWER_QUIZ, submitAnswerReq)).data
 }
-
-
-// services/student.ts
-
-// const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
-
-// For now, we'll use mock data since the API doesn't exist yet
-export const getStudentsByCourseId = async (courseId: string) => {
-    // Simulate API call with mock data
-    return mockStudents
-};
 
 export const addStudentToCourse = async (courseId: string, studentData: Partial<Student>) => {
     // Simulate API call

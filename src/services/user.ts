@@ -12,5 +12,12 @@ export const getUsers = async () => {
 }
 
 export const getUserById = async (id: string) => {
-    return (await http.get(USER_API.GET_USER_BY_ID + id)).data
+    return (await httpAuth.get(USER_API.GET_USER_BY_ID + id)).data
 }
+
+export const findUser = async (query: string) => {
+    return (await httpAuth.get(USER_API.FIND_USER, {
+        params: { search: query }
+    })).data;
+};
+

@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, BookOpen, AlertCircle, Loader2 } from 'lucide-react';
 import QuizComponent from './Quiz/QuizComponent.tsx';
-import { getAnsweredQuiz, getNextQuiz, getQuizByExerciseId } from '../../../../../services/lesson.ts'
+import { getAnsweredQuiz, getQuizByExerciseId } from '../../../../../services/lesson.ts'
 import { Exercise, Quiz, SubmitAnswerReq } from '../../../../../model/classroom.ts'
 import styles from './LearningChallenge.module.css';
 import TestComponent from './TestComponent/TestComponent.tsx'
 import { useSelector } from 'react-redux'
 import RequireAuth from '../../../../commons/RequireAuth/RequireAuth.tsx'
 import ConfirmationPopup from './PopupComponent/ConfirmationPopup.tsx'
+import EmptyStateNotification from '../../../Teacher/common/EmptyStateNotification/EmptyStateNotification.tsx'
+import { createScore } from '../../../../../services/score.ts'
 
 const LearningChallenge: React.FC = () => {
     const location = useLocation();
@@ -70,7 +72,8 @@ const LearningChallenge: React.FC = () => {
         };
 
         try {
-            const result = await getAnsweredQuiz(submitData);
+            const data = await getAnsweredQuiz(submitData);
+            const result = data.data
             return {
                 isCorrect: result.isCorrect,
                 correctAnswer: result.correctAnswer
@@ -83,16 +86,90 @@ const LearningChallenge: React.FC = () => {
 
     const handleSubmitTest = async (answers: Record<string, string[]>) => {
         try {
-            // Đây là nơi bạn sẽ gọi API để kiểm tra kết quả và lấy điểm số
-            // Ví dụ mẫu:
-            // const result = await submitTestAnswers(exercise.id, answers);
-            // return result;
+            // Ensure we have answers and valid data
+            if (!answers || Object.keys(answers).length === 0) {
+                throw new Error('No answers provided');
+            }
 
-            // Trả về mẫu để demo:
-            return { score: 85 }; // Điểm mẫu
+            // Detailed quiz results
+            const quizResults: Record<string, {
+                isCorrect: boolean,
+                correctAnswers: string[],
+                userAnswers: string[]
+            }> = {};
+
+            // Array to store individual quiz check results
+            const quizCheckPromises = Object.entries(answers).map(async ([quizId, selectedAnswers]) => {
+                const submitData: SubmitAnswerReq = {
+                    questionId: quizId,
+                    exerciseId: exercise._id,
+                    lessonId,
+                    userId: user._id,
+                    answer: selectedAnswers
+                };
+
+                try {
+                    // Check each quiz individually
+                    const data = await getAnsweredQuiz(submitData);
+                    const result = data.data;
+
+                    // Store detailed results
+                    quizResults[quizId] = {
+                        isCorrect: result.isCorrect,
+                        correctAnswers: result.correctAnswer || [],
+                        userAnswers: selectedAnswers
+                    };
+
+                    return {
+                        quizId,
+                        isCorrect: result.isCorrect,
+                        partialCorrect: result.partialCorrect || false
+                    };
+                } catch (error) {
+                    console.error(`Error checking quiz ${quizId}:`, error);
+                    return {
+                        quizId,
+                        isCorrect: false,
+                        partialCorrect: false
+                    };
+                }
+            });
+
+            // Wait for all quiz checks to complete
+            const quizResultsList = await Promise.all(quizCheckPromises);
+
+            // Calculate total score
+            const totalQuestions = quizList.length;
+            const correctQuestions = quizResultsList.filter(result => result.isCorrect).length;
+            const partialQuestions = quizResultsList.filter(result => result.partialCorrect).length;
+
+            // Calculate score (out of 10)
+            const score = Math.round(
+                ((correctQuestions + partialQuestions * 0.5) / totalQuestions) * 10
+            );
+
+            // Optional: Submit score to backend
+            try {
+                await createScore({
+                    userId: user._id,
+                    exerciseId: exercise._id,
+                    score: score
+                });
+            } catch (scoreSubmitError) {
+                console.error('Error submitting score:', scoreSubmitError);
+            }
+
+            // Return score and detailed quiz results
+            return {
+                score,
+                quizResults
+            };
         } catch (error) {
             console.error('Error submitting test:', error);
-            return { score: 0 };
+            return {
+                score: 0,
+                quizResults: {}
+            };
         }
     };
 
@@ -185,12 +262,20 @@ const LearningChallenge: React.FC = () => {
 
             <main className={styles.mainContent}>
                 {showConfirmation ? (
-                    <ConfirmationPopup
-                        exercise={exercise}
-                        quizCount={quizList.length}
-                        onConfirm={handleConfirmExercise}
-                        onCancel={() => navigate(-1)}
-                    />
+                    quizList.length > 0 ? (
+                        <ConfirmationPopup
+                            exercise={exercise}
+                            quizCount={quizList.length}
+                            onConfirm={handleConfirmExercise}
+                            onCancel={() => navigate(-1)}
+                        />
+                    ) : (
+                        <EmptyStateNotification
+                            title="Chưa có bài tập"
+                            message="Chưa có bài tập được thêm, hãy liên hệ với giáo viên của bạn nhé!"
+                            image="https://i.pinimg.com/originals/9f/7c/90/9f7c9024044595556cf3025fa510e369.gif"
+                        />
+                    )
                 ) : exercise.type === 'quiz' ? (
                     currentQuiz ? (
                         <QuizComponent
@@ -224,9 +309,11 @@ const LearningChallenge: React.FC = () => {
                     <TestComponent
                         exercise={exercise}
                         quizList={quizList}
-                        onSubmit={handleSubmitTest}
+                        userId={user._id}
+                        lessonId={lessonId}
+                        onSubmit={handleSubmitTest}  // Pass the function directly, not calling it
                     />
-                ) : (
+                )  : (
                     <div className={styles.errorContainer}>
                         <AlertCircle size={64} className={styles.errorIcon} />
                         <h2>Loại bài tập không hợp lệ</h2>

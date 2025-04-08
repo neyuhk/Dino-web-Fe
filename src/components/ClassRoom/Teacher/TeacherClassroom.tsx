@@ -5,6 +5,7 @@ import { Course } from '../../../model/classroom.ts'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import RequireAuth from '../../commons/RequireAuth/RequireAuth.tsx'
+import { getCourseByTeacherId } from '../../../services/course.ts'
 
 interface ClassTeacher {
     teacherId: string;
@@ -59,77 +60,18 @@ const TeacherClassroom: React.FC = () => {
         );
     }
 
-    // Mock teacherId - trong thực tế sẽ lấy từ context hoặc props
-    const teacherId = "t123456";
+    // Get teacher ID from user object
+    const teacherId = user._id || "";
 
-    // Mock data
+    // Fetch courses data from API
     useEffect(() => {
-        // Giả lập API call
         const fetchData = async () => {
             try {
-                // Mock courses data
-                const mockCourses: Course[] = [
-                    {
-                        _id: '67209a7b02677d2df9e8dcd7',
-                        teacherId: teacherId,
-                        title: 'Toán học cơ bản lớp 10',
-                        description: 'Khóa học về toán học cơ bản dành cho học sinh lớp 10',
-                        images: ['https://i.pinimg.com/736x/cb/6f/e3/cb6fe3fc101c6bace3f04ede7d0c37dc.jpg'],
-                        start_date: '2025-01-01',
-                        end_date: '2025-06-01',
-                        certification: 'Chứng chỉ hoàn thành',
-                        createdAt: '2024-12-01',
-                        updatedAt: '2024-12-15',
-                        progress: 30,
-                        students: Array(25).fill(null).map((_, i) => ({ id: `s${i}`, name: `Học sinh ${i+1}` }))
-                    },
-                    {
-                        _id: '67209a7b02677d2df9e8dcd7',
-                        teacherId: teacherId,
-                        title: 'Vật lý nâng cao lớp 11',
-                        description: 'Khóa học vật lý nâng cao dành cho học sinh lớp 11',
-                        images: ['/images/physics.jpg'],
-                        start_date: '2025-01-15',
-                        end_date: '2025-05-15',
-                        certification: 'Chứng chỉ xuất sắc',
-                        createdAt: '2024-12-10',
-                        updatedAt: '2024-12-20',
-                        progress: 15,
-                        students: Array(18).fill(null).map((_, i) => ({ id: `s${i+30}`, name: `Học sinh ${i+31}` }))
-                    },
-                    {
-                        _id: '67209a7b02677d2df9e8dcd7',
-                        teacherId: teacherId,
-                        title: 'Hóa học cơ bản lớp 12',
-                        description: 'Khóa học hóa học cơ bản dành cho học sinh lớp 12',
-                        images: ['/images/chemistry.jpg'],
-                        start_date: '2025-02-01',
-                        end_date: '2025-07-01',
-                        certification: 'Chứng chỉ giỏi',
-                        createdAt: '2025-01-01',
-                        updatedAt: '2025-01-10',
-                        progress: 5,
-                        students: Array(22).fill(null).map((_, i) => ({ id: `s${i+50}`, name: `Học sinh ${i+51}` }))
-                    }
-                ];
+                // Use the service function to get courses by teacher ID
+                const coursesData = await getCourseByTeacherId(teacherId);
+                setCourses(coursesData.data);
 
-                setCourses(mockCourses);
-                // setCourses([])
-
-                // Mock class teacher data - this could come from a separate API call
-                // For demo purposes, let's assume this teacher is the class teacher of class "10A1"
-                const mockClassTeacher: ClassTeacher = {
-                    teacherId: teacherId,
-                    classId: "cls10A1",
-                    className: "10A1"
-                };
-
-                // Uncomment below line to test the "not a class teacher" notification
-                setClassTeacherInfo(null);
-
-                // setClassTeacherInfo(mockClassTeacher);
-
-                // Hiển thị thông báo khi load dữ liệu thành công
+                // Show success toast
                 setToast({
                     show: true,
                     type: 'success',
@@ -138,7 +80,7 @@ const TeacherClassroom: React.FC = () => {
                     image: '/images/success.png'
                 });
 
-                // Ẩn toast sau 3 giây
+                // Hide toast after 3 seconds
                 setTimeout(() => {
                     setToast(prev => ({ ...prev, show: false }));
                 }, 3000);
@@ -156,7 +98,7 @@ const TeacherClassroom: React.FC = () => {
         };
 
         fetchData();
-    }, []);
+    }, [teacherId]);
 
     const showToast = (type, title, message) => {
         setToast({
@@ -167,14 +109,13 @@ const TeacherClassroom: React.FC = () => {
         });
     };
 
-    // Đóng toast
+    // Close toast
     const hideToast = () => {
         setToast(prev => ({ ...prev, show: false }));
     };
 
-    // Xử lý khi click vào course
-    const handleCourseClick = (courseId: string, sampleCourse: Course) => {
-        // Thông báo khi click vào course
+    // Handle course click
+    const handleCourseClick = (courseId: string, course: Course) => {
         setToast({
             show: true,
             type: 'info',
@@ -183,19 +124,21 @@ const TeacherClassroom: React.FC = () => {
             image: '/images/info.png'
         });
 
-        // Ẩn toast sau 3 giây
+        // Hide toast after 3 seconds
         setTimeout(() => {
             setToast(prev => ({ ...prev, show: false }));
         }, 3000);
 
-        // Xử lý navigation hoặc gọi API với courseId
+        // Handle navigation with course ID
         console.log('Selected course ID:', courseId);
-        navigate(`/classroom/courses/${courseId}`, { state: { course: sampleCourse } });
-        // Ở đây bạn có thể thêm code để navigate hoặc truyền courseId sang component khác
+        navigate(`/classroom/courses/${courseId}`, { state: { course } });
     };
 
     // Format date function
     const formatDate = (dateString: string) => {
+        if (!dateString) return 'N/A';
+        if (dateString === 'unlimited') return 'Không giới hạn';
+
         const date = new Date(dateString);
         return date.toLocaleDateString('vi-VN');
     };
@@ -233,7 +176,7 @@ const TeacherClassroom: React.FC = () => {
                             >
                                 <div className={styles.courseImageContainer}>
                                     <img
-                                        src={course.images[0] || '/images/default-course.jpg'}
+                                        src={course.images && course.images.length > 0 ? course.images[0] : 'https://i.pinimg.com/474x/cd/4b/d9/cd4bd9b0ea2807611ba3a67c331bff0b.jpg'}
                                         alt={course.title}
                                         className={styles.courseImage}
                                     />
@@ -242,28 +185,32 @@ const TeacherClassroom: React.FC = () => {
                                     <h3 className={styles.courseTitle}>{course.title}</h3>
                                     <p className={styles.courseDescription}>{course.description}</p>
                                     <div className={styles.courseStats}>
-                                        <div className={styles.statsItem}>
-                                            <span className={styles.statsLabel}>Học sinh:</span>
-                                            <span className={styles.statsValue}>{course.students.length}</span>
-                                        </div>
+                                        {course.students && (
+                                            <div className={styles.statsItem}>
+                                                <span className={styles.statsLabel}>Học sinh:</span>
+                                                <span className={styles.statsValue}>{course.students.length}</span>
+                                            </div>
+                                        )}
                                         <div className={styles.statsItem}>
                                             <span className={styles.statsLabel}>Thời gian:</span>
                                             <span className={styles.statsValue}>
-                                                {formatDate(course.start_date)} - {formatDate(course.end_date)}
+                                                {formatDate(course.start_date)} - {course.end_date === 'unlimited' ? 'Không giới hạn' : formatDate(course.end_date)}
                                             </span>
                                         </div>
                                     </div>
-                                    <div className={styles.progressContainer}>
-                                        <div className={styles.progressLabel}>
-                                            Tiến độ: {course.progress}%
+                                    {course.progress !== undefined && (
+                                        <div className={styles.progressContainer}>
+                                            <div className={styles.progressLabel}>
+                                                Tiến độ: {course.progress}%
+                                            </div>
+                                            <div className={styles.progressBar}>
+                                                <div
+                                                    className={styles.progressFill}
+                                                    style={{ width: `${course.progress}%` }}
+                                                />
+                                            </div>
                                         </div>
-                                        <div className={styles.progressBar}>
-                                            <div
-                                                className={styles.progressFill}
-                                                style={{ width: `${course.progress}%` }}
-                                            />
-                                        </div>
-                                    </div>
+                                    )}
                                 </div>
                             </div>
                         ))}

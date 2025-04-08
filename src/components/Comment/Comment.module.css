@@ -1,0 +1,126 @@
+.container {
+    width: 100%;
+}
+
+.commentList {
+    width: 100%;
+}
+
+.mainCommentWrapper {
+    margin-bottom: 16px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 8px;
+}
+
+.commentItem {
+    margin-bottom: 4px;
+    padding-bottom: 4px;
+}
+
+.repliesContainer {
+    padding-left: 40px;
+    margin-top: 8px;
+    margin-bottom: 12px;
+    border-left: 1px solid #f0f0f0;
+}
+
+.subCommentContainer {
+    padding-bottom: 8px;
+    padding-top: 8px;
+}
+
+.subCommentName {
+    font-size: 14px;
+}
+
+.subCommentContent {
+    font-size: 14px;
+}
+
+.avatarMain {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.avatarSub {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+}
+
+.actionButtons {
+    display: flex;
+    align-items: center;
+}
+
+.actionButton {
+    color: #000;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    height: auto;
+}
+
+.actionButton:hover {
+    color: #1890ff;
+}
+
+.activeButton {
+    color: #1890ff;
+}
+
+.mainCommentForm {
+    margin-top: 16px;
+}
+
+.inlineReplyForm {
+    padding-left: 40px;
+    margin-top: 8px;
+    margin-bottom: 16px;
+}
+
+.replyForm {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.replyInput {
+    flex: 1;
+    margin-right: 8px;
+    margin-bottom: 0;
+}
+
+/* Auto-expanding textarea styles */
+.autoExpandTextarea {
+    width: 100%;
+    resize: none;
+    overflow-y: hidden;
+    transition: height 0.2s;
+}
+
+/* Make sure the input container can grow */
+.replyInput :global(.ant-form-item-control-input) {
+    min-height: auto;
+}
+
+/* Ensure the textarea shows all content */
+.autoExpandTextarea:focus {
+    height: auto !important;
+}
+
+/* View replies button styling */
+.viewRepliesButton {
+    margin-left: 40px;
+    padding: 0 8px;
+    font-size: 14px;
+    color: #1890ff;
+    height: 28px;
+    margin-top: 4px;
+    margin-bottom: 8px;
+}
+
+.viewRepliesButton:hover {
+    background-color: #f0f7ff;
+}

@@ -1,66 +1,57 @@
 // ClassroomPage.tsx
 import React, { useEffect, useState } from 'react';
-import { Search, GraduationCap, Users, BookOpen } from 'lucide-react';
+import { Search, GraduationCap, Users, BookOpen, Award, Calendar } from 'lucide-react';
 import styles from './ClassroomPage.module.css';
-import { getClassroomList } from '../../services/classroom.ts'
-import EmptyState from './EmptyState/EmptyState.tsx'
-import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { PATHS } from '../../router/path.ts'
-import { Classroom, Course } from '../../model/classroom.ts'
-import RequireAuth from '../commons/RequireAuth/RequireAuth.tsx'
-
-interface ClassroomListProps {
-    classrooms: Classroom;
-}
+import { getCourseByUserId } from '../../services/course.ts';
+import EmptyState from './EmptyState/EmptyState.tsx';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { PATHS } from '../../router/path.ts';
+import { Course } from '../../model/classroom.ts';
 
 const ClassroomList: React.FC = () => {
-    const [classrooms, setClassrooms] = useState<Classroom[]>([]);
-    const [filteredClassrooms, setFilteredClassrooms] = useState<Classroom[]>([]);
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const { user } = useSelector((state: any) => state.auth);
-    const [auth, checkAuth] = useState(false)
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchClassrooms = async () => {
+        const fetchCourses = async () => {
             try {
-                const data = await getClassroomList();
-                setClassrooms(data.data);
-                setFilteredClassrooms(data.data);
+                if (!user?._id) return;
+                const data = await getCourseByUserId(user._id);
+                setCourses(data.data);
+                setFilteredCourses(data.data);
             } catch (error) {
-                console.error('Error fetching classrooms:', error);
+                console.error('Error fetching courses:', error);
             } finally {
                 setIsLoading(false);
             }
         };
-        if(user){
-            checkAuth(true)
-            fetchClassrooms();
-        }
 
-    }, []);
+        fetchCourses();
+    }, [user]);
 
-    const handleCardClick = (classroomId: string) => {
-        console.log('class room',classroomId);
-        navigate(`${PATHS.CLASSROOM_DETAIL}`, { state: { classroomId } });
+    const handleCardClick = (course: Course) => {
+        navigate(`${PATHS.CLASSROOM_DETAIL}`, { state: { classroom: course } });
     };
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
         const query = event.target.value.toLowerCase();
         setSearchQuery(query);
-        const filtered = classrooms.filter(classroom =>
-            classroom.name.toLowerCase().includes(query.trim())
+        const filtered = courses.filter(course =>
+            course.title.toLowerCase().includes(query.trim())
         );
-        setFilteredClassrooms(filtered);
+        setFilteredCourses(filtered);
     };
 
-    // if(!user){
-    //     return (
-    //         <RequireAuth></RequireAuth>
-    //     );
-    // }
+    const formatDateRange = (startDate: string, endDate: string) => {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        return `${start.toLocaleDateString()} - ${end.toLocaleDateString()}`;
+    };
 
     if (isLoading) {
         return (
@@ -68,12 +59,12 @@ const ClassroomList: React.FC = () => {
                 <div className={styles.loadingSpinner}>
                     <GraduationCap size={32} className={styles.loadingIcon} />
                 </div>
-                <p>Chờ xíuuuu... Hông ai iu anh bằng tôi iu anh..</p>
+                <p>Đang tải lớp học của bạn...</p>
             </div>
         );
     }
 
-    if (!classrooms.length) {
+    if (!courses.length) {
         return <EmptyState />;
     }
 
@@ -82,17 +73,16 @@ const ClassroomList: React.FC = () => {
             <div className={styles.container}>
                 <div className={styles.headerSection}>
                     <div className={styles.headerContent}>
-                        <h1 className={styles.title}>Lớp học của bạn</h1>
-
+                        <h1 className={styles.title}>Khóa học của bạn</h1>
                         <p className={styles.subtitle}>
-                            Khám phá và tham gia các lớp học trực tuyến của bạn.
+                            Khám phá và tham gia các khóa học trực tuyến để nâng cao kỹ năng của bạn.
                         </p>
                     </div>
                     <div className={styles.searchContainer}>
                         <Search className={styles.searchIcon} size={20} />
                         <input
                             type="text"
-                            placeholder="Tìm kiếm lớp học của bạn..."
+                            placeholder="Tìm kiếm khóa học..."
                             value={searchQuery}
                             onChange={handleSearch}
                             className={styles.searchInput}
@@ -101,78 +91,69 @@ const ClassroomList: React.FC = () => {
                 </div>
 
                 <div className={styles.grid}>
-                    {filteredClassrooms.map((classroom) => (
-                        <div key={classroom._id}
-                             className={styles.card}
-                             onClick={() => handleCardClick( classroom._id)}
+                    {filteredCourses.map((course) => (
+                        <div
+                            key={course._id}
+                            className={styles.card}
+                            onClick={() => handleCardClick(course)}
                         >
+                            <div className={styles.ribbon}>
+                                {course.course_type === "DEFAULT" ? "Tiêu chuẩn" : "Đặc biệt"}
+                            </div>
+
                             <div className={styles.cardHeader}>
                                 <div className={styles.imageWrapper}>
                                     <img
                                         src={
-                                            classroom.images && classroom.images.length > 0
-                                                ? classroom.images[0]
+                                            course.images && course.images.length > 0
+                                                ? course.images[0]
                                                 : '/default-classroom.jpg'
                                         }
-                                        alt={classroom.name}
+                                        alt={course.title}
                                         className={styles.image}
                                     />
                                     <div className={styles.imageOverlay} />
-                                </div>
-                                <div className={styles.subjectBadge}>
-                                    {'General'}
                                 </div>
                             </div>
 
                             <div className={styles.content}>
                                 <h2 className={styles.classroomName}>
-                                    {classroom.name}
+                                    {course.title}
                                 </h2>
+
                                 <p className={styles.description}>
-                                    {classroom.description}
+                                    {course.description}
                                 </p>
 
-                                <div className={styles.teacherSection}>
-                                    <div className={styles.avatarContainer}>
-                                        <img
-                                            src={classroom.teacher_id.avatar}
-                                            alt={classroom.teacher_id.username}
-                                            className={styles.avatar}
-                                        />
+                                <div className={styles.infoSection}>
+                                    <div className={styles.infoItem}>
+                                        <Calendar size={16} className={styles.infoIcon} />
+                                        <span>{formatDateRange(course.start_date, course.end_date)}</span>
                                     </div>
-                                    <div className={styles.teacherDetails}>
-                                        <span className={styles.teacherLabel}>Teacher</span>
-                                        <span className={styles.teacherName}>
-                                         {classroom.teacher_id.username}
-            </span>
-                                    </div>
+
+                                    {course.certification && (
+                                        <div className={styles.infoItem}>
+                                            <Award size={16} className={styles.infoIcon} />
+                                            <span>Có chứng chỉ</span>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className={styles.cardFooter}>
                                     <div className={styles.stats}>
                                         <div className={styles.statItem}>
-                                            <Users size={16} />
-                                            <span >
-                    { classroom.students && classroom.students.length > 0
-                        ? classroom.students.length
-                        : '0'} Students
-                </span>
-                                        </div>
-                                        <div className={styles.statItem}>
                                             <BookOpen size={16} />
-                                            <span>Active</span>
+                                            <span>Đang hoạt động</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     ))}
                 </div>
             </div>
         </div>
-    )
+    );
 };
 
 export default ClassroomList;
-

@@ -258,12 +258,13 @@
 }
 
 .correctAnswer {
-    background-color: rgba(75, 192, 120, 0.2);
+    background-color: var(--success-light);
+    color: var(--text-color);
     border: 1px solid rgba(75, 192, 120, 0.5);
 }
 
 .correctAnswer .answerLetter {
-    background-color: rgb(75, 192, 120);
+    background-color: var(--success-color);
 }
 
 .expandedActions {

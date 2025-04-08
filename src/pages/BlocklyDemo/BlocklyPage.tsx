@@ -113,12 +113,18 @@ const BlocklyPage: React.FC = () => {
 
     const executeCode = () => {
         if (workspace) {
-            const code = javascriptGenerator.workspaceToCode(workspace)
-            const outputDiv = document.getElementById('output')
-            if (outputDiv) outputDiv.innerHTML = ''
-            eval(code)
+            const code = javascriptGenerator.workspaceToCode(workspace);
+            const outputDiv = document.getElementById('output');
+            if (outputDiv) outputDiv.innerHTML = '';
+            try {
+                const execFunc = new Function(code);
+                execFunc();
+            } catch (error) {
+                if (outputDiv) outputDiv.innerHTML = `<span style="color: red">Error: ${error.message}</span>`;
+                console.error("Code execution error:", error);
+            }
         }
-    }
+    };
 
     const saveCodeBlockToDB = async () => {
         if (workspace) {
@@ -508,8 +514,8 @@ const BlocklyPage: React.FC = () => {
                         <h3>Dịch khối thành mã nguồn</h3>
                         <pre id="generatedCode"><code></code></pre>
 
-                        {/*<h3>LED Simulator</h3>*/}
-                        {/*<div id="simulated-led" className={ledState}></div>*/}
+                        <h3>LED Simulator</h3>
+                        <div id="simulated-led" className={ledState}></div>
 
                         <button id="executeButton" onClick={executeCode}>
                             <PlayCircleOutlined /> Chạy và xem kết quả

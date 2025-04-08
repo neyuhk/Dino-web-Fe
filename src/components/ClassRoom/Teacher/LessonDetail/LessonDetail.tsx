@@ -5,6 +5,8 @@ import Toast from '../../../commons/Toast/Toast.tsx';
 import { Exercise, Lesson } from '../../../../model/classroom.ts'
 import { useSelector } from 'react-redux'
 import RequireAuth from '../../../commons/RequireAuth/RequireAuth.tsx'
+import { deleteExercise } from '../../../../services/lesson.ts'
+import DeleteConfirmPopup from './DeletePopup/DeleteConfirmPopup.tsx'
 
 interface ToastMessage {
     show: boolean;
@@ -23,6 +25,12 @@ const LessonDetail: React.FC = () => {
     const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
     const [activeTab, setActiveTab] = useState<'content' | 'exercises'>('content');
     const { user } = useSelector((state: any) => state.auth);
+    const [deleteConfirm, setDeleteConfirm] = useState({
+        show: false,
+        exerciseId: '',
+        title: '',
+        description: ''
+    });
 
     if(!user){
         return (
@@ -49,60 +57,6 @@ const LessonDetail: React.FC = () => {
                     // Otherwise you would fetch it from your API
                     // This is a placeholder for your actual API call
                     console.log('Would fetch lesson with ID:', lessonId);
-
-                    // Mock data for demo purposes
-                    // const mockLesson: Lesson = {
-                    //     id: lessonId || '1',
-                    //     title: 'Introduction to React',
-                    //     description: 'Learn the basics of React and component architecture',
-                    //     videoUrl: 'https://example.com/video.mp4',
-                    //     images: ['/images/react-lesson.jpg'],
-                    //     body: '<p>React is a JavaScript library for building user interfaces...</p>',
-                    //     course_id: courseId? courseId : '1',
-                    //     createdAt: new Date().toISOString(),
-                    //     updatedAt: new Date().toISOString(),
-                    //     exercises: [
-                    //         {
-                    //             id: "1",
-                    //             type: "quiz",
-                    //             time: 30,
-                    //             title: "Bài kiểm tra Toán",
-                    //             description: "Bài kiểm tra nhanh về toán học cơ bản.",
-                    //             score: 85,
-                    //             isCompleted: true,
-                    //             submittedAt: "2025-03-01T10:30:00Z",
-                    //             endDate: new Date("2025-03-10"),
-                    //         },
-                    //         {
-                    //             id: "2",
-                    //             type: "test",
-                    //             time: 60,
-                    //             title: "Bài kiểm tra Vật lý",
-                    //             description: "Bài kiểm tra về các định luật Newton.",
-                    //             isCompleted: false,
-                    //             endDate: new Date("2025-03-15"),
-                    //         },
-                    //         {
-                    //             id: "3",
-                    //             type: "quiz",
-                    //             time: 20,
-                    //             title: "Bài kiểm tra Tiếng Anh",
-                    //             description: "Kiểm tra nhanh về ngữ pháp tiếng Anh.",
-                    //             score: 90,
-                    //             isCompleted: true,
-                    //             submittedAt: "2025-02-28T08:15:00Z",
-                    //             endDate: new Date("2025-03-12"),
-                    //         }
-                    //     ],
-                    //     order: 1,
-                    //     duration: 45,
-                    //     isCompleted: false,
-                    //     progress: 30,
-                    //     averageScore: 85,
-                    //     lastAccessedAt: new Date().toISOString()
-                    // };
-
-                    // setCurrentLesson(mockLesson);
                 }
 
                 setLoading(false);
@@ -162,6 +116,84 @@ const LessonDetail: React.FC = () => {
         }
     };
 
+    const handleDeleteExercise = (exercise) => {
+        setDeleteConfirm({
+            show: true,
+            exerciseId: exercise._id,
+            title: exercise.title,
+            description: exercise.description
+        });
+    };
+
+    const confirmDelete = async () => {
+        try {
+            await deleteExercise(deleteConfirm.exerciseId);
+
+            setToast({
+                show: true,
+                type: 'success',
+                title: 'Xóa thành công',
+                message: 'Bài tập đã được xóa khỏi danh sách.',
+                image: '/images/success.png'
+            });
+
+            // Cập nhật danh sách bài tập sau khi xóa
+            setCurrentLesson(prevLesson => ({
+                ...prevLesson!,
+                exercises: prevLesson?.exercises.filter(ex => ex._id !== deleteConfirm.exerciseId) || []
+            }));
+
+            // Đóng popup
+            setDeleteConfirm({
+                show: false,
+                exerciseId: '',
+                title: '',
+                description: ''
+            });
+        } catch (error) {
+            console.error('Lỗi khi xóa bài tập:', error);
+
+            setToast({
+                show: true,
+                type: 'error',
+                title: 'Lỗi',
+                message: 'Không thể xóa bài tập. Vui lòng thử lại sau.',
+                image: '/images/error.png'
+            });
+        }
+    };
+
+    const cancelDelete = () => {
+        setDeleteConfirm({
+            show: false,
+            exerciseId: '',
+            title: '',
+            description: ''
+        });
+    };
+
+    const getYoutubeEmbedUrl = (url) => {
+        if (!url) return '';
+        let videoId = '';
+        const watchRegex = /youtube\.com\/watch\?v=([^&]+)/;
+        const shortRegex = /youtu\.be\/([^?]+)/;
+        const embedRegex = /youtube\.com\/embed\/([^?]+)/;
+
+        const watchMatch = url.match(watchRegex);
+        const shortMatch = url.match(shortRegex);
+        const embedMatch = url.match(embedRegex);
+
+        if (watchMatch && watchMatch[1]) {
+            videoId = watchMatch[1];
+        } else if (shortMatch && shortMatch[1]) {
+            videoId = shortMatch[1];
+        } else if (embedMatch && embedMatch[1]) {
+            videoId = embedMatch[1];
+        } else {
+            return url;
+        }
+        return `https://www.youtube.com/embed/${videoId}`;
+    };
     const formatDuration = (minutes: number) => {
         const hours = Math.floor(minutes / 60);
         const mins = minutes % 60;
@@ -189,17 +221,21 @@ const LessonDetail: React.FC = () => {
                         {currentLesson.video_url ? (
                             <div className={styles.videoContainer}>
                                 <iframe
-                                    src={currentLesson.video_url}
+                                    src={getYoutubeEmbedUrl(currentLesson.video_url)}
                                     title={currentLesson.title}
                                     className={styles.videoFrame}
                                     allowFullScreen
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 />
                             </div>
-                        ) : currentLesson.images &&
-                          currentLesson.images.length > 0 ? (
+                        ) : currentLesson.images && currentLesson.images.length > 0 ? (
                             <div className={styles.imageContainer}>
                                 <img
-                                    src={currentLesson.images[0]}
+                                    src={
+                                        currentLesson.images[0]
+                                            ? currentLesson.images[0]
+                                            : 'src/assets/dinologo-black.jpg'
+                                    }
                                     alt={currentLesson.title}
                                     className={styles.lessonImage}
                                 />
@@ -332,6 +368,37 @@ const LessonDetail: React.FC = () => {
                                             >
                                                 {exercise.description}
                                             </p>
+                                            <div
+                                                className={
+                                                    styles.exerciseDeadline
+                                                }
+                                            >
+                                                <span
+                                                    className={
+                                                        styles.deadlineLabel
+                                                    }
+                                                >
+                                                    Thời hạn nộp bài:
+                                                </span>
+                                                <span
+                                                    className={
+                                                        styles.deadlineValue
+                                                    }
+                                                >
+                                                    {exercise.end_date
+                                                        ? new Date(
+                                                              exercise.end_date
+                                                          ).toLocaleDateString(
+                                                              'vi-VN',
+                                                              {
+                                                                  day: '2-digit',
+                                                                  month: '2-digit',
+                                                                  year: 'numeric',
+                                                              }
+                                                          )
+                                                        : 'Không giới hạn'}
+                                                </span>
+                                            </div>
                                         </div>
 
                                         <div className={styles.exerciseStats}>
@@ -391,6 +458,7 @@ const LessonDetail: React.FC = () => {
                                                     className={
                                                         styles.actionButtonDelete
                                                     }
+                                                    onClick={() => handleDeleteExercise(exercise)}
                                                 >
                                                     Xóa
                                                 </button>
@@ -415,11 +483,21 @@ const LessonDetail: React.FC = () => {
                     </div>
                 )}
             </div>
-
+            <DeleteConfirmPopup
+                show={deleteConfirm.show}
+                title={deleteConfirm.title}
+                description={deleteConfirm.description}
+                onConfirm={confirmDelete}
+                onCancel={cancelDelete}
+            />
             {/* Toast notification */}
             {toast.show && <Toast toast={toast} onClose={hideToast} />}
         </div>
     )
+
+
+
+
 };
 
 export default LessonDetail;

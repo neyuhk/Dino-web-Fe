@@ -1,719 +1,648 @@
 import React, { useState, useEffect } from 'react';
 import styles from './CourseStudents.module.css';
-import { FaPlus, FaTrash, FaSearch, FaSort, FaFilter, FaEllipsisV, FaUserGraduate } from 'react-icons/fa';
-import { Student } from '../../../../model/classroom.ts'
-import { getStudentsByCourseId } from '../../../../services/lesson.ts'
-
+import { User } from '../../../../model/model.ts';
+import { addStudent, getStudentByCourseId } from '../../../../services/course.ts';
+import { findUser, getUserById } from '../../../../services/user.ts'
+import EmptyStateNotification from '../common/EmptyStateNotification/EmptyStateNotification.tsx';
 interface CourseStudentsProps {
     courseId: string;
-    getStudentsByCourseId: (courseId: string) => Promise<Student[]>;
 }
 
-// ConfirmDialog component
-interface ConfirmDialogProps {
-    isOpen: boolean;
-    title: string;
-    message: string;
-    onConfirm: () => void;
-    onCancel: () => void;
-}
-
-const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ isOpen, title, message, onConfirm, onCancel }) => {
-    if (!isOpen) return null;
-
-    return (
-        <div className={styles.modalOverlay}>
-            <div className={styles.modalContent}>
-                <h3 className={styles.modalTitle}>{title}</h3>
-                <p className={styles.modalMessage}>{message}</p>
-                <div className={styles.modalActions}>
-                    <button onClick={onCancel} className={styles.cancelButton}>Hủy</button>
-                    <button onClick={onConfirm} className={styles.confirmButton}>Xác nhận</button>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-// StudentAddModal component
-interface StudentAddModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onAdd: (student: Partial<Student>) => void;
-}
-
-const StudentAddModal: React.FC<StudentAddModalProps> = ({ isOpen, onClose, onAdd }) => {
-    const [studentData, setStudentData] = useState({
-        name: '',
-        email: '',
-        studentId: ''
-    });
-
-    if (!isOpen) return null;
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onAdd(studentData);
-        setStudentData({ name: '', email: '', studentId: '' });
-    };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setStudentData(prev => ({ ...prev, [name]: value }));
-    };
-
-    return (
-        <div className={styles.modalOverlay}>
-            <div className={styles.modalContent}>
-                <div className={styles.modalHeader}>
-                    <h3 className={styles.modalTitle}>Thêm học sinh vào lớp</h3>
-                    <button className={styles.closeButton} onClick={onClose}>×</button>
-                </div>
-                <form onSubmit={handleSubmit} className={styles.addForm}>
-                    <div className={styles.formGroup}>
-                        <label htmlFor="name" className={styles.formLabel}>Họ và tên</label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            value={studentData.name}
-                            onChange={handleChange}
-                            className={styles.formInput}
-                            required
-                        />
-                    </div>
-                    <div className={styles.formGroup}>
-                        <label htmlFor="email" className={styles.formLabel}>Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={studentData.email}
-                            onChange={handleChange}
-                            className={styles.formInput}
-                            required
-                        />
-                    </div>
-                    <div className={styles.formGroup}>
-                        <label htmlFor="studentId" className={styles.formLabel}>Mã học sinh</label>
-                        <input
-                            type="text"
-                            id="studentId"
-                            name="studentId"
-                            value={studentData.studentId}
-                            onChange={handleChange}
-                            className={styles.formInput}
-                            required
-                        />
-                    </div>
-                    <div className={styles.formActions}>
-                        <button type="button" onClick={onClose} className={styles.cancelButton}>Hủy</button>
-                        <button type="submit" className={styles.submitButton}>Thêm học sinh</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    );
-};
-
-// Main CourseStudents component
 const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
-    const [students, setStudents] = useState<Student[]>([]);
+    const [students, setStudents] = useState<User[]>([]);
+    const [filteredStudents, setFilteredStudents] = useState<User[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [searchQuery, setSearchQuery] = useState<string>('');
-    const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
-    const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
-    const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
-    const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
-    const [sortField, setSortField] = useState<string>('name');
-    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-    const [expandedStudent, setExpandedStudent] = useState<string | null>(null);
-
-    const toggleStudentDetails = (studentId: string) => {
-        setExpandedStudent(expandedStudent === studentId ? null : studentId);
-    };
-
-
-    // Fetch students data
-    useEffect(() => {
-        const loadStudents = async () => {
-            try {
-                setLoading(true);
-                const data = await getStudentsByCourseId(courseId);
-                setStudents(data);
-                setError(null);
-            } catch (err) {
-                setError('Không thể tải danh sách học sinh. Vui lòng thử lại sau!');
-                console.error('Error fetching students:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadStudents();
-    }, [courseId, getStudentsByCourseId]);
-
-    // Handle adding a new student
-    const handleAddStudent = (studentData: Partial<Student>) => {
-        // In a real app, you would call an API to add the student
-        const newStudent: Student = {
-            _id: `s${Date.now()}`,
-            username: studentData.name || '',
-            email: studentData.email || '',
-            studentId: studentData.studentId || '',
-            avatar: `/images/avatars/student-${Math.floor(Math.random() * 10) + 1}.jpg`,
-            enrollmentDate: new Date().toISOString(),
-            courses: [courseId],
-            progress: [{
-                courseId: courseId,
-                completedLessons: [],
-                completionPercentage: 0,
-                lastAccessDate: new Date().toISOString()
-            }],
-            grades: [],
-            attendance: [],
-            rank: students.length + 1,
-            averageScore: 0
-        };
-
-        setStudents(prev => [...prev, newStudent]);
-        setIsAddModalOpen(false);
-    };
-
-    // Handle removing a student
-    const handleRemoveStudent = (studentId: string) => {
-        setSelectedStudentId(studentId);
-        setIsConfirmDialogOpen(true);
-    };
-
-    const confirmRemoveStudent = () => {
-        if (selectedStudentId) {
-            setStudents(prev => prev.filter(student => student._id !== selectedStudentId));
-            setIsConfirmDialogOpen(false);
-            setSelectedStudentId(null);
-        }
-    };
-
-    // Handle search
-    const filteredStudents = Array.isArray(students)
-        ? students.filter(student => {
-            const name = student.name?.toLowerCase() || '';
-            const studentId = student.studentId?.toLowerCase() || '';
-            const email = student.email?.toLowerCase() || '';
-            const query = searchQuery?.toLowerCase() || '';
-
-            return name.includes(query) || studentId.includes(query) || email.includes(query);
-        })
-        : [];
-
-    // Handle sorting
-    const sortedStudents = [...filteredStudents].sort((a, b) => {
-        let comparison = 0;
-
-        if (sortField === 'name') {
-            comparison = a.name.localeCompare(b.name);
-        } else if (sortField === 'studentId') {
-            comparison = a.studentId.localeCompare(b.studentId);
-        } else if (sortField === 'completionPercentage') {
-            const aProgress = a.progress.find(p => p.courseId === courseId)?.completionPercentage || 0;
-            const bProgress = b.progress.find(p => p.courseId === courseId)?.completionPercentage || 0;
-            comparison = aProgress - bProgress;
-        } else if (sortField === 'averageScore') {
-            const aScore = a.averageScore || 0;
-            const bScore = b.averageScore || 0;
-            comparison = aScore - bScore;
-        } else if (sortField === 'lastAccess') {
-            const aDate = new Date(a.progress.find(p => p.courseId === courseId)?.lastAccessDate || 0).getTime();
-            const bDate = new Date(b.progress.find(p => p.courseId === courseId)?.lastAccessDate || 0).getTime();
-            comparison = aDate - bDate;
-        }
-
-        return sortDirection === 'asc' ? comparison : -comparison;
+    const [searchId, setSearchId] = useState<string>('');
+    const [searchResult, setSearchResult] = useState<User[]>([]);
+    const [pendingStudents, setPendingStudents] = useState<User[]>([]);
+    const [addingStudents, setAddingStudents] = useState<boolean>(false);
+    const [searching, setSearching] = useState<boolean>(false);
+    const [studentFilter, setStudentFilter] = useState<string>('');
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+    const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
+    const [studentManagement, setStudentManagement] = useState<{
+        open: boolean;
+        student: User | null;
+    }>({
+        open: false,
+        student: null,
     });
 
-    // Handle sort toggle
-    const handleSort = (field: string) => {
-        if (sortField === field) {
-            setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
-        } else {
-            setSortField(field);
-            setSortDirection('asc');
+    useEffect(() => {
+        fetchStudents();
+    }, [courseId]);
+
+    // Thêm vào useEffect
+    useEffect(() => {
+        return () => {
+            // Cleanup
+            if (searchTimeout) {
+                clearTimeout(searchTimeout);
+            }
+        };
+    }, [searchTimeout]);
+
+    useEffect(() => {
+        // Filter and sort students when the filter text changes or when the student list changes
+        const filtered = students.filter(student =>
+            student.username?.toLowerCase().includes(studentFilter.toLowerCase()) ||
+            student.email?.toLowerCase().includes(studentFilter.toLowerCase()) ||
+            student.username?.toLowerCase().includes(studentFilter.toLowerCase())
+        );
+
+        // Sort students by name
+        const sorted = [...filtered].sort((a, b) => {
+            const nameA = a.username?.toLowerCase() || '';
+            const nameB = b.username?.toLowerCase() || '';
+
+            if (sortOrder === 'asc') {
+                return nameA.localeCompare(nameB);
+            } else {
+                return nameB.localeCompare(nameA);
+            }
+        });
+
+        setFilteredStudents(sorted);
+    }, [studentFilter, students, sortOrder]);
+
+    const fetchStudents = async () => {
+        try {
+            setLoading(true);
+            const data = await getStudentByCourseId(courseId);
+            const listStudent = data.data;
+            const studentsList = Array.isArray(listStudent) ? listStudent : [];
+            setStudents(studentsList);
+            setFilteredStudents(studentsList);
+            setError(null);
+        } catch (err) {
+            console.error('Error fetching students:', err);
+            setError('Không thể tải danh sách học sinh');
+            setStudents([]);
+            setFilteredStudents([]);
+        } finally {
+            setLoading(false);
         }
     };
 
-    // Get student progress for the current course
-    const getStudentProgress = (student: Student) => {
-        return student.progress.find(p => p.courseId === courseId)?.completionPercentage || 0;
+    const handleSearch = async (searchValue: string = searchId) => {
+        if (!searchValue.trim()) {
+            setError('Vui lòng nhập tên/mã học sinh');
+            return;
+        }
+
+        try {
+            setSearching(true);
+            const data = await findUser(searchValue);
+            const users = data.data;
+
+            // Lọc chỉ giữ lại những người dùng có role "user"
+            const studentUsers = Array.isArray(users)
+                ? users.filter(user => user.role === 'user')
+                : [];
+
+            if (studentUsers.length > 0) {
+                setSearchResult(studentUsers);
+                setError(null);
+            } else {
+                setError('Không tìm thấy học sinh phù hợp');
+                setSearchResult([]);
+            }
+        } catch (err) {
+            console.error('Error searching for users:', err);
+            setError('Không tìm thấy học sinh với thông tin đã nhập');
+            setSearchResult([]);
+        } finally {
+            setSearching(false);
+        }
+    };
+    const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setSearchId(value);
+
+        // Xóa timeout cũ nếu có
+        if (searchTimeout) {
+            clearTimeout(searchTimeout);
+        }
+
+        // Nếu input trống, reset kết quả tìm kiếm
+        if (!value.trim()) {
+            setSearchResult([]);
+            setError(null);
+            return;
+        }
+
+        // Thiết lập timeout mới (debounce 1 giây)
+        const newTimeout = setTimeout(() => {
+            handleSearch(value);
+        }, 1000);
+
+        setSearchTimeout(newTimeout);
+    };
+    const addToPending = (student: User) => {
+        // Check if student is already in the course
+        if (students.some((s) => s._id === student._id)) {
+            setError('Học sinh này đã có trong lớp học');
+            return;
+        }
+
+        // Check if student is already in pending list
+        if (pendingStudents.some((s) => s._id === student._id)) {
+            setError('Học sinh này đã có trong danh sách chờ');
+            return;
+        }
+
+        setPendingStudents([...pendingStudents, student]);
+        setError(null);
     };
 
-    // Calculate average score for the current course
-    const getStudentAverageScore = (student: Student) => {
-        const courseGrades = student.grades.filter(g => g.courseId === courseId);
-        if (courseGrades.length === 0) return 0;
-
-        const sum = courseGrades.reduce((acc, grade) => acc + (grade.score / grade.maxScore) * 10, 0);
-        return Number((sum / courseGrades.length).toFixed(1));
+    const removePending = (id: string) => {
+        setPendingStudents(pendingStudents.filter((student) => student._id !== id));
     };
 
-    // Get last access date
-    const getLastAccessDate = (student: Student) => {
-        const lastAccess = student.progress.find(p => p.courseId === courseId)?.lastAccessDate;
-        if (!lastAccess) return 'Chưa truy cập';
+    const handleAddStudents = async () => {
+        if (pendingStudents.length === 0) {
+            setError('Không có học sinh nào trong danh sách chờ');
+            return;
+        }
 
-        return new Date(lastAccess).toLocaleDateString('vi-VN');
+        setAddingStudents(true);
+
+        try {
+            // Add students one by one
+            for (const student of pendingStudents) {
+                await addStudent({
+                    courseId: courseId,
+                    studentId: student._id,
+                });
+            }
+
+            // Clear pending list and refresh student list
+            setPendingStudents([]);
+            await fetchStudents();
+            setError(null);
+        } catch (err) {
+            console.error('Error adding students:', err);
+            setError('Có lỗi khi thêm học sinh');
+        } finally {
+            setAddingStudents(false);
+        }
     };
 
-    if (loading) {
-        return (
-            <div className={styles.loadingContainer}>
-                <div className={styles.spinner}></div>
-                <p>Đang tải danh sách học sinh...</p>
-            </div>
-        );
-    }
+    const openStudentManagement = (student: User) => {
+        setStudentManagement({
+            open: true,
+            student,
+        });
+    };
 
-    if (error) {
-        return (
-            <div className={styles.errorContainer}>
-                <p className={styles.errorMessage}>{error}</p>
-                <button
-                    className={styles.retryButton}
-                    onClick={() => getStudentsByCourseId(courseId)}
-                >
-                    Thử lại
-                </button>
-            </div>
-        );
+    const closeStudentManagement = () => {
+        setStudentManagement({
+            open: false,
+            student: null,
+        });
+    };
+
+    const handleRemoveStudent = async (studentId: string) => {
+        try {
+            // Implement remove student API call here
+            // For now, just simulating removal from the local state
+            setStudents(students.filter((student) => student._id !== studentId));
+            closeStudentManagement();
+        } catch (err) {
+            console.error('Error removing student:', err);
+            setError('Có lỗi khi xóa học sinh');
+        }
+    };
+
+    const toggleSortOrder = () => {
+        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    };
+
+    if (loading && students.length === 0) {
+        return <div className={styles.loading}>Đang tải...</div>;
     }
 
     return (
         <div className={styles.container}>
-            <div className={styles.header}>
-                <h2 className={styles.title}>
-                    Quản lý học sinh{' '}
-                    <span className={styles.studentCount}>
-                        ({students.length})
-                    </span>
-                </h2>
-                <div className={styles.actions}>
-                    <div className={styles.searchContainer}>
-                        <input
-                            type="text"
-                            placeholder="Tìm kiếm học sinh..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className={styles.searchInput}
-                        />
-                        <FaSearch className={styles.searchIcon} />
-                    </div>
-                    <button
-                        className={styles.addButton}
-                        onClick={() => setIsAddModalOpen(true)}
-                    >
-                        <FaPlus className={styles.buttonIcon} />
-                        Thêm học sinh
-                    </button>
-                </div>
-            </div>
+            <h2 className={styles.sectionTitle}>Quản lý học sinh</h2>
 
-            {students.length === 0 ? (
-                <div className={styles.emptyState}>
-                    <FaUserGraduate className={styles.emptyStateIcon} />
-                    <h3>Không có học sinh trong lớp này</h3>
-                    <p>
-                        Nhấn "Thêm học sinh" để bắt đầu quản lý lớp học của bạn
-                    </p>
+            {/* Search for new students */}
+            <div className={styles.searchSection}>
+                <h3>Thêm học sinh mới</h3>
+                <div className={styles.searchForm}>
+                    <input
+                        type="text"
+                        placeholder="Nhập ID học sinh"
+                        value={searchId}
+                        onChange={handleSearchInputChange}
+                        className={styles.searchInput}
+                    />
                     <button
-                        className={styles.addButton}
-                        onClick={() => setIsAddModalOpen(true)}
+                        onClick={() => handleSearch()}
+                        className={styles.searchButton}
+                        disabled={searching}
                     >
-                        <FaPlus className={styles.buttonIcon} />
-                        Thêm học sinh
+                        {searching ? 'Đang tìm...' : 'Tìm kiếm'}
                     </button>
                 </div>
-            ) : (
-                <>
-                    <div className={styles.studentTable}>
-                        <div className={styles.tableHeader}>
-                            <div
-                                className={styles.headerCell}
-                                onClick={() => handleSort('name')}
-                            >
-                                Học sinh
-                                {sortField === 'name' && (
-                                    <FaSort
-                                        className={`${styles.sortIcon} ${sortDirection === 'desc' ? styles.sortDesc : ''}`}
-                                    />
-                                )}
+
+                <div className={styles.errorContainer}>
+                    {error && <div className={styles.error}>{error}</div>}
+                </div>
+
+                {/* Search Result */}
+                <div className={styles.searchResultContainer}>
+                    {searchResult.length > 0 && (
+                        <div className={styles.searchResult}>
+                            <div className={styles.studentCardHeader}>
+                                <h4>
+                                    Kết quả tìm kiếm ({searchResult.length})
+                                </h4>
                             </div>
-                            <div
-                                className={styles.headerCell}
-                                onClick={() => handleSort('studentId')}
-                            >
-                                Mã học sinh
-                                {sortField === 'studentId' && (
-                                    <FaSort
-                                        className={`${styles.sortIcon} ${sortDirection === 'desc' ? styles.sortDesc : ''}`}
-                                    />
-                                )}
-                            </div>
-                            <div
-                                className={`${styles.headerCell} ${styles.headerCellCenter}`}
-                                onClick={() =>
-                                    handleSort('completionPercentage')
-                                }
-                            >
-                                Tiến độ
-                                {sortField === 'completionPercentage' && (
-                                    <FaSort
-                                        className={`${styles.sortIcon} ${sortDirection === 'desc' ? styles.sortDesc : ''}`}
-                                    />
-                                )}
-                            </div>
-                            <div
-                                className={`${styles.headerCell} ${styles.headerCellCenter}`}
-                                onClick={() => handleSort('averageScore')}
-                            >
-                                Điểm TB
-                                {sortField === 'averageScore' && (
-                                    <FaSort
-                                        className={`${styles.sortIcon} ${sortDirection === 'desc' ? styles.sortDesc : ''}`}
-                                    />
-                                )}
-                            </div>
-                            <div
-                                className={styles.headerCell}
-                                onClick={() => handleSort('lastAccess')}
-                            >
-                                Truy cập gần nhất
-                                {sortField === 'lastAccess' && (
-                                    <FaSort
-                                        className={`${styles.sortIcon} ${sortDirection === 'desc' ? styles.sortDesc : ''}`}
-                                    />
-                                )}
-                            </div>
-                            <div className={styles.headerCell}>Thao tác</div>
-                        </div>
-                        <div className={styles.tableBody}>
-                            {sortedStudents.map((student) => (
+                            {searchResult.map((student) => (
                                 <div
                                     key={student._id}
-                                    className={styles.tableRow}
-                                    onClick={() => {
-                                        if (window.innerWidth <= 768) {
-                                            toggleStudentDetails(student._id)
-                                        }
-                                    }}
+                                    className={styles.studentCard}
                                 >
-                                    <div className={styles.studentCell}>
-                                        <div className={styles.avatarContainer}>
-                                            {student.avatar ? (
-                                                <img
-                                                    src={student.avatar}
-                                                    alt={student.name}
-                                                    className={styles.avatar}
-                                                />
-                                            ) : (
-                                                <div
-                                                    className={
-                                                        styles.avatarPlaceholder
-                                                    }
+                                    <div className={styles.avatarContainer}>
+                                        <img
+                                            src={
+                                                student.avatar.length != 0
+                                                    ? student.avatar[0]
+                                                    : 'https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg'
+                                            }
+                                            alt={
+                                                student.name || student.username
+                                            }
+                                            className={styles.avatar}
+                                        />
+                                        <div className={styles.userRole}>
+                                            <span>Học sinh</span>
+                                        </div>
+                                    </div>
+                                    <div className={styles.studentInfo}>
+                                        <h4>
+                                            {student.name || student.username}
+                                        </h4>
+                                        <div className={styles.infoGrid}>
+                                            <div className={styles.infoItem}>
+                                                <span
+                                                    className={styles.infoLabel}
                                                 >
-                                                    {student.name.charAt(0)}
+                                                    ID:
+                                                </span>
+                                                <span
+                                                    className={styles.infoValue}
+                                                >
+                                                    {student._id}
+                                                </span>
+                                            </div>
+                                            <div className={styles.infoItem}>
+                                                <span
+                                                    className={styles.infoLabel}
+                                                >
+                                                    Email:
+                                                </span>
+                                                <span
+                                                    className={styles.infoValue}
+                                                >
+                                                    {student.email}
+                                                </span>
+                                            </div>
+                                            {student.username && (
+                                                <div
+                                                    className={styles.infoItem}
+                                                >
+                                                    <span
+                                                        className={
+                                                            styles.infoLabel
+                                                        }
+                                                    >
+                                                        Tên người dùng:
+                                                    </span>
+                                                    <span
+                                                        className={
+                                                            styles.infoValue
+                                                        }
+                                                    >
+                                                        {student.username}
+                                                    </span>
+                                                </div>
+                                            )}
+                                            {student.phonenumber && (
+                                                <div
+                                                    className={styles.infoItem}
+                                                >
+                                                    <span
+                                                        className={
+                                                            styles.infoLabel
+                                                        }
+                                                    >
+                                                        Số điện thoại:
+                                                    </span>
+                                                    <span
+                                                        className={
+                                                            styles.infoValue
+                                                        }
+                                                    >
+                                                        {student.phonenumber}
+                                                    </span>
                                                 </div>
                                             )}
                                         </div>
-                                        <div className={styles.studentInfo}>
-                                            <div className={styles.studentName}>
-                                                {student.name}
-                                            </div>
-                                            <div
-                                                className={styles.studentEmail}
-                                            >
-                                                {student.email}
-                                            </div>
-                                        </div>
                                     </div>
-                                    <div className={styles.cell}>
-                                        {student.studentId}
-                                    </div>
-                                    <div className={styles.cell}>
-                                        <div
-                                            className={styles.progressContainer}
+                                    <div className={styles.studentActions}>
+                                        <button
+                                            onClick={() =>
+                                                addToPending(student)
+                                            }
+                                            className={styles.addButton}
                                         >
-                                            <div
-                                                className={styles.progressBar}
-                                                style={{
-                                                    width: `${getStudentProgress(student)}%`,
-                                                }}
-                                            ></div>
-                                            <span
-                                                className={styles.progressText}
-                                            >
-                                                {getStudentProgress(student)}%
+                                            <span className={styles.addIcon}>
+                                                +
                                             </span>
-                                        </div>
-                                    </div>
-                                    <div
-                                        className={`${styles.cell} ${styles.score}`}
-                                    >
-                                        <span
-                                            className={`${styles.scoreLabel} ${getStudentAverageScore(student) >= 8 ? styles.highScore : getStudentAverageScore(student) >= 6.5 ? styles.mediumScore : styles.lowScore}`}
-                                        >
-                                            {getStudentAverageScore(student)}
-                                        </span>
-                                    </div>
-                                    <div className={styles.cell}>
-                                        {getLastAccessDate(student)}
-                                    </div>
-                                    <div className={styles.actionsCell}>
-                                        <button
-                                            className={styles.viewButton}
-                                            onClick={() =>
-                                                setSelectedStudent(student)
-                                            }
-                                        >
-                                            Xem chi tiết
-                                        </button>
-                                        <button
-                                            className={styles.removeButton}
-                                            onClick={() =>
-                                                handleRemoveStudent(student._id)
-                                            }
-                                        >
-                                            <FaTrash />
+                                            Thêm vào hàng chờ
                                         </button>
                                     </div>
-                                    {expandedStudent === student._id && (
-                                        <div className={styles.expandedDetails}>
-                                            <div className={styles.cell}>
-                                                <strong>Email:</strong>{' '}
-                                                {student.email}
-                                            </div>
-                                            <div className={styles.cell}>
-                                                <strong>Mã học sinh:</strong>{' '}
-                                                {student.studentId}
-                                            </div>
-                                            <div className={styles.cell}>
-                                                <strong>Tiến độ:</strong>{' '}
-                                                {getStudentProgress(student)}%
-                                            </div>
-                                            <div className={styles.cell}>
-                                                <strong>Điểm TB:</strong>{' '}
-                                                {getStudentAverageScore(
-                                                    student
-                                                )}
-                                            </div>
-                                            <div className={styles.cell}>
-                                                <strong>
-                                                    Truy cập gần nhất:
-                                                </strong>{' '}
-                                                {getLastAccessDate(student)}
-                                            </div>
-                                        </div>
-                                    )}
                                 </div>
                             ))}
+                            <div className={styles.searchResultActions}>
+                                <button
+                                    onClick={() => setSearchResult([])}
+                                    className={styles.cancelSearchButton}
+                                >
+                                    Hủy tìm kiếm
+                                </button>
+                            </div>
                         </div>
+                    )}
+                </div>
+
+                {/* Pending Students */}
+                {pendingStudents.length > 0 && (
+                    <div className={styles.pendingSection}>
+                        <h3>
+                            Học sinh đang chờ thêm ({pendingStudents.length})
+                        </h3>
+                        {pendingStudents.length > 0 ? (
+                            <>
+                                <div className={styles.pendingList}>
+                                    {pendingStudents.map((student) => (
+                                        <div
+                                            key={student._id}
+                                            className={styles.pendingItem}
+                                        >
+                                            <div className={styles.pendingInfo}>
+                                                <img
+                                                    src={
+                                                        student.avatar.length !=
+                                                        0
+                                                            ? student.avatar[0]
+                                                            : 'https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg'
+                                                    }
+                                                    className={
+                                                        styles.smallAvatar
+                                                    }
+                                                />
+                                                <div
+                                                    className={
+                                                        styles.pendingDetails
+                                                    }
+                                                >
+                                                    <span
+                                                        className={
+                                                            styles.pendingName
+                                                        }
+                                                    >
+                                                        {student.username ||
+                                                            student.username}
+                                                    </span>
+                                                    <span
+                                                        className={
+                                                            styles.pendingEmail
+                                                        }
+                                                    >
+                                                        {student.email}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() =>
+                                                    removePending(student._id)
+                                                }
+                                                className={styles.removeButton}
+                                                title="Xóa khỏi danh sách chờ"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                                <button
+                                    onClick={handleAddStudents}
+                                    className={styles.addAllButton}
+                                    disabled={addingStudents}
+                                >
+                                    {addingStudents ? (
+                                        <>
+                                            <span
+                                                className={styles.loadingIcon}
+                                            >
+                                                ●
+                                            </span>
+                                            Đang thêm...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className={styles.plusIcon}>
+                                                +
+                                            </span>
+                                            Thêm tất cả học sinh vào lớp
+                                        </>
+                                    )}
+                                </button>
+                            </>
+                        ) : (
+                            <div className={styles.emptyPending}>
+                                <p>Chưa có học sinh nào trong hàng chờ.</p>
+                                <p className={styles.emptyPendingSubtext}>
+                                    Tìm kiếm và thêm học sinh vào hàng chờ để
+                                    đưa vào lớp học.
+                                </p>
+                            </div>
+                        )}
                     </div>
+                )}
+            </div>
 
-                    <div className={styles.pagination}>
-                        <div className={styles.paginationInfo}>
-                            Hiển thị 1-{Math.min(sortedStudents.length, 10)} của{' '}
-                            {sortedStudents.length} học sinh
+            {/* Current Students List with Search and Filter */}
+            <div className={styles.studentsList}>
+                <div className={styles.studentsListHeader}>
+                    <h3>Danh sách học sinh ({students.length})</h3>
+                    <div className={styles.filterControls}>
+                        <div className={styles.searchFilter}>
+                            <input
+                                type="text"
+                                placeholder="Tìm kiếm học sinh..."
+                                value={studentFilter}
+                                onChange={(e) =>
+                                    setStudentFilter(e.target.value)
+                                }
+                                className={styles.filterInput}
+                            />
                         </div>
-                        <div className={styles.paginationControls}>
-                            <button
-                                className={styles.paginationButton}
-                                disabled
-                            >
-                                Trước
-                            </button>
-                            <button
-                                className={`${styles.paginationButton} ${styles.activePage}`}
-                            >
-                                1
-                            </button>
-                            <button
-                                className={styles.paginationButton}
-                                disabled
-                            >
-                                Sau
-                            </button>
-                        </div>
+                        <button
+                            className={styles.sortButton}
+                            onClick={toggleSortOrder}
+                            title={
+                                sortOrder === 'asc'
+                                    ? 'Sắp xếp A-Z'
+                                    : 'Sắp xếp Z-A'
+                            }
+                        >
+                            {sortOrder === 'asc' ? 'A-Z ↓' : 'Z-A ↑'}
+                        </button>
                     </div>
-                </>
-            )}
+                </div>
 
-            {/* Add Student Modal */}
-            <StudentAddModal
-                isOpen={isAddModalOpen}
-                onClose={() => setIsAddModalOpen(false)}
-                onAdd={handleAddStudent}
-            />
+                {students.length === 0 ? (
+                    <EmptyStateNotification
+                        title="Chưa có học sinh nào"
+                        message="Khóa học này chưa có học sinh nào. Hãy tìm kiếm và thêm học sinh vào khóa học."
+                        image="https://i.pinimg.com/originals/9f/7c/90/9f7c9024044595556cf3025fa510e369.gif"
+                    />
+                ) : filteredStudents.length === 0 ? (
+                    <div className={styles.noResults}>
+                        <p>
+                            Không tìm thấy học sinh phù hợp với tìm kiếm của bạn
+                        </p>
+                    </div>
+                ) : (
+                    <div className={styles.studentsTable}>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Họ tên học sinh</th>
+                                    <th>Email</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredStudents.map((student) => (
+                                    <tr key={student._id}>
+                                        <td className={styles.studentCell}>
+                                            <img
+                                                src={
+                                                    student.avatar.length != 0
+                                                        ? student.avatar[0]
+                                                        : 'https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg'
+                                                }
+                                                alt={student.Tên}
+                                                className={styles.tableAvatar}
+                                            />
+                                            <span>{student.username}</span>
+                                        </td>
+                                        <td>{student.email}</td>
+                                        <td>{student.phonenumber || 'N/A'}</td>
+                                        <td>
+                                            <button
+                                                onClick={() =>
+                                                    openStudentManagement(
+                                                        student
+                                                    )
+                                                }
+                                                className={
+                                                    styles.tableActionButton
+                                                }
+                                            >
+                                                Chi tiết
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
 
-            {/* Confirm Dialog */}
-            <ConfirmDialog
-                isOpen={isConfirmDialogOpen}
-                title="Xóa học sinh"
-                message="Bạn có chắc chắn muốn xóa học sinh này khỏi lớp học? Hành động này không thể hoàn tác."
-                onConfirm={confirmRemoveStudent}
-                onCancel={() => setIsConfirmDialogOpen(false)}
-            />
-
-            {/* Student Detail Modal (can be implemented as needed) */}
-            {selectedStudent && (
-                <div className={styles.modalOverlay}>
-                    <div
-                        className={`${styles.modalContent} ${styles.detailModal}`}
-                    >
+            {/* Student Management Modal */}
+            {studentManagement.open && studentManagement.student && (
+                <div className={styles.modal}>
+                    <div className={styles.modalContent}>
                         <div className={styles.modalHeader}>
-                            <h3 className={styles.modalTitle}>
-                                Thông tin chi tiết học sinh
-                            </h3>
+                            <h3>Quản lý học sinh</h3>
                             <button
+                                onClick={closeStudentManagement}
                                 className={styles.closeButton}
-                                onClick={() => setSelectedStudent(null)}
                             >
                                 ×
                             </button>
                         </div>
-                        <div className={styles.studentDetailContent}>
-                            <div className={styles.studentDetailHeader}>
-                                <div className={styles.detailAvatarContainer}>
-                                    {selectedStudent.avatar ? (
-                                        <img
-                                            src={selectedStudent.avatar}
-                                            alt={selectedStudent.name}
-                                            className={styles.detailAvatar}
-                                        />
-                                    ) : (
-                                        <div
-                                            className={
-                                                styles.detailAvatarPlaceholder
-                                            }
-                                        >
-                                            {selectedStudent.name.charAt(0)}
-                                        </div>
-                                    )}
-                                </div>
-                                <div className={styles.studentDetailInfo}>
-                                    <h2 className={styles.detailName}>
-                                        {selectedStudent.name}
-                                    </h2>
-                                    <div className={styles.detailMeta}>
-                                        <p className={styles.detailId}>
-                                            Mã học sinh:{' '}
-                                            {selectedStudent.studentId}
-                                        </p>
-                                        <p className={styles.detailEmail}>
-                                            {selectedStudent.email}
-                                        </p>
-                                        <p className={styles.detailEnrollment}>
-                                            Ngày tham gia:{' '}
-                                            {new Date(
-                                                selectedStudent.enrollmentDate
-                                            ).toLocaleDateString('vi-VN')}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className={styles.detailTabs}>
-                                <button
-                                    className={`${styles.detailTabButton} ${styles.activeTab}`}
-                                >
-                                    Tổng quan
-                                </button>
-                                <button className={styles.detailTabButton}>
-                                    Điểm số
-                                </button>
-                                <button className={styles.detailTabButton}>
-                                    Điểm danh
-                                </button>
-                            </div>
-
-                            <div className={styles.detailSection}>
-                                <h3 className={styles.detailSectionTitle}>
-                                    Tiến độ học tập
-                                </h3>
-                                <div className={styles.detailProgressContainer}>
-                                    <div className={styles.detailProgressOuter}>
-                                        <div
-                                            className={
-                                                styles.detailProgressInner
-                                            }
-                                            style={{
-                                                width: `${getStudentProgress(selectedStudent)}%`,
-                                            }}
-                                        ></div>
-                                    </div>
-                                    <span
-                                        className={styles.detailProgressLabel}
-                                    >
-                                        {getStudentProgress(selectedStudent)}%
-                                        hoàn thành
-                                    </span>
-                                </div>
-
-                                <div className={styles.detailStatsGrid}>
-                                    <div className={styles.detailStatCard}>
-                                        <div className={styles.detailStatValue}>
-                                            {
-                                                selectedStudent.grades.filter(
-                                                    (g) =>
-                                                        g.courseId === courseId
-                                                ).length
-                                            }
-                                        </div>
-                                        <div className={styles.detailStatLabel}>
-                                            Bài kiểm tra đã làm
-                                        </div>
-                                    </div>
-                                    <div className={styles.detailStatCard}>
-                                        <div className={styles.detailStatValue}>
-                                            {getStudentAverageScore(
-                                                selectedStudent
-                                            )}
-                                        </div>
-                                        <div className={styles.detailStatLabel}>
-                                            Điểm trung bình
-                                        </div>
-                                    </div>
-                                    <div className={styles.detailStatCard}>
-                                        <div className={styles.detailStatValue}>
-                                            {
-                                                selectedStudent.attendance.filter(
-                                                    (a) =>
-                                                        a.status === 'present'
-                                                ).length
-                                            }
-                                        </div>
-                                        <div className={styles.detailStatLabel}>
-                                            Buổi học tham gia
-                                        </div>
-                                    </div>
-                                    <div className={styles.detailStatCard}>
-                                        <div className={styles.detailStatValue}>
-                                            {
-                                                selectedStudent.attendance.filter(
-                                                    (a) => a.status === 'absent'
-                                                ).length
-                                            }
-                                        </div>
-                                        <div className={styles.detailStatLabel}>
-                                            Buổi học vắng mặt
-                                        </div>
-                                    </div>
+                        <div className={styles.modalBody}>
+                            <div className={styles.studentDetail}>
+                                <img
+                                    src={
+                                        studentManagement.student.avatar
+                                            .length != 0
+                                            ? studentManagement.student
+                                                  .avatar[0]
+                                            : 'https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg'
+                                    }
+                                    alt={studentManagement.student.username}
+                                    className={styles.detailAvatar}
+                                />
+                                <div className={styles.detailInfo}>
+                                    <h4>
+                                        {studentManagement.student.username}
+                                    </h4>
+                                    <p>ID: {studentManagement.student._id}</p>
+                                    <p>
+                                        Email: {studentManagement.student.email}
+                                    </p>
+                                    <p>
+                                        Username:{' '}
+                                        {studentManagement.student.username}
+                                    </p>
+                                    <p>
+                                        Số điện thoại:{' '}
+                                        {studentManagement.student.phonenumber}
+                                    </p>
+                                    <p>
+                                        Ngày sinh:{' '}
+                                        {studentManagement.student.birthday
+                                            ? new Date(
+                                                  studentManagement.student.birthday
+                                              ).toLocaleDateString('vi-VN')
+                                            : 'N/A'}
+                                    </p>
+                                    <p>
+                                        Ngày tham gia:{' '}
+                                        {studentManagement.student.createdAt
+                                            ? new Date(
+                                                  studentManagement.student.createdAt
+                                              ).toLocaleDateString('vi-VN')
+                                            : 'N/A'}
+                                    </p>
                                 </div>
                             </div>
                         </div>
-
-                        <div className={styles.modalActions}>
+                        <div className={styles.modalFooter}>
                             <button
+                                onClick={() =>
+                                    handleRemoveStudent(
+                                        studentManagement.student?._id
+                                    )
+                                }
+                                className={styles.deleteButton}
+                            >
+                                Xóa khỏi lớp học
+                            </button>
+                            <button
+                                onClick={closeStudentManagement}
                                 className={styles.cancelButton}
-                                onClick={() => setSelectedStudent(null)}
                             >
                                 Đóng
                             </button>

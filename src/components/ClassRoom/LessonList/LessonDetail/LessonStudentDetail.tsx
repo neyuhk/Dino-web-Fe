@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { Exercise, Lesson } from '../../../../model/classroom.ts'
 import { PATHS } from '../../../../router/path.ts'
 import RequireAuth from '../../../commons/RequireAuth/RequireAuth.tsx'
+import { convertDateTimeToDate } from '../../../../helpers/convertDateTime.ts'
 
 const LessonStudentDetail: React.FC = () => {
     const { id } = useParams();
@@ -29,8 +30,8 @@ const LessonStudentDetail: React.FC = () => {
     }
 
     const isExerciseExpired = (exercise: Exercise): boolean => {
-        if (!exercise.endDate) return false;
-        return new Date(exercise.endDate) < new Date();
+        if (!exercise.end_date) return false;
+        return new Date(exercise.end_date) < new Date();
     };
 
     const handleSelectExercise = (exercise: Exercise, lessonId: string) => {
@@ -162,11 +163,11 @@ const LessonStudentDetail: React.FC = () => {
                                         <div className={styles.exerciseInfo}>
                                             <span className={styles.exerciseTitle}>{exercise.title}</span>
                                             <p className={styles.exerciseDescription}>{exercise.description}</p>
-                                            {exercise.endDate && (
+                                            {exercise.end_date && (
                                                 <div className={styles.exerciseDeadline}>
                                                     <Clock size={16} className={styles.deadlineIcon} />
                                                     <span className={`${expired ? styles.deadlineExpired : ''}`}>
-                                                        Hạn nộp: {formatDate(exercise.endDate.toLocaleDateString())}
+                                                        Hạn nộp: {convertDateTimeToDate(exercise.end_date)}
                                                         {expired ? ' (Đã hết hạn)' : ''}
                                                     </span>
                                                 </div>

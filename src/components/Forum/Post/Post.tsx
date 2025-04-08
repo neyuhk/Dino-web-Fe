@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { Heart, MessageCircle, Repeat2, Share2 } from 'lucide-react'
 import styles from './post.module.css';
-import { Forum, PostProps } from '../../../model/model.ts'
+import { Forum } from '../../../model/model.ts'
 import CommentComponent from '../../Comment/Comment.tsx'
 import { convertDateTimeToDate } from '../../../helpers/convertDateTime.ts'
 import { likePost, repost } from '../../../services/forum.ts'
@@ -65,7 +65,7 @@ const Post: React.FC<ExtendedPostProps> = ({
         <div className={styles.container}>
             <div className={styles.header}>
                 <img
-                    src={user_id.avatar || "/api/placeholder/40/40"}
+                    src={user_id.avatar || "https://i.pinimg.com/474x/9f/07/27/9f072737e28d2e21dc7adbd35db8aede.jpg"}
                     alt={`${user_id.username}'s avatar`}
                     className={styles.avatar}
                 />

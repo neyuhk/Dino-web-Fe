@@ -98,6 +98,9 @@
     background-color: #EBF5FF;
 }
 
+.menuItemActive:hover {
+    background-color: #EBF5FF;
+}
 .menuItemInactive:hover {
     background-color: #F3F4F6;
 }

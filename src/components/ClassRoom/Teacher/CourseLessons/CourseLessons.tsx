@@ -13,10 +13,13 @@ import {
     FaRecycle, FaTrash,
 } from 'react-icons/fa'
 import { Course, Exercise, Lesson } from '../../../../model/classroom.ts'
-import { getLessonByCourseId } from '../../../../services/lesson.ts'
+import { getLessonByCourseId, deleteLesson } from '../../../../services/lesson.ts'
 import Toast from '../../../commons/Toast/Toast.tsx'
 import AddLessonPopup from '../AddLessonPopup/AddLessonPopup.tsx'
 import { FaDeleteLeft } from 'react-icons/fa6'
+import EmptyStateNotification from '../common/EmptyStateNotification/EmptyStateNotification.tsx'
+import DeleteLessonPopup from './DeleteLessonPopup/DeleteLessonPopup.tsx'
+import EditLessonPopup from './EditLessonPopup/EditLessonPopup.tsx'
 
 interface ToastMessage {
     show: boolean;
@@ -26,28 +29,10 @@ interface ToastMessage {
     image?: string;
 }
 
-interface EmptyStateProps {
-    title: string;
-    message: string;
-    image: string;
-}
-
 interface CourseLessonsProps {
     courseId: string;
 }
 
-// Empty state component
-const EmptyStateNotification: React.FC<EmptyStateProps> = ({ title, message, image }) => {
-    return (
-        <div className={styles.emptyStateContainer}>
-            <div className={styles.emptyStateContent}>
-                <img src={image} alt={title} className={styles.emptyStateImage} />
-                <h2 className={styles.emptyStateTitle}>{title}</h2>
-                <p className={styles.emptyStateMessage}>{message}</p>
-            </div>
-        </div>
-    );
-};
 
 const CourseLessons: React.FC<CourseLessonsProps> = ({ courseId }) => {
     const navigate = useNavigate();
@@ -62,55 +47,61 @@ const CourseLessons: React.FC<CourseLessonsProps> = ({ courseId }) => {
         message: ''
     });
 
+    const [showEditPopup, setShowEditPopup] = useState<boolean>(false);
+    const [lessonToEdit, setLessonToEdit] = useState<Lesson | null>(null);
+
+    // Add state for delete confirmation
+    const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
+    const [lessonToDelete, setLessonToDelete] = useState<Lesson | null>(null);
 
     const [showAddLessonPopup, setShowAddLessonPopup] = useState<boolean>(false);
 
-    useEffect(() => {
-        const fetchLessons = async () => {
-            try {
-                setLoading(true);
-                setError(false);
+    const fetchLessons = async () => {
+        try {
+            setLoading(true);
+            setError(false);
 
-                if (!courseId) {
-                    throw new Error('Course ID is missing');
-                }
-
-                const response = await getLessonByCourseId(courseId);
-                console.log('lesson', response.data);
-
-                if (!response.data || response.data.length === 0) {
-                    setLessons([]);
-                } else {
-                    setLessons(response.data);
-                    setCourseTitle('Ten lop hoc');
-                }
-
-                setToast({
-                    show: true,
-                    type: 'success',
-                    title: 'Thành công',
-                    message: 'Đã tải danh sách bài học',
-                    image: '/images/success.png'
-                });
-
-                setTimeout(() => {
-                    setToast(prev => ({ ...prev, show: false }));
-                }, 3000);
-            } catch (err) {
-                console.error('Error fetching lessons:', err);
-                setError(true);
-                setToast({
-                    show: true,
-                    type: 'error',
-                    title: 'Lỗi',
-                    message: 'Không thể tải danh sách bài học',
-                    image: '/images/error.png'
-                });
-            } finally {
-                setLoading(false);
+            if (!courseId) {
+                throw new Error('Course ID is missing');
             }
-        };
 
+            const response = await getLessonByCourseId(courseId);
+            console.log('lesson', response.data);
+
+            if (!response.data || response.data.length === 0) {
+                setLessons([]);
+            } else {
+                setLessons(response.data);
+                setCourseTitle('Ten lop hoc');
+            }
+
+            setToast({
+                show: true,
+                type: 'success',
+                title: 'Thành công',
+                message: 'Đã tải danh sách bài học',
+                image: '/images/success.png'
+            });
+
+            setTimeout(() => {
+                setToast(prev => ({ ...prev, show: false }));
+            }, 3000);
+        } catch (err) {
+            console.error('Error fetching lessons:', err);
+            setError(true);
+            setToast({
+                show: true,
+                type: 'error',
+                title: 'Lỗi',
+                message: 'Không thể tải danh sách bài học',
+                image: '/images/error.png'
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchLessons();
     }, [courseId]); // Chỉ phụ thuộc vào courseId
 
@@ -137,21 +128,81 @@ const CourseLessons: React.FC<CourseLessonsProps> = ({ courseId }) => {
         navigate(`/classroom/courses/${courseId}/lesson/${lesson._id}`, { state: { lesson } });
     };
 
-    const handleEditLesson = (lessonId: string) => {
+    const handleEditClick = (lesson: Lesson) => {
+        setLessonToEdit(lesson);
+        setShowEditPopup(true);
+
         setToast({
             show: true,
             type: 'info',
             title: 'Chỉnh sửa bài học',
-            message: `Đang mở chỉnh sửa bài học có ID: ${lessonId}`,
+            message: `Đang mở chỉnh sửa bài học: ${lesson.title}`,
             image: '/images/info.png'
         });
 
         setTimeout(() => {
             setToast(prev => ({ ...prev, show: false }));
         }, 3000);
+    };
 
-        // Navigate to lesson edit page
-        navigate(`/lessons/${lessonId}/edit`);
+    const handleEditSuccess = () => {
+        setToast({
+            show: true,
+            type: 'success',
+            title: 'Thành công',
+            message: 'Đã cập nhật bài học thành công',
+            image: '/images/success.png'
+        });
+
+        setTimeout(() => {
+            setToast(prev => ({ ...prev, show: false }));
+        }, 3000);
+
+        // Tải lại danh sách bài học
+        fetchLessons();
+    };
+
+    // Handle delete button click
+    const handleDeleteClick = (lesson: Lesson) => {
+        setLessonToDelete(lesson);
+        setShowDeletePopup(true);
+    };
+
+    // Handle confirm delete
+    const handleConfirmDelete = async () => {
+        if (!lessonToDelete || !lessonToDelete._id) return;
+
+        try {
+            setLoading(true);
+            await deleteLesson(lessonToDelete._id);
+
+            // Update the lessons list after successful deletion
+            setLessons(prevLessons => prevLessons.filter(lesson => lesson._id !== lessonToDelete._id));
+
+            setToast({
+                show: true,
+                type: 'success',
+                title: 'Thành công',
+                message: `Đã xóa bài học "${lessonToDelete.title}"`,
+                image: '/images/success.png'
+            });
+
+            // Close the delete popup
+            setShowDeletePopup(false);
+            setLessonToDelete(null);
+
+        } catch (error) {
+            console.error('Error deleting lesson:', error);
+            setToast({
+                show: true,
+                type: 'error',
+                title: 'Lỗi',
+                message: 'Không thể xóa bài học. Vui lòng thử lại sau.',
+                image: '/images/error.png'
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleAddLesson = () => {
@@ -162,7 +213,7 @@ const CourseLessons: React.FC<CourseLessonsProps> = ({ courseId }) => {
         setShowAddLessonPopup(false);
     };
 
-// Thêm hàm để xử lý khi submit form
+    // Thêm hàm để xử lý khi submit form
     const handleSubmitLesson = async (lessonData: any) => {
         try {
             // Gọi API để tạo lesson mới (giả định)
@@ -183,7 +234,7 @@ const CourseLessons: React.FC<CourseLessonsProps> = ({ courseId }) => {
             }, 3000);
 
             // Tải lại danh sách bài học
-            // fetchLessons();
+            fetchLessons();
         } catch (error) {
             console.error('Error creating lesson:', error);
             setToast({
@@ -260,17 +311,16 @@ const CourseLessons: React.FC<CourseLessonsProps> = ({ courseId }) => {
                                 {lesson.order}
                             </div>
                             <div className={styles.lessonImageContainer}>
-                                {lesson.images && lesson.images.length > 0 ? (
-                                    <img
-                                        src={lesson.images[0]}
-                                        alt={lesson.title}
-                                        className={styles.lessonImage}
-                                    />
-                                ) : (
-                                    <div className={styles.noImage}>
-                                        <FaFileAlt size={40} />
-                                    </div>
-                                )}
+                                <img
+                                    src={
+                                        lesson.images &&
+                                        lesson.images.length > 0
+                                            ? lesson.images[0]
+                                            : 'https://i.pinimg.com/736x/fb/08/2e/fb082e7893d751e73578b2d668a338e3.jpg'
+                                    }
+                                    alt={lesson.title}
+                                    className={styles.lessonImage}
+                                />
                             </div>
                             <div className={styles.lessonContent}>
                                 <h3 className={styles.lessonTitle}>
@@ -314,14 +364,14 @@ const CourseLessons: React.FC<CourseLessonsProps> = ({ courseId }) => {
                                 </button>
                                 <button
                                     className={`${styles.actionButton} ${styles.editButton}`}
-                                    onClick={() => handleEditLesson(lesson._id)}
+                                    onClick={() => handleEditClick(lesson)}
                                 >
                                     <FaEdit /> Sửa
                                 </button>
 
                                 <button
                                     className={`${styles.actionButton} ${styles.deleteButton}`}
-                                    onClick={() => handleEditLesson(lesson._id)}
+                                    onClick={() => handleDeleteClick(lesson)}
                                 >
                                     <FaTrash /> Xoá
                                 </button>
@@ -342,6 +392,25 @@ const CourseLessons: React.FC<CourseLessonsProps> = ({ courseId }) => {
                     courseId={courseId || ''}
                     onClose={handleCloseAddLessonPopup}
                     onSubmit={handleSubmitLesson}
+                />
+            )}
+
+            {showDeletePopup && lessonToDelete && (
+                <DeleteLessonPopup
+                    lesson={lessonToDelete}
+                    isOpen={showDeletePopup}
+                    onClose={() => setShowDeletePopup(false)}
+                    onConfirm={handleConfirmDelete}
+                />
+            )}
+
+            {showEditPopup && lessonToEdit && (
+                <EditLessonPopup
+                    isOpen={showEditPopup}
+                    onClose={() => setShowEditPopup(false)}
+                    onSuccess={handleEditSuccess}
+                    lessonId={lessonToEdit._id}
+                    lesson={lessonToEdit}
                 />
             )}
 

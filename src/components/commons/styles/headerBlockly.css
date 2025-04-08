@@ -1,4 +1,4 @@
-/* Updated headerBlockly.css */
+/* Improved headerBlockly.css */
 
 /* General styling */
 body {
@@ -8,14 +8,15 @@ body {
     background-color: var(--background-color);
 }
 
-/* Header styling */
+/* Enhanced Header styling */
 .header-blockly {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
     padding: 0 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     position: sticky;
     top: 0;
     z-index: 1000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .header-content {
@@ -23,11 +24,21 @@ body {
     align-items: center;
     justify-content: space-between;
     height: 64px;
+    max-width: 1920px;
+    margin: 0 auto;
 }
 
+/* Logo section improvements */
 .logo-title {
     display: flex;
     align-items: center;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+}
+
+.logo-title:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .logo-title h3 {
@@ -35,15 +46,40 @@ body {
     color: var(--text-lighter);
     font-family: var(--font-primary);
     font-weight: 600;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.7px;
     font-size: 22px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.25);
+    background: linear-gradient(to right, #ffffff, #e0e0e0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
+/* Menu section improvements */
 .menu-section {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 12px;
+    padding: 0 24px;
+    position: relative;
+}
+
+.menu-section::before, .menu-section::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 1px;
+    height: 32px;
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-50%);
+}
+
+.menu-section::before {
+    left: 0;
+}
+
+.menu-section::after {
+    right: 0;
 }
 
 .dropdown-menu {
@@ -51,65 +87,97 @@ body {
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    padding: 6px 12px;
-    border-radius: 4px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    position: relative;
+}
+
+.dropdown-menu::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: var(--secondary-light);
+    transition: width 0.3s ease, left 0.3s ease;
 }
 
 .dropdown-menu:hover {
     background-color: rgba(255, 255, 255, 0.15);
 }
 
+.dropdown-menu:hover::after {
+    width: 80%;
+    left: 10%;
+}
+
 .white-text {
     color: var(--text-lighter) !important;
     font-size: 15px;
     font-weight: 500;
-    transition: color 0.3s;
+    transition: all 0.3s;
+    letter-spacing: 0.3px;
 }
 
 .white-text:hover {
     color: var(--secondary-light) !important;
+    transform: translateY(-1px);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-/* Project name input */
+/* Project name input improvements */
 .project-name-input {
     border-radius: 6px;
-    border: 1px solid var(--gray-light);
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
-    padding: 8px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05), inset 0 2px 5px rgba(0, 0, 0, 0.05);
+    padding: 8px 16px;
     font-size: 14px;
     transition: all 0.3s;
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.12);
     font-family: var(--font-secondary);
+    color: var(--text-lighter);
+}
+
+.project-name-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
 }
 
 .project-name-input:focus {
-    box-shadow: 0 0 0 2px var(--primary-light);
+    box-shadow: 0 0 0 2px var(--primary-light), inset 0 2px 5px rgba(0, 0, 0, 0);
     border-color: var(--primary-color);
+    background-color: rgba(255, 255, 255, 0.9);
+    color: var(--text-color);
 }
 
-/* User section */
+/* User section improvements */
 .user-info {
     display: flex;
     align-items: center;
+    gap: 10px;
     cursor: pointer;
-    padding: 6px 12px;
-    border-radius: 20px;
-    background-color: rgba(255, 255, 255, 0.1);
-    transition: background-color 0.3s;
+    padding: 6px 16px;
+    border-radius: 24px;
+    background-color: rgba(255, 255, 255, 0.12);
+    transition: all 0.3s;
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .user-info:hover {
     background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
 }
 
 .username {
     color: var(--text-lighter);
-    margin-left: 8px;
     font-weight: 500;
     font-family: var(--font-secondary);
+    letter-spacing: 0.3px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* Workspace container */
+/* The rest of the CSS remains the same */
 #pageContainer {
     display: flex;
     height: calc(100vh - 64px);

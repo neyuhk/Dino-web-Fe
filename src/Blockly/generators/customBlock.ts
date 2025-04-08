@@ -3,6 +3,14 @@ import * as Blockly from 'blockly/core';
 
 export const forBlock = Object.create(null);
 
+const simulateLED = (state: string) => {
+    const ledElement = document.getElementById('simulated-led');
+    if (ledElement) {
+        ledElement.style.backgroundColor = state === 'HIGH' ? 'yellow' : 'black';
+    }
+    console.log('LED state:', state);
+};
+
 // Existing custom block generators.
 forBlock['add_text'] = function (
   block: Blockly.Block,
@@ -39,6 +47,24 @@ forBlock['base_delay'] = function (
   const delayTime = generator.valueToCode(block, 'DELAY_TIME', Order.NONE) || '0';
   return `delay(${delayTime});\n`;
 };
+
+forBlock['print_result'] = function (
+    block: Blockly.Block,
+    generator: Blockly.CodeGenerator,
+) {
+    const value = generator.valueToCode(block, 'VALUE', Order.NONE) || "''";
+    const printFunction = generator.provideFunction_(
+        'printResult',
+        `function ${generator.FUNCTION_NAME_PLACEHOLDER_}(text) {
+  const outputDiv = document.getElementById('output');
+  const el = document.createElement('p');
+  el.innerText = text;
+  outputDiv.appendChild(el);
+}`
+    );
+    return `${printFunction}(${value});\n`;
+};
+
 
 // base_map: Map block.
 forBlock['base_map'] = function (
@@ -324,19 +350,19 @@ forBlock['logic_ternary'] = function (
   return [code, Order.ATOMIC];
 };
 // Generator for controls_repeat (using internal number).
-forBlock['controls_repeat'] = function (
-  block: Blockly.Block,
-  generator: Blockly.CodeGenerator,
-) {
-  // Get the number of repeats from the field input.
-  const repeats = block.getFieldValue('TIMES') || '10';
-  const branch = generator.statementToCode(block, 'DO');
-  // For simplicity, use a fixed loop variable "i".
-  const code = 'for (int i = 0; i < ' + repeats + '; i++) {\n' +
-               branch +
-               '}\n';
-  return code;
-};
+// forBlock['controls_repeat'] = function (
+//   block: Blockly.Block,
+//   generator: Blockly.CodeGenerator,
+// ) {
+//   // Get the number of repeats from the field input.
+//   const repeats = block.getFieldValue('TIMES') || '10';
+//   const branch = generator.statementToCode(block, 'DO');
+//   // For simplicity, use a fixed loop variable "i".
+//   const code = 'for (int i = 0; i < ' + repeats + '; i++) {\n' +
+//                branch +
+//                '}\n';
+//   return code;
+// };
 
 // Generator for controls_repeat_ext.
 forBlock['controls_repeat_ext'] = function (
@@ -439,4 +465,154 @@ forBlock['simulate_led'] = function (
 }`
   );
   return `${simLEDFunc}('${state}');\n`;
+};
+// RGB LED Control Block Generator
+forBlock['rgb_led_control'] = function(
+    block: Blockly.Block,
+    generator: Blockly.CodeGenerator,
+) {
+    const red = generator.valueToCode(block, 'RED', Order.NONE) || '0';
+    const green = generator.valueToCode(block, 'GREEN', Order.NONE) || '0';
+    const blue = generator.valueToCode(block, 'BLUE', Order.NONE) || '0';
+
+    // Generate code that would typically set RGB LED values
+    return `setRGBLed(${red}, ${green}, ${blue});\n`;
+};
+
+// DHT Sensor Block Generator
+forBlock['dht_sensor'] = function(
+    block: Blockly.Block,
+    generator: Blockly.CodeGenerator,
+) {
+    const sensorType = block.getFieldValue('DHT_VALUE');
+    const pin = block.getFieldValue('PIN');
+
+    // Return appropriate code based on sensor type
+    if (sensorType === 'TEMP') {
+        return [`readDHTTemperature(${pin})`, Order.FUNCTION_CALL];
+    } else {
+        return [`readDHTHumidity(${pin})`, Order.FUNCTION_CALL];
+    }
+};
+
+// Ultrasonic Sensor Block Generator
+forBlock['ultrasonic_sensor'] = function(
+    block: Blockly.Block,
+    generator: Blockly.CodeGenerator,
+) {
+    const trigPin = block.getFieldValue('TRIG_PIN');
+    const echoPin = block.getFieldValue('ECHO_PIN');
+
+    // Generate code for reading distance from ultrasonic sensor
+    return [`readUltrasonicDistance(${trigPin}, ${echoPin})`, Order.FUNCTION_CALL];
+};
+
+// DC Motor Control Block Generator
+forBlock['dc_motor_control'] = function(
+    block: Blockly.Block,
+    generator: Blockly.CodeGenerator,
+) {
+    const pin1 = block.getFieldValue('PIN1');
+    const pin2 = block.getFieldValue('PIN2');
+    const direction = block.getFieldValue('DIRECTION');
+    const speed = generator.valueToCode(block, 'SPEED', Order.NONE) || '0';
+
+    // Generate code for controlling DC motor
+    return `controlDCMotor(${pin1}, ${pin2}, ${direction}, ${speed});\n`;
+};
+
+// LCD Display Block Generator
+forBlock['lcd_display'] = function(
+    block: Blockly.Block,
+    generator: Blockly.CodeGenerator,
+) {
+    const text = generator.valueToCode(block, 'TEXT', Order.NONE) || '""';
+    const row = block.getFieldValue('ROW');
+    const col = block.getFieldValue('COL');
+
+    // Generate code for displaying text on LCD
+    return `lcdDisplayText(${text}, ${row}, ${col});\n`;
+};
+
+// Light Sensor Block Generator
+forBlock['light_sensor'] = function(
+    block: Blockly.Block,
+    generator: Blockly.CodeGenerator,
+) {
+    const pin = block.getFieldValue('PIN');
+
+    // Generate code for reading light sensor value
+    return [`analogRead(${pin})`, Order.FUNCTION_CALL];
+};
+
+// PIR Motion Sensor Block Generator
+forBlock['pir_motion_sensor'] = function(
+    block: Blockly.Block,
+    generator: Blockly.CodeGenerator,
+) {
+    const pin = block.getFieldValue('PIN');
+
+    // Generate code for checking if motion is detected
+    return [`digitalRead(${pin}) == HIGH`, Order.EQUALITY];
+};
+
+// Debounced Button Block Generator
+forBlock['debounced_button'] = function(
+    block: Blockly.Block,
+    generator: Blockly.CodeGenerator,
+) {
+    const pin = block.getFieldValue('PIN');
+    const debounceTime = generator.valueToCode(block, 'DEBOUNCE_TIME', Order.NONE) || '50';
+
+    // Generate code for reading debounced button state
+    return [`readDebouncedButton(${pin}, ${debounceTime})`, Order.FUNCTION_CALL];
+};
+
+// Stepper Motor Control Block Generator
+forBlock['stepper_motor_control'] = function(
+    block: Blockly.Block,
+    generator: Blockly.CodeGenerator,
+) {
+    const steps = generator.valueToCode(block, 'STEPS', Order.NONE) || '0';
+    const speed = generator.valueToCode(block, 'SPEED', Order.NONE) || '0';
+
+    // Generate code for controlling stepper motor
+    return `moveStepperMotor(${steps}, ${speed});\n`;
+};
+
+// Serial Begin Block Generator
+forBlock['serial_begin'] = function(
+    block: Blockly.Block,
+    generator: Blockly.CodeGenerator,
+) {
+    const baudRate = block.getFieldValue('BAUD_RATE');
+
+    // Generate code for initializing serial communication
+    return `Serial.begin(${baudRate});\n`;
+};
+
+// Map Extended Block Generator
+forBlock['map_extended'] = function(
+    block: Blockly.Block,
+    generator: Blockly.CodeGenerator,
+) {
+    const value = generator.valueToCode(block, 'VALUE', Order.NONE) || '0';
+    const fromLow = generator.valueToCode(block, 'FROM_LOW', Order.NONE) || '0';
+    const fromHigh = generator.valueToCode(block, 'FROM_HIGH', Order.NONE) || '1023';
+    const toLow = generator.valueToCode(block, 'TO_LOW', Order.NONE) || '0';
+    const toHigh = generator.valueToCode(block, 'TO_HIGH', Order.NONE) || '255';
+
+    // Generate code for mapping a value from one range to another
+    return [`map(${value}, ${fromLow}, ${fromHigh}, ${toLow}, ${toHigh})`, Order.FUNCTION_CALL];
+};
+
+// Wait Until Block Generator
+forBlock['wait_until'] = function(
+    block: Blockly.Block,
+    generator: Blockly.CodeGenerator,
+) {
+    const condition = generator.valueToCode(block, 'CONDITION', Order.NONE) || 'false';
+
+    // Generate code for waiting until a condition is met
+    return `while(!(${condition})) {\n  delay(1);\n}\n`;
 };

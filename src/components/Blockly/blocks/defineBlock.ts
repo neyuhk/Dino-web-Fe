@@ -862,7 +862,392 @@ const simulateLed = {
     }
   }
 };
+// 1. Khối điều khiển đèn RGB
+const rgbLedControl = {
+    type: "rgb_led_control",
+    message0: "Set RGB LED R:%1 G:%2 B:%3",
+    args0: [
+        {
+            type: "input_value",
+            name: "RED",
+            check: "Number"
+        },
+        {
+            type: "input_value",
+            name: "GREEN",
+            check: "Number"
+        },
+        {
+            type: "input_value",
+            name: "BLUE",
+            check: "Number"
+        }
+    ],
+    inputsInline: true,
+    previousStatement: null,
+    nextStatement: null,
+    colour: 160,
+    tooltip: "Set RGB LED colors (values 0-255)",
+    helpUrl: ""
+};
 
+// 2. Khối cảm biến DHT (nhiệt độ, độ ẩm)
+const dhtSensor = {
+    type: "dht_sensor",
+    message0: "Read %1 from DHT sensor on PIN# %2",
+    args0: [
+        {
+            type: "field_dropdown",
+            name: "DHT_VALUE",
+            options: [
+                ["Temperature (°C)", "TEMP"],
+                ["Humidity (%)", "HUM"]
+            ]
+        },
+        {
+            type: "field_dropdown",
+            name: "PIN",
+            options: [
+                ["2", "2"],
+                ["3", "3"],
+                ["4", "4"],
+                ["5", "5"],
+                ["6", "6"],
+                ["7", "7"],
+                ["8", "8"]
+            ]
+        }
+    ],
+    output: "Number",
+    colour: 180,
+    tooltip: "Read temperature or humidity from DHT11/DHT22 sensor",
+    helpUrl: ""
+};
+
+// 3. Khối cảm biến siêu âm (đo khoảng cách)
+const ultrasonicSensor = {
+    type: "ultrasonic_sensor",
+    message0: "Read distance (cm) from ultrasonic sensor TRIG PIN# %1 ECHO PIN# %2",
+    args0: [
+        {
+            type: "field_dropdown",
+            name: "TRIG_PIN",
+            options: [
+                ["2", "2"],
+                ["3", "3"],
+                ["4", "4"],
+                ["5", "5"],
+                ["6", "6"],
+                ["7", "7"],
+                ["8", "8"]
+            ]
+        },
+        {
+            type: "field_dropdown",
+            name: "ECHO_PIN",
+            options: [
+                ["2", "2"],
+                ["3", "3"],
+                ["4", "4"],
+                ["5", "5"],
+                ["6", "6"],
+                ["7", "7"],
+                ["8", "8"]
+            ]
+        }
+    ],
+    output: "Number",
+    colour: 180,
+    tooltip: "Measure distance using HC-SR04 ultrasonic sensor",
+    helpUrl: ""
+};
+
+// 4. Khối điều khiển động cơ DC
+const dcMotorControl = {
+    type: "dc_motor_control",
+    message0: "Set DC motor on PIN1# %1 PIN2# %2 direction %3 speed %4",
+    args0: [
+        {
+            type: "field_dropdown",
+            name: "PIN1",
+            options: [
+                ["2", "2"],
+                ["3", "3"],
+                ["4", "4"],
+                ["5", "5"],
+                ["6", "6"],
+                ["7", "7"],
+                ["8", "8"]
+            ]
+        },
+        {
+            type: "field_dropdown",
+            name: "PIN2",
+            options: [
+                ["2", "2"],
+                ["3", "3"],
+                ["4", "4"],
+                ["5", "5"],
+                ["6", "6"],
+                ["7", "7"],
+                ["8", "8"]
+            ]
+        },
+        {
+            type: "field_dropdown",
+            name: "DIRECTION",
+            options: [
+                ["Forward", "FORWARD"],
+                ["Backward", "BACKWARD"],
+                ["Stop", "STOP"]
+            ]
+        },
+        {
+            type: "input_value",
+            name: "SPEED",
+            check: "Number"
+        }
+    ],
+    inputsInline: true,
+    previousStatement: null,
+    nextStatement: null,
+    colour: 200,
+    tooltip: "Control DC motor direction and speed (0-255)",
+    helpUrl: ""
+};
+
+// 5. Khối điều khiển màn hình LCD
+const lcdDisplay = {
+    type: "lcd_display",
+    message0: "LCD display text %1 at row %2 column %3",
+    args0: [
+        {
+            type: "input_value",
+            name: "TEXT",
+            check: "String"
+        },
+        {
+            type: "field_dropdown",
+            name: "ROW",
+            options: [
+                ["0", "0"],
+                ["1", "1"]
+            ]
+        },
+        {
+            type: "field_dropdown",
+            name: "COL",
+            options: [
+                ["0", "0"],
+                ["1", "1"],
+                ["2", "2"],
+                ["3", "3"],
+                ["4", "4"],
+                ["5", "5"],
+                ["6", "6"],
+                ["7", "7"],
+                ["8", "8"],
+                ["9", "9"],
+                ["10", "10"],
+                ["11", "11"],
+                ["12", "12"],
+                ["13", "13"],
+                ["14", "14"],
+                ["15", "15"]
+            ]
+        }
+    ],
+    inputsInline: true,
+    previousStatement: null,
+    nextStatement: null,
+    colour: 160,
+    tooltip: "Display text on LCD screen at specified position",
+    helpUrl: ""
+};
+
+// 6. Khối cảm biến ánh sáng
+const lightSensor = {
+    type: "light_sensor",
+    message0: "Read light level from LDR on PIN# %1",
+    args0: [
+        {
+            type: "field_dropdown",
+            name: "PIN",
+            options: [
+                ["A0", "A0"],
+                ["A1", "A1"],
+                ["A2", "A2"],
+                ["A3", "A3"],
+                ["A4", "A4"],
+                ["A5", "A5"]
+            ]
+        }
+    ],
+    output: "Number",
+    colour: 180,
+    tooltip: "Read analog value from Light Dependent Resistor (LDR)",
+    helpUrl: ""
+};
+
+// 7. Khối cảm biến chuyển động PIR
+const pirMotionSensor = {
+    type: "pir_motion_sensor",
+    message0: "Motion detected on PIR sensor PIN# %1",
+    args0: [
+        {
+            type: "field_dropdown",
+            name: "PIN",
+            options: [
+                ["2", "2"],
+                ["3", "3"],
+                ["4", "4"],
+                ["5", "5"],
+                ["6", "6"],
+                ["7", "7"],
+                ["8", "8"]
+            ]
+        }
+    ],
+    output: "Boolean",
+    colour: 180,
+    tooltip: "Detect motion using PIR sensor (returns true/false)",
+    helpUrl: ""
+};
+
+// 8. Khối nút nhấn với debounce
+const debouncedButton = {
+    type: "debounced_button",
+    message0: "Button pressed on PIN# %1 with debounce %2 ms",
+    args0: [
+        {
+            type: "field_dropdown",
+            name: "PIN",
+            options: [
+                ["2", "2"],
+                ["3", "3"],
+                ["4", "4"],
+                ["5", "5"],
+                ["6", "6"],
+                ["7", "7"],
+                ["8", "8"]
+            ]
+        },
+        {
+            type: "input_value",
+            name: "DEBOUNCE_TIME",
+            check: "Number"
+        }
+    ],
+    output: "Boolean",
+    colour: 180,
+    tooltip: "Read button state with debounce to prevent false triggers",
+    helpUrl: ""
+};
+
+// 9. Khối điều khiển stepper motor
+const stepperMotorControl = {
+    type: "stepper_motor_control",
+    message0: "Move stepper motor steps %1 speed %2",
+    args0: [
+        {
+            type: "input_value",
+            name: "STEPS",
+            check: "Number"
+        },
+        {
+            type: "input_value",
+            name: "SPEED",
+            check: "Number"
+        }
+    ],
+    inputsInline: true,
+    previousStatement: null,
+    nextStatement: null,
+    colour: 200,
+    tooltip: "Control stepper motor movement (positive:clockwise, negative:counterclockwise)",
+    helpUrl: ""
+};
+
+// 10. Khối thiết lập Serial
+const serialBegin = {
+    type: "serial_begin",
+    message0: "Begin Serial communication at baud rate %1",
+    args0: [
+        {
+            type: "field_dropdown",
+            name: "BAUD_RATE",
+            options: [
+                ["9600", "9600"],
+                ["19200", "19200"],
+                ["38400", "38400"],
+                ["57600", "57600"],
+                ["115200", "115200"]
+            ]
+        }
+    ],
+    inputsInline: true,
+    previousStatement: null,
+    nextStatement: null,
+    colour: 230,
+    tooltip: "Initialize Serial communication with specified baud rate",
+    helpUrl: "http://arduino.cc/en/Serial/Begin"
+};
+
+// 11. Khối hàm ánh xạ map() mở rộng
+const mapExtended = {
+    type: "map_extended",
+    message0: "Map value %1 from range [%2 - %3] to range [%4 - %5]",
+    args0: [
+        {
+            type: "input_value",
+            name: "VALUE",
+            check: "Number"
+        },
+        {
+            type: "input_value",
+            name: "FROM_LOW",
+            check: "Number"
+        },
+        {
+            type: "input_value",
+            name: "FROM_HIGH",
+            check: "Number"
+        },
+        {
+            type: "input_value",
+            name: "TO_LOW",
+            check: "Number"
+        },
+        {
+            type: "input_value",
+            name: "TO_HIGH",
+            check: "Number"
+        }
+    ],
+    inputsInline: true,
+    output: "Number",
+    colour: 230,
+    tooltip: "Re-map a number from one range to another",
+    helpUrl: "http://arduino.cc/en/Reference/Map"
+};
+
+// 12. Khối chờ đến khi điều kiện thỏa mãn
+const waitUntil = {
+    type: "wait_until",
+    message0: "Wait until %1",
+    args0: [
+        {
+            type: "input_value",
+            name: "CONDITION",
+            check: "Boolean"
+        }
+    ],
+    previousStatement: null,
+    nextStatement: null,
+    colour: 120,
+    tooltip: "Wait until a condition becomes true",
+    helpUrl: ""
+};
 export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([
   simulateLed,
 
@@ -902,4 +1287,16 @@ export const blocks = Blockly.common.createBlockDefinitionsFromJsonArray([
   controlsFor,
   controlsForEach,
   controlsFlowStatements,
+    rgbLedControl,
+    dhtSensor,
+    ultrasonicSensor,
+    dcMotorControl,
+    lcdDisplay,
+    lightSensor,
+    pirMotionSensor,
+    debouncedButton,
+    stepperMotorControl,
+    serialBegin,
+    mapExtended,
+    waitUntil
 ]);

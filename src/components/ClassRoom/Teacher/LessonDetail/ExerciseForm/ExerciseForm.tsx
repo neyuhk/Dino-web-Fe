@@ -20,7 +20,7 @@ interface FormData {
     description: string;
     time: number;
     timeUnit: 'seconds' | 'minutes' | 'hours';
-    endDate: string | 'unlimited';
+    end_date: string | 'unlimited';
 }
 
 const ExerciseForm: React.FC<ExerciseFormProps> = ({ lessonId, onSuccess }) => {
@@ -41,7 +41,7 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ lessonId, onSuccess }) => {
         description: '',
         time: 30,
         timeUnit: 'minutes',
-        endDate: 'unlimited',
+        end_date: 'unlimited',
     });
 
     useEffect(() => {
@@ -55,7 +55,7 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ lessonId, onSuccess }) => {
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value || 'unlimited';
-        setFormData(prev => ({ ...prev, endDate: value }));
+        setFormData(prev => ({ ...prev, end_date: value }));
     };
 
     const hideToast = () => {
@@ -83,7 +83,7 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ lessonId, onSuccess }) => {
             }
 
             // Prepare the end date
-            const endDate = formData.endDate === 'unlimited' ? null : new Date(formData.endDate);
+            const end_date = formData.end_date === 'unlimited' ? null : new Date(formData.end_date);
 
             // Prepare the payload
             const payload = {
@@ -92,7 +92,7 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ lessonId, onSuccess }) => {
                 title: formData.title,
                 description: formData.description,
                 time: timeInSeconds, // Always in seconds
-                endDate: endDate,
+                end_date: end_date,
             };
 
             // Call API to create exercise
@@ -161,7 +161,7 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ lessonId, onSuccess }) => {
             description: '',
             time: 30,
             timeUnit: 'minutes',
-            endDate: 'unlimited',
+            end_date: 'unlimited',
         });
         console.log(exerciseId, showQuestionForm);
         setToast({
@@ -301,15 +301,15 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ lessonId, onSuccess }) => {
                     )}
 
                     <div className={styles.formGroup}>
-                        <label htmlFor="endDate">Ngày kết thúc</label>
+                        <label htmlFor="end_date">Ngày kết thúc</label>
                         <div className={styles.endDateContainer}>
                             <input
                                 type="date"
-                                id="endDate"
-                                name="endDate"
+                                id="end_date"
+                                name="end_date"
                                 value={
-                                    formData.endDate !== 'unlimited'
-                                        ? formData.endDate
+                                    formData.end_date !== 'unlimited'
+                                        ? formData.end_date
                                         : ''
                                 }
                                 onChange={handleDateChange}
@@ -320,12 +320,12 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ lessonId, onSuccess }) => {
                                 <input
                                     type="checkbox"
                                     id="unlimited"
-                                    checked={formData.endDate === 'unlimited'}
+                                    checked={formData.end_date === 'unlimited'}
                                     onChange={() =>
                                         setFormData((prev) => ({
                                             ...prev,
-                                            endDate:
-                                                prev.endDate === 'unlimited'
+                                            end_date:
+                                                prev.end_date === 'unlimited'
                                                     ? ''
                                                     : 'unlimited',
                                         }))
@@ -341,7 +341,7 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ lessonId, onSuccess }) => {
                             </div>
                         </div>
                         <small className={styles.helpText}>
-                            {formData.endDate === 'unlimited'
+                            {formData.end_date === 'unlimited'
                                 ? 'Không có thời hạn - học viên có thể nộp bất kỳ lúc nào'
                                 : 'Sau ngày này, bài nộp sẽ không được chấp nhận'}
                         </small>

@@ -2,26 +2,29 @@ import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Calendar, Users, BookOpen, ArrowLeft, GraduationCap } from 'lucide-react'
 import styles from './ClassroomDetail.module.css';
-import { Classroom } from '../../../model/classroom.ts'
+import { Classroom, Course } from '../../../model/classroom.ts'
 import { getClassroomById } from '../../../services/classroom.ts'
 import { useSelector } from 'react-redux'
 import { PATHS } from '../../../router/path.ts'
 import RequireAuth from '../../commons/RequireAuth/RequireAuth.tsx'
+import { User } from '../../../model/model.ts'
+import { getUserById } from '../../../services/user.ts'
+import LessonList from '../LessonList/LessonList.tsx'
 
 const ClassroomDetailPage: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { classroomId } = location.state as { classroomId: string};
-    const [classroom, setClassroom] = useState<Classroom>();
+    const { classroom } = location.state as { classroom: Course};
+    const [teacher, setTeacher] = useState<User>();
     const [isLoading, setIsLoading] = useState(true);
     const { user } = useSelector((state: any) => state.auth);
 
     useEffect(() => {
         const fetchData = async () => {
             try{
-                console.log( 'classroomId',classroomId);
-                const newClassroom = await getClassroomById(classroomId.toString())
-                setClassroom(newClassroom.data)
+                console.log( 'classroomId', classroom ,classroom.teacher_id);
+                const data = await getUserById(classroom.teacher_id)
+                setTeacher(data.data)
                 // setClassroom('') //test null data
             } catch (error){
                 console.log('Error fetching courses',error)
@@ -91,7 +94,7 @@ const ClassroomDetailPage: React.FC = () => {
                 }}
             >
                 <div className={styles.headerOverlay}>
-                    <h1>{classroom.name}</h1>
+                    <h1>{classroom.title}</h1>
                     <p>{classroom.description}</p>
                 </div>
             </div>
@@ -102,13 +105,13 @@ const ClassroomDetailPage: React.FC = () => {
                 <div className={styles.teacherCard}>
                     <img
                         src={
-                            Array.isArray(classroom.teacher_id?.avatar) &&
-                            classroom.teacher_id.avatar.length > 0
-                                ? classroom.teacher_id.avatar[0]
-                                : '/default-avatar.jpg'
+                            Array.isArray(teacher?.avatar) &&
+                            teacher.avatar.length > 0
+                                ? teacher.avatar[0]
+                                : 'https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg'
                         }
                         alt={
-                            classroom.teacher_id?.username ||
+                        teacher?.username ||
                             'Chưa cập nhật tên'
                         }
                     />
@@ -116,96 +119,45 @@ const ClassroomDetailPage: React.FC = () => {
                     <div className={styles.teacherInfo}>
                         <p>
                             Giáo viên: {' '}
-                            { classroom.teacher_id?.username ||
+                            { teacher?.username ||
                                 'Chưa cập nhật tên giáo viên'}
                         </p>
                         <p>
                             Email:{' '}
-                            {classroom.teacher_id?.email?.trim() ||
+                            {teacher?.email?.trim() ||
                                 'Chưa cập nhật email'}
                         </p>
                         <p>
                             Số điện thoại:{' '}
-                            {classroom.teacher_id?.phonenumber?.trim() ||
+                            {teacher?.phonenumber?.trim() ||
                                 'Chưa cập nhật số điện thoại'}
                         </p>
                     </div>
                 </div>
             </div>
 
-            {/* Courses Section */}
+             Courses Section
             <div className={styles.coursesSection}>
                 <h2>Khóa học</h2>
-                <div className={styles.courseGrid}>
-                    {classroom.courses?.map((course) => (
-                        <div key={course._id} className={styles.courseCard}
-                        onClick={() => handleCardClick(course._id)}
-                        >
-                            <div className={styles.courseImage}>
-                                <img
-                                    src={
-                                        Array.isArray(course.images) &&
-                                        course.images.length > 0
-                                            ? course.images[0]
-                                            : '/default-course.jpg'
-                                    }
-                                    alt={
-                                        course.title ||
-                                        'Chưa cập nhật tên khóa học'
-                                    }
-                                />
-                            </div>
-                            <div className={styles.courseContent}>
-                                <h3>{course.title}</h3>
-                                <p>{course.description}</p>
-                                <div className={styles.courseInfo}>
-                                    <div>
-                                        <Calendar size={16} />
-                                        <span>
-                                            {new Date(
-                                                course.start_date
-                                            ).toLocaleDateString('vi-VN')}{' '}
-                                            -
-                                            {new Date(
-                                                course.end_date
-                                            ).toLocaleDateString('vi-VN')}
-                                        </span>
-                                    </div>
-                                    <div className={styles.progressBar}>
-                                        <div
-                                            className={styles.progressFill}
-                                            style={{
-                                                width: `${course.progress}%`,
-                                            }}
-                                        />
-                                        <span>
-                                            {course.progress}% Hoàn
-                                            thành
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                <LessonList courseId={classroom._id} />
             </div>
 
             {/* Students Section */}
-            <div className={styles.studentsSection}>
-                <h2>Học viên ({classroom.students?.length || 0})</h2>
-                <div className={styles.studentGrid}>
-                    {classroom.students?.map((student) => (
-                        <div key={student._id} className={styles.studentCard}>
-                            <img src={student.avatar} alt={student.name} />
-                            <h4>{student.username}</h4>
-                            <p>{student.email}</p>
-                            <p className={styles.phoneNumber}>
-                                {student.phonenumber}
-                            </p>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            {/*<div className={styles.studentsSection}>*/}
+            {/*    <h2>Học viên ({classroom.students?.length || 0})</h2>*/}
+            {/*    <div className={styles.studentGrid}>*/}
+            {/*        {classroom.students?.map((student) => (*/}
+            {/*            <div key={student._id} className={styles.studentCard}>*/}
+            {/*                <img src={student.avatar} alt={student.name} />*/}
+            {/*                <h4>{student.username}</h4>*/}
+            {/*                <p>{student.email}</p>*/}
+            {/*                <p className={styles.phoneNumber}>*/}
+            {/*                    {student.phonenumber}*/}
+            {/*                </p>*/}
+            {/*            </div>*/}
+            {/*        ))}*/}
+            {/*    </div>*/}
+            {/*</div>*/}
         </div>
     )
 };

@@ -186,7 +186,7 @@ export const router = [
     {
         path: PATHS.FORUM,
         component: ForumPage,
-        layout: DefaultLayout,
+        layout: HeaderOnlyLayout,
         meta: {
             requiresAuth: false,
         },

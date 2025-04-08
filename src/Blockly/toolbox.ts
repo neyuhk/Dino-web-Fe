@@ -137,12 +137,24 @@ export const toolbox = {
               { kind: 'block', type: 'logic_boolean' },
               { kind: 'block', type: 'logic_null' },
               { kind: 'block', type: 'logic_ternary' },
-              { kind: 'block', type: 'controls_repeat' },
+              // { kind: 'block', type: 'controls_repeat' },
               { kind: 'block', type: 'controls_repeat_ext' },
               { kind: 'block', type: 'controls_whileUntil' },
               { kind: 'block', type: 'controls_for' },
               { kind: 'block', type: 'controls_forEach' },
               { kind: 'block', type: 'controls_flow_statements' },
+              { kind: 'block', type: 'rgb_led_control' },
+              { kind: 'block', type: 'dht_sensor' },
+              { kind: 'block', type: 'ultrasonic_sensor' },
+              { kind: 'block', type: 'dc_motor_control' },
+              { kind: 'block', type: 'lcd_display' },
+              { kind: 'block', type: 'light_sensor' },
+              { kind: 'block', type: 'pir_motion_sensor' },
+              { kind: 'block', type: 'debounced_button' },
+              { kind: 'block', type: 'stepper_motor_control' },
+              { kind: 'block', type: 'serial_begin' },
+              { kind: 'block', type: 'map_extended' },
+              { kind: 'block', type: 'wait_until' },
             ],
           },
           
@@ -684,6 +696,22 @@ export const toolbox = {
             categorystyle: 'procedure_category',
             custom: 'PROCEDURE',
         },
+        {
+            kind: 'category',
+            name: 'Actions',
+            colour: '#FFAB19',
+            contents: [
+                {
+                    kind: 'block',
+                    type: 'print_result',
+                },
+                {
+                    kind: 'block',
+                    type: 'add_text',
+                }
+            ]
+        }
+
     ],
     
 }

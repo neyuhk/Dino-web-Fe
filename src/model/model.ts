@@ -18,7 +18,7 @@ export interface User {
     email: string;
     username: string;
     name: string;
-    avatar: string;
+    avatar: string[];
     role: string;
     createdAt: string;
     updatedAt: string;

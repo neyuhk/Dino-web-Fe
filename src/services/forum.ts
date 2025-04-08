@@ -14,6 +14,14 @@ export const getForumById = async (id: string) => {
     return (await http.get(FORUM_API.GET_FORUM_BY_ID + id)).data
 }
 
+export const getLikeForum = async (id: string) => {
+    return (await http.get(FORUM_API.GET_LIKE_FORUM_BY_ID + id)).data
+}
+
+export const getRepostForum = async (id: string) => {
+    return (await http.get(FORUM_API.GET_REPOST_FORUM_BY_ID + id)).data
+}
+
 export const likePost = async (forumId: string, userId: string) => {
     return (await http.post(FORUM_API.LIKE , {forumId, userId})).data
 }

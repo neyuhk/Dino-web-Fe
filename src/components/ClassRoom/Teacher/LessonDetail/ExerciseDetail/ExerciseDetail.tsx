@@ -1,4 +1,3 @@
-// ExerciseDetail.tsx
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import QuestionForm from '../QuestionForm/QuestionForm';
@@ -6,7 +5,7 @@ import styles from './ExerciseDetail.module.css';
 import { format } from 'date-fns';
 import { FaArrowLeft, FaEdit, FaPlus, FaEye, FaTrash, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { Exercise, Quiz } from '../../../../../model/classroom.ts'
-import { getQuiz, deleteQuiz } from '../../../../../services/lesson.ts'
+import { getQuizForTeacher, deleteQuiz } from '../../../../../services/lesson.ts'
 import Toast, { ToastMessage } from '../../../../commons/Toast/Toast.tsx'
 
 const ExerciseDetail: React.FC = () => {
@@ -42,7 +41,7 @@ const ExerciseDetail: React.FC = () => {
         const fetchQuestions = async () => {
             try {
                 setIsLoading(true);
-                const data = await getQuiz(exercise._id);
+                const data = await getQuizForTeacher(exercise._id);
                 setQuestions(data.data || []);
             } catch (error) {
                 console.error('Lỗi khi tải câu hỏi:', error);
@@ -59,7 +58,7 @@ const ExerciseDetail: React.FC = () => {
         setExerciseId(null);
         setEditingQuestion(null);
         // Cập nhật lại danh sách câu hỏi sau khi thêm/sửa
-        getQuiz(exercise._id).then(data => setQuestions(data.data || []));
+        getQuizForTeacher(exercise._id).then(data => setQuestions(data || []));
     };
 
     const handleAddQuestion = () => {
@@ -97,8 +96,8 @@ const ExerciseDetail: React.FC = () => {
 
         try {
             await deleteQuiz(questionToDelete._id);
-            const data = await getQuiz(exercise._id);
-            setQuestions(data.data || []);
+            const data = await getQuizForTeacher(exercise._id);
+            setQuestions(data || []);
             setShowDeleteModal(false);
             setQuestionToDelete(null);
             setToast({
@@ -144,7 +143,7 @@ const ExerciseDetail: React.FC = () => {
         if (exercise.type === 'test') {
             return `${formattedTime.trim()} để hoàn thành`;
         }
-        return `Hạn nộp: ${format(new Date(exercise.endDate), 'PPP')}`;
+        return `Hạn nộp: ${format(new Date(exercise.end_date), 'PPP')}`;
     };
 
     const getExerciseTypeLabel = () => {
@@ -206,7 +205,7 @@ const ExerciseDetail: React.FC = () => {
                         setEditingQuestion(null);
                     }}
                 />
-            ) : (
+            )  : (
                 <>
                     <div className={styles.header}>
                         <button

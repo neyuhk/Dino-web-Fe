@@ -1,20 +1,22 @@
 /* ClassroomPage.module.css */
 :root {
-    --primary-gradient: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
-    --secondary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    --accent-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-    --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-    --hover-transform: translateY(-6px);
+    --primary-gradient: linear-gradient(135deg, #4776E6 0%, #8E54E9 100%);
+    --secondary-gradient: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+    --accent-gradient: linear-gradient(135deg, #FF9966 0%, #FF5E62 100%);
+    --green-gradient: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+    --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --hover-transform: translateY(-8px);
 }
 
 .pageWrapper {
     min-height: 100vh;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     padding: 2rem 1rem;
 }
 
 .container {
-    /*max-width: 1400px;*/
+    width: 100%;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 1rem;
 }
@@ -34,7 +36,7 @@
 }
 
 .title {
-    font-size: 2.5rem;
+    font-size: 2.75rem;
     font-weight: 800;
     margin: 0;
     background: var(--primary-gradient);
@@ -44,63 +46,69 @@
 }
 
 .subtitle {
-    color: #64748b;
-    font-size: 1.1rem;
-    margin-top: 0.5rem;
+    color: #6c757d;
+    font-size: 1.15rem;
+    margin-top: 0.75rem;
+    line-height: 1.6;
 }
 
 .searchContainer {
     background: white;
-    border-radius: 16px;
-    padding: 0.75rem 1.25rem;
+    border-radius: 20px;
+    padding: 0.85rem 1.5rem;
     display: flex;
     align-items: center;
     gap: 0.75rem;
     width: 100%;
     max-width: 400px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
     transition: all 0.3s ease;
 }
 
 .searchContainer:focus-within {
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
 }
 
 .searchIcon {
-    color: #94a3b8;
+    color: #6c757d;
 }
 
 .searchInput {
     border: none;
     outline: none;
     width: 100%;
-    font-size: 1rem;
-    color: #1e293b;
+    font-size: 1.05rem;
+    color: #212529;
 }
 
 .searchInput::placeholder {
-    color: #94a3b8;
+    color: #adb5bd;
 }
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
     gap: 2rem;
 }
 
 .card {
     background: white;
-    border-radius: 20px;
+    border-radius: 24px;
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: var(--card-shadow);
     position: relative;
+    cursor: pointer;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .card:hover {
     transform: var(--hover-transform);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
 }
 
 .cardHeader {
@@ -117,11 +125,11 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    transition: transform 0.6s ease;
 }
 
 .card:hover .image {
-    transform: scale(1.1);
+    transform: scale(1.08);
 }
 
 .imageOverlay {
@@ -130,112 +138,102 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+    background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
 }
 
-.subjectBadge {
+.ribbon {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #1e293b;
-    backdrop-filter: blur(4px);
+    top: 15px;
+    left: -10px;
+    padding: 0.5rem 1.5rem;
+    background: var(--accent-gradient);
+    color: white;
+    font-weight: 600;
+    font-size: 0.85rem;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(255, 94, 98, 0.3);
+    border-radius: 0 4px 4px 0;
+}
+
+.ribbon:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -10px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-top: 10px solid #FF5E62;
+    border-bottom: 0;
 }
 
 .content {
-    padding: 1.5rem;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
 
 .classroomName {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #1e293b;
-    margin: 0 0 0.75rem 0;
+    color: #212529;
+    margin: 0 0 0.85rem 0;
     line-height: 1.3;
 }
 
 .description {
-    color: #64748b;
+    color: #6c757d;
     line-height: 1.6;
-    /*margin: 0 0 1.5rem 0;*/
+    margin-bottom: 1.5rem;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
+.infoSection {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.infoItem {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f8f9fa;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #495057;
+}
+
+.infoIcon {
+    color: #6c757d;
+}
+
 .cardFooter {
+    margin-top: auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid #e9ecef;
     padding-top: 1.25rem;
-    margin-top: auto;
-}
-
-.teacherInfo {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.teacherSection {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 0px;
-}
-
-.avatarContainer {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    overflow: hidden;
-    background: var(--secondary-gradient);
-    padding: 2px;
-}
-
-.avatar {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-    background: white;
-}
-
-.teacherDetails {
-    display: flex;
-    flex-direction: column;
-}
-
-.teacherLabel {
-    font-size: 0.875rem;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.teacherName {
-    color: #1e293b;
-    font-weight: 600;
-    font-size: 0.875rem;
 }
 
 .stats {
     display: flex;
-    gap: 1rem;
+    gap: 1.25rem;
 }
 
 .statItem {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #64748b;
-    font-size: 0.875rem;
+    color: #6c757d;
+    font-size: 0.9rem;
 }
 
 /* Loading State */
@@ -246,12 +244,12 @@
     justify-content: center;
     min-height: 60vh;
     gap: 1.5rem;
-    color: #64748b;
+    color: #6c757d;
 }
 
 .loadingSpinner {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -262,7 +260,7 @@
 }
 
 .loadingIcon {
-    color: #FF6B6B;
+    color: #8E54E9;
     animation: bounce 2s infinite;
 }
 
@@ -278,16 +276,16 @@
 
 .emptyContent {
     text-align: center;
-    max-width: 480px;
-    padding: 3rem;
+    max-width: 500px;
+    padding: 3.5rem;
     background: white;
     border-radius: 24px;
     box-shadow: var(--card-shadow);
 }
 
 .emptyIcon {
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
     border-radius: 50%;
     background: var(--accent-gradient);
     display: flex;
@@ -298,49 +296,50 @@
 }
 
 .emptyTitle {
-    font-size: 1.75rem;
+    font-size: 1.85rem;
     font-weight: 700;
-    color: #1e293b;
+    color: #212529;
     margin: 0 0 1rem;
 }
 
 .emptyDescription {
-    color: #64748b;
+    color: #6c757d;
     line-height: 1.6;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
 }
 
 .emptyButton {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.875rem 1.5rem;
+    gap: 0.75rem;
+    padding: 1rem 1.75rem;
     background: var(--primary-gradient);
     color: white;
     border: none;
     border-radius: 12px;
     font-weight: 600;
+    font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .emptyButton:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(71, 118, 230, 0.3);
 }
 
 /* Animations */
 @keyframes pulse {
-     0% {
-         box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.4);
-     }
-     70% {
-         box-shadow: 0 0 0 20px rgba(255, 107, 107, 0);
-     }
-     100% {
-         box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
-     }
- }
+    0% {
+        box-shadow: 0 0 0 0 rgba(142, 84, 233, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 20px rgba(142, 84, 233, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(142, 84, 233, 0);
+    }
+}
 
 @keyframes bounce {
     0%, 20%, 50%, 80%, 100% {
@@ -352,7 +351,4 @@
     60% {
         transform: translateY(-7px);
     }
-}
-._emptyState_xcaqu_263{
-    background-color: white;
 }

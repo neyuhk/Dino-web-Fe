@@ -4,7 +4,7 @@ import styles from './Forum.module.css';
 import Post from './Post/Post.tsx'
 import { Forum } from '../../model/model.ts';
 import { useSelector } from 'react-redux';
-import { getForums } from '../../services/forum.ts';
+import { getForums, getLikeForum, getRepostForum } from '../../services/forum.ts'
 import { message, Drawer } from 'antd';
 import EmptyState from './EmptyState/EmptyState.tsx'
 import CreatePostModal from './CreatePost/CreatePostModal.tsx'
@@ -44,9 +44,21 @@ const ForumPage: React.FC = () => {
         const fetchData = async () => {
             try {
                 let postList;
-                if(selectedMenu == 'home'){
-                    postList = await getForums(user._id)
+                switch (selectedMenu) {
+                    case 'home':
+                        postList = await getForums(user._id);
+                        break;
+                    case 'reposted':
+                        postList = await getRepostForum(user._id);
+                        break;
+                    case 'liked':
+                        postList = await getLikeForum(user._id);
+                        break;
+                    default:
+                        postList = [];
+                        break;
                 }
+
                 setLoading(false)
                 setForumList(postList.data)
                 // setFilteredData(forums.data)
