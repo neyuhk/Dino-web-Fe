@@ -34,23 +34,23 @@ const BlocklyPage: React.FC = () => {
     const [ledState, setLedState] = useState('off')
 
     // Attach simulateLED function to window so it's available in generated code.
-    useEffect(() => {
-        (window as any).simulateLED = (state: string): void => {
-            const ledElement = document.getElementById('simulated-led')
-            if (ledElement) {
-                if (state === 'HIGH') {
-                    ledElement.style.backgroundColor = 'yellow'
-                    ledElement.classList.add('on')
-                    setLedState('on')
-                } else {
-                    ledElement.style.backgroundColor = '#333'
-                    ledElement.classList.remove('on')
-                    setLedState('off')
-                }
-            }
-            console.log('LED state:', state)
-        }
-    }, [])
+    // useEffect(() => {
+    //     (window as any).simulateLED = (state: string): void => {
+    //         const ledElement = document.getElementById('simulated-led')
+    //         if (ledElement) {
+    //             if (state === 'HIGH') {
+    //                 ledElement.style.backgroundColor = 'yellow'
+    //                 ledElement.classList.add('on')
+    //                 setLedState('on')
+    //             } else {
+    //                 ledElement.style.backgroundColor = '#333'
+    //                 ledElement.classList.remove('on')
+    //                 setLedState('off')
+    //             }
+    //         }
+    //         console.log('LED state:', state)
+    //     }
+    // }, [])
 
     useEffect(() => {
         const initializeWorkspace = async () => {
@@ -58,7 +58,17 @@ const BlocklyPage: React.FC = () => {
                 Blockly.common.defineBlocks(blocks)
                 Object.assign(javascriptGenerator.forBlock, forBlock)
 
-                const newWorkspace = Blockly.inject(blocklyDiv.current, { toolbox })
+                const newWorkspace = Blockly.inject(blocklyDiv.current, {
+                    toolbox,
+                    zoom: {
+                        controls: true,    // Show zoom in/out buttons
+                        wheel: true,       // Enable mouse wheel zoom
+                        startScale: 1.0,   // Initial zoom level
+                        maxScale: 3,       // Maximum zoom in level
+                        minScale: 0.3,     // Maximum zoom out level
+                        scaleSpeed: 1.2    // Zoom speed factor
+                    }
+                });
                 setWorkspace(newWorkspace)
 
                 if (projectId) {

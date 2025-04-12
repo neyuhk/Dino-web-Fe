@@ -2,9 +2,9 @@ import { PROJECT_API } from '../constants/api.ts'
 import http from '../services/http/http'
 import httpAuth from './http/httpAuth.ts'
 
-export const getProjects = async (page: number, perPage: number) => {
+export const getProjects = async (page: number, perPage: number, name: string) => {
     return (await http.get(PROJECT_API.GET_PROJECTS, {
-        params: { page, perPage }
+        params: { page, perPage, name }
     })).data;
 };
 

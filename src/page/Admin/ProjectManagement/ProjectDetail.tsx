@@ -1,9 +1,31 @@
 import React, { useEffect, useState } from 'react'
-import { Card, Typography, Row, Col, Image, Statistic, Avatar, Space } from 'antd'
-import { HeartOutlined, HeartFilled, EyeOutlined, MessageOutlined, UserOutlined, StarOutlined } from '@ant-design/icons'
+import {
+    Card,
+    Typography,
+    Row,
+    Col,
+    Image,
+    Statistic,
+    Avatar,
+    Space,
+    Button,
+} from 'antd'
+import {
+    HeartOutlined,
+    HeartFilled,
+    EyeOutlined,
+    MessageOutlined,
+    UserOutlined,
+    StarOutlined,
+    BlockOutlined,
+} from '@ant-design/icons'
 import { Project } from '../../../model/model.ts'
-import { getProjectById, isLikedProject, likeProject } from '../../../services/project.ts'
-import { useParams } from 'react-router-dom'
+import {
+    getProjectById,
+    isLikedProject,
+    likeProject,
+} from '../../../services/project.ts'
+import { useNavigate, useParams } from 'react-router-dom'
 import moment from 'moment/moment'
 import CommentComponent from '../../../components/Comment/Comment.tsx'
 import { useSelector } from 'react-redux'
@@ -16,16 +38,22 @@ const ProjectDetailPage: React.FC = () => {
     const [projectData, setProjectData] = useState<Project | null>(null)
     const [isLiked, setIsLiked] = useState(false)
     const userId = user._id // Replace with actual userId from local storage
+    const navigate = useNavigate()
 
     useEffect(() => {
         const fetchProjectData = async () => {
             try {
-                const response = await getProjectById(projectId ? projectId : '')
+                const response = await getProjectById(
+                    projectId ? projectId : ''
+                )
                 setProjectData(response.data)
                 console.log(projectId, userId)
-                const liked = await isLikedProject(projectId ? projectId : '', userId);
-                setIsLiked(liked.data);
-                console.log(liked.data);
+                const liked = await isLikedProject(
+                    projectId ? projectId : '',
+                    userId
+                )
+                setIsLiked(liked.data)
+                console.log(liked.data)
             } catch (error) {
                 console.error('Failed to fetch project data:', error)
             }
@@ -34,6 +62,9 @@ const ProjectDetailPage: React.FC = () => {
         fetchProjectData()
     }, [projectId])
 
+    const handleViewInBlockly = () => {
+        navigate(`/blockly/${projectId}`)
+    }
 
     if (!projectData) {
         return (
@@ -58,11 +89,19 @@ const ProjectDetailPage: React.FC = () => {
     const handleLikeProject = async () => {
         try {
             if (isLiked) {
-                setProjectData(prevData => prevData ? { ...prevData, like_count: prevData.like_count - 1 } : null);
+                setProjectData((prevData) =>
+                    prevData
+                        ? { ...prevData, like_count: prevData.like_count - 1 }
+                        : null
+                )
             } else {
-                setProjectData(prevData => prevData ? { ...prevData, like_count: prevData.like_count + 1 } : null);
+                setProjectData((prevData) =>
+                    prevData
+                        ? { ...prevData, like_count: prevData.like_count + 1 }
+                        : null
+                )
             }
-            setIsLiked(!isLiked);
+            setIsLiked(!isLiked)
             console.log(isLiked)
             await likeProject(projectId ? projectId : '', userId)
         } catch (error) {
@@ -95,25 +134,60 @@ const ProjectDetailPage: React.FC = () => {
                 </Col>
                 <Col xs={24} sm={8}>
                     <Card>
-                        <Space>
-                            <Avatar icon={<UserOutlined />} />
-                            <div>
-                                <Title style={{ margin: '0' }} level={2}>{name}</Title>
-                                <Text strong>by {username}</Text>
-                                <br />
-                                <Text type="secondary">Created on {createdAt !== 'Unknown' ? moment(createdAt).format('DD/MM/YYYY') : 'Unknown'}</Text>
-                            </div>
+                        <Space direction="vertical" style={{ width: '100%' }}>
+                            <Space>
+                                <Avatar icon={<UserOutlined />} />
+                                <div>
+                                    <Title style={{ margin: '0' }} level={2}>
+                                        {name}
+                                    </Title>
+                                    <Text strong>by {username}</Text>
+                                    <br />
+                                    <Text type="secondary">
+                                        Created on{' '}
+                                        {createdAt !== 'Unknown'
+                                            ? moment(createdAt).format(
+                                                  'DD/MM/YYYY'
+                                              )
+                                            : 'Unknown'}
+                                    </Text>
+                                </div>
+                            </Space>
+                            <Button
+                                type="primary"
+                                icon={<BlockOutlined />}
+                                onClick={handleViewInBlockly}
+                                style={{ marginTop: '16px', width: '100%' }}
+                            >
+                                View in Blockly
+                            </Button>
                         </Space>
                     </Card>
                 </Col>
             </Row>
             <Col xs={24} sm={16}>
-                <Row style={{ marginTop: '16px' }} gutter={[16, 16]} justify={'center'}>
+                <Row
+                    style={{ marginTop: '16px' }}
+                    gutter={[16, 16]}
+                    justify={'center'}
+                >
                     <Col xs={24} sm={4}>
                         <Statistic
                             title="Likes"
                             value={like_count}
-                            prefix={isLiked ? <HeartFilled style={{ color: 'red' }} onClick={handleLikeProject} /> : <HeartOutlined style={{ color: 'red' }} onClick={handleLikeProject} />}
+                            prefix={
+                                isLiked ? (
+                                    <HeartFilled
+                                        style={{ color: 'red' }}
+                                        onClick={handleLikeProject}
+                                    />
+                                ) : (
+                                    <HeartOutlined
+                                        style={{ color: 'red' }}
+                                        onClick={handleLikeProject}
+                                    />
+                                )
+                            }
                         />
                     </Col>
                     <Col xs={24} sm={4}>
@@ -127,14 +201,18 @@ const ProjectDetailPage: React.FC = () => {
                         <Statistic
                             title="Favourites"
                             value={0}
-                            prefix={<StarOutlined style={{ color: 'yellow' }} />}
+                            prefix={
+                                <StarOutlined style={{ color: 'yellow' }} />
+                            }
                         />
                     </Col>
                     <Col xs={24} sm={4}>
                         <Statistic
                             title="Comments"
                             value={0}
-                            prefix={<MessageOutlined style={{ color: 'green' }} />}
+                            prefix={
+                                <MessageOutlined style={{ color: 'green' }} />
+                            }
                         />
                     </Col>
                 </Row>
@@ -151,7 +229,10 @@ const ProjectDetailPage: React.FC = () => {
                 <Col span={24}>
                     <Card>
                         <Title level={2}>Bình luận</Title>
-                        <CommentComponent commentableId={projectId ? projectId : ''} commentableType={"PROJECT"} />
+                        <CommentComponent
+                            commentableId={projectId ? projectId : ''}
+                            commentableType={'PROJECT'}
+                        />
                     </Card>
                 </Col>
             </Row>
