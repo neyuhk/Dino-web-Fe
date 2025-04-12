@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
+import {useParams, useNavigate, useLocation} from 'react-router-dom';
 import styles from './LessonDetail.module.css';
 import Toast from '../../../commons/Toast/Toast.tsx';
-import { Exercise, Lesson } from '../../../../model/classroom.ts'
-import { useSelector } from 'react-redux'
+import {Exercise, Lesson} from '../../../../model/classroom.ts'
+import {useSelector} from 'react-redux'
 import RequireAuth from '../../../commons/RequireAuth/RequireAuth.tsx'
-import { deleteExercise } from '../../../../services/lesson.ts'
+import {deleteExercise} from '../../../../services/lesson.ts'
 import DeleteConfirmPopup from './DeletePopup/DeleteConfirmPopup.tsx'
+import {convertDateTimeToDate} from "../../../../helpers/convertDateTime.ts";
+import {getExerciseForTeacher} from "../../../../services/exercise.ts";
 
 interface ToastMessage {
     show: boolean;
@@ -17,14 +19,15 @@ interface ToastMessage {
 }
 
 const LessonDetail: React.FC = () => {
-    const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
+    const {courseId, lessonId} = useParams<{ courseId: string; lessonId: string }>();
     const navigate = useNavigate();
     const location = useLocation();
     const lesson = location.state?.lesson || null;
+    const [exercises, setExercises] = useState<Exercise[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
     const [activeTab, setActiveTab] = useState<'content' | 'exercises'>('content');
-    const { user } = useSelector((state: any) => state.auth);
+    const {user} = useSelector((state: any) => state.auth);
     const [deleteConfirm, setDeleteConfirm] = useState({
         show: false,
         exerciseId: '',
@@ -32,7 +35,7 @@ const LessonDetail: React.FC = () => {
         description: ''
     });
 
-    if(!user){
+    if (!user) {
         return (
             <RequireAuth></RequireAuth>
         );
@@ -70,7 +73,7 @@ const LessonDetail: React.FC = () => {
                 });
 
                 setTimeout(() => {
-                    setToast(prev => ({ ...prev, show: false }));
+                    setToast(prev => ({...prev, show: false}));
                 }, 3000);
             } catch (error) {
                 console.error('Error fetching lesson details:', error);
@@ -85,6 +88,17 @@ const LessonDetail: React.FC = () => {
             }
         };
 
+        //fetch exercise by lessonId for teacher
+        const fetchExercises = async () => {
+            try {
+                const listExercise = await getExerciseForTeacher(lesson._id);
+                console.log(listExercise.data)
+                setExercises(listExercise.data);
+            } catch (error) {
+                console.error('Error fetching exercises:', error);
+            }
+        };
+        fetchExercises()
         fetchLessonDetail();
     }, [lessonId, lesson, courseId]);
 
@@ -93,7 +107,7 @@ const LessonDetail: React.FC = () => {
     };
 
     const hideToast = () => {
-        setToast(prev => ({ ...prev, show: false }));
+        setToast(prev => ({...prev, show: false}));
     };
 
     const handleAddExercise = () => {
@@ -108,15 +122,15 @@ const LessonDetail: React.FC = () => {
     };
 
     const handleViewExercise = (exercise: Exercise) => {
-        console.log('xem chi tiet ',courseId, lessonId, exercise._id);
+        console.log('xem chi tiet ', courseId, lessonId, exercise._id);
         if (courseId && lessonId && exercise._id) {
             navigate(`/classroom/courses/${courseId}/lesson/${lessonId}/${exercise._id}`, {
-                state: { exercise },
+                state: {exercise},
             });
         }
     };
 
-    const handleDeleteExercise = (exercise) => {
+    const handleDeleteExercise = (exercise: Exercise) => {
         setDeleteConfirm({
             show: true,
             exerciseId: exercise._id,
@@ -172,7 +186,7 @@ const LessonDetail: React.FC = () => {
         });
     };
 
-    const getYoutubeEmbedUrl = (url) => {
+    const getYoutubeEmbedUrl = (url: string) => {
         if (!url) return '';
         let videoId = '';
         const watchRegex = /youtube\.com\/watch\?v=([^&]+)/;
@@ -347,138 +361,128 @@ const LessonDetail: React.FC = () => {
                             </button>
                         </div>
 
-                        {currentLesson?.exercises &&
-                        currentLesson.exercises.length > 0 ? (
-                            <div className={styles.exercisesList}>
-                                {currentLesson.exercises.map((exercise) => (
-                                    <div
-                                        key={exercise._id}
-                                        className={styles.exerciseItem}
-                                    >
-                                        <div className={styles.exerciseInfo}>
-                                            <h4
-                                                className={styles.exerciseTitle}
-                                            >
-                                                {exercise.title}
-                                            </h4>
-                                            <p
+                        {exercises.length > 0 ? (
+                        <div className={styles.exercisesList}>
+                            {exercises.map((exercise) => (
+                                <div
+                                    key={exercise._id}
+                                    className={styles.exerciseItem}
+                                >
+                                    <div className={styles.exerciseInfo}>
+                                        <h4
+                                            className={styles.exerciseTitle}
+                                        >
+                                            {exercise.title}
+                                        </h4>
+                                        <p
+                                            className={
+                                                styles.exerciseDescription
+                                            }
+                                        >
+                                            {exercise.description}
+                                        </p>
+                                        <div
+                                            className={
+                                                styles.exerciseDeadline
+                                            }
+                                        >
+                                        <span
+                                            className={
+                                                styles.deadlineLabel
+                                            }
+                                        >
+                                            Thời hạn nộp bài:
+                                        </span>
+                                            <span
                                                 className={
-                                                    styles.exerciseDescription
+                                                    styles.deadlineValue
                                                 }
                                             >
-                                                {exercise.description}
-                                            </p>
-                                            <div
-                                                className={
-                                                    styles.exerciseDeadline
-                                                }
-                                            >
-                                                <span
-                                                    className={
-                                                        styles.deadlineLabel
-                                                    }
-                                                >
-                                                    Thời hạn nộp bài:
-                                                </span>
-                                                <span
-                                                    className={
-                                                        styles.deadlineValue
-                                                    }
-                                                >
-                                                    {exercise.end_date
-                                                        ? new Date(
-                                                              exercise.end_date
-                                                          ).toLocaleDateString(
-                                                              'vi-VN',
-                                                              {
-                                                                  day: '2-digit',
-                                                                  month: '2-digit',
-                                                                  year: 'numeric',
-                                                              }
-                                                          )
-                                                        : 'Không giới hạn'}
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div className={styles.exerciseStats}>
-                                            <div
-                                                className={
-                                                    styles.completionContainer
-                                                }
-                                            >
-                                                <div
-                                                    className={
-                                                        styles.completionLabel
-                                                    }
-                                                >
-                                                    Hoàn thành: 20%
-                                                </div>
-                                                <div
-                                                    className={
-                                                        styles.completionBar
-                                                    }
-                                                >
-                                                    <div
-                                                        className={
-                                                            styles.completionFill
-                                                        }
-                                                        style={{
-                                                            width: `${20}%`,
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div
-                                                className={
-                                                    styles.exerciseActions
-                                                }
-                                            >
-                                                <button
-                                                    className={
-                                                        styles.actionButton
-                                                    }
-                                                    onClick={() =>
-                                                        handleViewExercise(
-                                                            exercise
-                                                        )
-                                                    }
-                                                >
-                                                    Xem chi tiết
-                                                </button>
-                                                <button
-                                                    className={
-                                                        styles.actionButton
-                                                    }
-                                                >
-                                                    Sửa
-                                                </button>
-                                                <button
-                                                    className={
-                                                        styles.actionButtonDelete
-                                                    }
-                                                    onClick={() => handleDeleteExercise(exercise)}
-                                                >
-                                                    Xóa
-                                                </button>
-                                            </div>
+                                            {exercise.end_date
+                                                    ? convertDateTimeToDate(exercise.end_date)
+                                                    : 'Không giới hạn'}
+                                            </span>
                                         </div>
                                     </div>
-                                ))}
-                            </div>
+
+                                    <div className={styles.exerciseStats}>
+                                        <div
+                                            className={
+                                                styles.completionContainer
+                                            }
+                                        >
+                                            <div
+                                                className={
+                                                    styles.completionLabel
+                                                }
+                                            >
+                                                Hoàn thành: {exercise.userSubmited}/{exercise.userInCourse}
+                                            </div>
+                                            <div
+                                                className={
+                                                    styles.completionBar
+                                                }
+                                            >
+                                                <div
+                                                    className={
+                                                        styles.completionFill
+                                                    }
+                                                    style={{
+                                                        width: `${exercise.userInCourse ? (exercise.userSubmited / exercise.userInCourse) * 100 : 0}%`,
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            className={
+                                                styles.exerciseActions
+                                            }
+                                        >
+                                            <button
+                                                className={
+                                                    styles.actionButton
+                                                }
+                                                onClick={() =>
+                                                    handleViewExercise(
+                                                        exercise
+                                                    )
+                                                }
+                                            >
+                                                Xem chi tiết
+                                            </button>
+                                            <button
+                                                className={
+                                                    styles.actionButton
+                                                }
+                                            >
+                                                Sửa
+                                            </button>
+                                            <button
+                                                className={
+                                                    styles.actionButtonDelete
+                                                }
+                                                onClick={() => handleDeleteExercise(exercise)}
+                                            >
+                                                Xóa
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                         ) : (
-                            <div className={styles.emptyStateContainer}>
-                                <p className={styles.emptyStateMessage}>
-                                    Chưa có bài tập nào trong bài học này
-                                </p>
-                                <button
-                                    onClick={handleAddExercise}
-                                    className={styles.emptyStateButton}
-                                >
-                                    Thêm bài tập đầu tiên
-                                </button>
-                            </div>
+                        <div className={styles.emptyStateContainer}>
+                            <p className={styles.emptyStateMessage}>
+                                Chưa có bài tập nào trong bài học này
+                            </p>
+                            <button
+                                onClick={handleAddExercise}
+                                className={styles.emptyStateButton}
+                            >
+                                Thêm bài tập đầu tiên
+                            </button>
+                        </div>
                         )}
                     </div>
                 )}
@@ -491,11 +495,9 @@ const LessonDetail: React.FC = () => {
                 onCancel={cancelDelete}
             />
             {/* Toast notification */}
-            {toast.show && <Toast toast={toast} onClose={hideToast} />}
+            {toast.show && <Toast toast={toast} onClose={hideToast}/>}
         </div>
     )
-
-
 
 
 };

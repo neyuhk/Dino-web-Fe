@@ -7,3 +7,10 @@ export const saveCodeBlock = async (payload: any) => {
 export const getLastestCodeBlock = async () => {
     return await http.get(`/code-block/latest`);
 }
+
+export const pushCodeToDb = async (code: string) => {
+    const payload = {
+        code: code
+    };
+    return await http.post('/code-block/push', payload);
+}

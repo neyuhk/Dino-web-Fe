@@ -31,7 +31,6 @@ export const repost = async (forumId: string, userId: string) => {
 }
 
 export const newForum = async (payload : any) => {
-    console.log('payload nekk',payload)
     return (await httpFile.post(FORUM_API.CREATE_FORUM, payload)).data
 }
 

@@ -1,24 +1,31 @@
-import React from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { Clock, ChevronLeft, Book, CheckCircle } from 'lucide-react';
+import React, {useEffect, useState} from 'react';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
+import {Clock, ChevronLeft, Book, CheckCircle} from 'lucide-react';
 import styles from './LessonStudentDetail.module.css';
-import { useSelector } from 'react-redux';
-import { Exercise, Lesson } from '../../../../model/classroom.ts'
-import { PATHS } from '../../../../router/path.ts'
+import {useSelector} from 'react-redux';
+import {Exercise, Lesson} from '../../../../model/classroom.ts'
+import {PATHS} from '../../../../router/path.ts'
 import RequireAuth from '../../../commons/RequireAuth/RequireAuth.tsx'
-import { convertDateTimeToDate } from '../../../../helpers/convertDateTime.ts'
+import {convertDateTimeToDate} from '../../../../helpers/convertDateTime.ts'
+import {getExerciseForStudent} from "../../../../services/exercise.ts";
 
 const LessonStudentDetail: React.FC = () => {
-    const { id } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
-    const { user } = useSelector((state: any) => state.auth);
+    const {user} = useSelector((state: any) => state.auth);
+    const [exercises, setExercises] = useState<Exercise[]>([]);
 
-    // Get lesson data from navigation state
-    const { lesson } = location.state as { lesson: Lesson };
+    const {lesson} = location.state as { lesson: Lesson };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const response = await getExerciseForStudent(lesson._id, user._id);
+            setExercises(response.data);
+        }
+        fetchData()
+    }, [lesson, navigate]);
 
     if (!lesson) {
-        // Handle case where lesson data is not available
         return (
             <div className={styles.errorContainer}>
                 <p>Không tìm thấy thông tin bài học.</p>
@@ -36,32 +43,18 @@ const LessonStudentDetail: React.FC = () => {
 
     const handleSelectExercise = (exercise: Exercise, lessonId: string) => {
         // Prevent navigation if exercise is expired
-        if (isExerciseExpired(exercise)) {
+        if (isExerciseExpired(exercise) || exercise.score) {
             return;
         }
         console.log(exercise);
-        navigate(PATHS.CLASSROOM_LEARNING, { state: { exercise, lessonId } });
-    };
-
-    const formatDate = (dateString: string | undefined): string => {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('vi-VN', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+        navigate(PATHS.CLASSROOM_LEARNING, {state: {exercise, lessonId}});
     };
 
     const convertYoutubeUrl = (url: string): string => {
-        // Xử lý URL Youtube
         if (url.includes('youtube.com/watch')) {
             const videoId = new URL(url).searchParams.get('v');
             return `https://www.youtube.com/embed/${videoId}`;
         }
-        // Trường hợp đã là URL nhúng hoặc URL khác
         return url;
     }
 
@@ -78,12 +71,12 @@ const LessonStudentDetail: React.FC = () => {
                     className={styles.backButton}
                     onClick={() => navigate(-1)}
                 >
-                    <ChevronLeft size={20} />
+                    <ChevronLeft size={20}/>
                     Quay lại danh sách bài học
                 </button>
                 <div className={styles.titleContainer}>
                     <div className={styles.titleInfo}>
-                        <Book size={28} className={styles.lessonIcon} />
+                        <Book size={28} className={styles.lessonIcon}/>
                         <h1 className={styles.lessonTitle}>{lesson.title}</h1>
                     </div>
                     {lesson.isCompleted && (
@@ -97,11 +90,6 @@ const LessonStudentDetail: React.FC = () => {
 
             <div className={styles.content}>
                 <div className={styles.lessonInfo}>
-                    <p className={styles.lessonMeta}>
-                        {lesson.duration} phút • {lesson.progress}% hoàn thành
-                        {lesson.lastAccessedAt &&
-                            ` • Truy cập lần cuối: ${formatDate(lesson.lastAccessedAt)}`}
-                    </p>
                     <p className={styles.lessonDescription}>
                         {lesson.description}
                     </p>
@@ -148,16 +136,16 @@ const LessonStudentDetail: React.FC = () => {
                     )}
                 </div>
 
-                {lesson.exercises && lesson.exercises.length > 0 ? (
+                {exercises && exercises.length > 0 ? (
                     <div className={styles.exerciseSection}>
-                        <h2>Bài tập ({lesson.exercises.length})</h2>
+                        <h2>Bài tập ({exercises.length})</h2>
                         <div className={styles.exerciseList}>
-                            {lesson.exercises.map((exercise) => {
+                            {exercises.map((exercise) => {
                                 const expired = isExerciseExpired(exercise);
                                 return (
                                     <div
                                         key={exercise._id}
-                                        className={`${styles.exerciseItem} ${expired ? styles.exerciseExpired : ''}`}
+                                        className={`${styles.exerciseItem} ${expired || exercise.score ? styles.exerciseExpired : ''}`}
                                         onClick={() => handleSelectExercise(exercise, lesson._id)}
                                     >
                                         <div className={styles.exerciseInfo}>
@@ -165,7 +153,7 @@ const LessonStudentDetail: React.FC = () => {
                                             <p className={styles.exerciseDescription}>{exercise.description}</p>
                                             {exercise.end_date && (
                                                 <div className={styles.exerciseDeadline}>
-                                                    <Clock size={16} className={styles.deadlineIcon} />
+                                                    <Clock size={16} className={styles.deadlineIcon}/>
                                                     <span className={`${expired ? styles.deadlineExpired : ''}`}>
                                                         Hạn nộp: {convertDateTimeToDate(exercise.end_date)}
                                                         {expired ? ' (Đã hết hạn)' : ''}
@@ -180,14 +168,13 @@ const LessonStudentDetail: React.FC = () => {
                                         </div>
                                         <span className={`
                                             ${styles.exerciseStatus} 
-                                            ${exercise.isCompleted ? styles.completed : ''} 
-                                            ${expired && !exercise.isCompleted ? styles.expired : ''}
+                                            
+                                            ${exercise.score ? styles.completed : ''} 
+                                            ${expired && !exercise.score ? styles.expired : ''}
                                         `}>
-                                            {expired && !exercise.isCompleted
-                                                ? 'Hết hạn'
-                                                : exercise.isCompleted
-                                                    ? 'Đã hoàn thành'
-                                                    : 'Chưa hoàn thành'}
+                                            {exercise.score
+                                                ? 'Đã hoàn thành'
+                                                : 'Chưa hoàn thành'}
                                         </span>
                                     </div>
                                 );
@@ -197,7 +184,7 @@ const LessonStudentDetail: React.FC = () => {
                 ) : (
                     <div className={styles.noExercisesContainer}>
                         <div className={styles.noExercisesImage}>
-                            <Book size={48} className={styles.noExercisesIcon} />
+                            <Book size={48} className={styles.noExercisesIcon}/>
                             <img src={"https://i.pinimg.com/originals/fe/93/b0/fe93b053043276b38386e625295af6cc.gif"}
                             />
                         </div>

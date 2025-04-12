@@ -16,3 +16,4 @@ export const load = function (workspace: Blockly.Workspace) {
   Blockly.serialization.workspaces.load(JSON.parse(data), workspace, undefined);
   Blockly.Events.enable();
 };
+

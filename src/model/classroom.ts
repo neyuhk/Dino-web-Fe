@@ -4,6 +4,7 @@ import { User } from './model.ts'
 export interface Exercise {
     _id: string;
     type: "quiz" | "test" | "file";
+    lesson_id: string;
     time: number;
     title: string;
     description: string;
@@ -11,6 +12,8 @@ export interface Exercise {
     isCompleted: boolean;
     submittedAt?: string;
     end_date: Date;
+    userSubmited: number;
+    userInCourse: number;
 }
 
 export interface Quiz{

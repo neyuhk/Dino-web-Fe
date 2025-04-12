@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Layout, Typography, Modal, Input, Dropdown, Menu, Space, Avatar, MenuProps } from 'antd'
+import { Layout, Typography, Modal, Input, Dropdown, Menu, Space, Avatar, MenuProps, message, Button } from 'antd'
 import { DownOutlined, UserOutlined, SaveOutlined, UploadOutlined, FileOutlined, EditOutlined, PlayCircleOutlined } from '@ant-design/icons'
 import * as Blockly from 'blockly'
 import { blocks } from '../../Blockly/blocks/defineBlock.ts'
@@ -15,7 +15,8 @@ import { Project } from '../../model/model.ts'
 import { useSelector } from 'react-redux'
 import { logout } from '../../stores/authSlice.ts'
 import store from '../../stores'
-import { saveCodeBlock } from '../../services/codeBlock.ts'
+import {pushCodeToDb, saveCodeBlock} from '../../services/codeBlock.ts'
+import styles from './BlocklyPage.module.css'
 
 const { Header, Content } = Layout
 const { Title } = Typography
@@ -111,22 +112,11 @@ const BlocklyPage: React.FC = () => {
         }
     }, [workspace])
 
+
     const executeCode = () => {
-        if (workspace) {
-            const code = javascriptGenerator.workspaceToCode(workspace);
-            const outputDiv = document.getElementById('output');
-            if (outputDiv) outputDiv.innerHTML = '';
-            try {
-                const execFunc = new Function(code);
-                execFunc();
-            } catch (error) {
-                if (outputDiv) outputDiv.innerHTML = `<span style="color: red">Error: ${error.message}</span>`;
-                console.error("Code execution error:", error);
-            }
-        }
     };
 
-    const saveCodeBlockToDB = async () => {
+    const pushCodeBlock = () => {
         if (workspace) {
             const javascriptCode = javascriptGenerator.workspaceToCode(workspace)
             const jsonCode = JSON.stringify(Blockly.serialization.workspaces.save(workspace), null, 2)
@@ -139,14 +129,50 @@ const BlocklyPage: React.FC = () => {
                 xmlCode,
             }
 
-            try {
-                await saveCodeBlock(payload)
-                console.log('Code block saved successfully')
-            } catch (e) {
-                console.error('Error saving code block', e)
-            }
+            console.log('Pushing code block:', payload)
         }
     }
+    const saveCodeBlockToDB = async () => {
+        executeCode();
+
+        const outputDiv = document.getElementById("output");
+        if (outputDiv) outputDiv.innerText = ""; // Xóa kết quả cũ nếu có
+
+        if (workspace) {
+            javascriptGenerator.finish = function (code: string): string {
+                const definitions = this.definitions_ || {};
+                const includes: string[] = [];
+                const others: string[] = [];
+
+                for (const [_, value] of Object.entries(definitions)) {
+                    if (value.trim().startsWith('#include')) {
+                        includes.push(value);
+                    } else {
+                        others.push(value);
+                    }
+                }
+
+                return includes.join('\n') + '\n\n' + others.join('\n') + '\n\n' + code;
+            };
+
+            const javascriptCode = javascriptGenerator.workspaceToCode(workspace);
+            console.log('Generated JavaScript code:', javascriptCode);
+
+            try {
+                message.loading({ content: 'Đang lưu code block...', key: 'saveCodeBlock' });
+                await pushCodeToDb(javascriptCode);
+                message.success({ content: 'Code block đã được lưu thành công!', key: 'saveCodeBlock' });
+                if (outputDiv) outputDiv.innerText = "✅ Code block saved successfully!";
+            } catch (e) {
+                console.error('Error saving code block', e);
+                message.error({ content: `Lỗi: ${e instanceof Error ? e.message : 'Không thể lưu code block'}`, key: 'saveCodeBlock' });
+                if (outputDiv) outputDiv.innerText = `❌ Error: ${e instanceof Error ? e.message : e}`;
+            }
+        } else {
+            message.warning('Workspace không tồn tại!');
+            if (outputDiv) outputDiv.innerText = "⚠️ Workspace not found.";
+        }
+    };
 
     const downloadXML = () => {
         if (workspace) {
@@ -259,11 +285,24 @@ const BlocklyPage: React.FC = () => {
     }
 
     const handleSaveProject = async () => {
+        if (!isAuthenticated) {
+            message.error('Vui lòng đăng nhập để lưu dự án!');
+            return;
+        }
+
+        if (!projectName.trim()) {
+            message.warning('Vui lòng nhập tên dự án trước khi lưu!');
+            return;
+        }
+
         if (workspace) {
             try {
                 const json = Blockly.serialization.workspaces.save(workspace)
                 const jsonString = JSON.stringify(json, null, 2)
                 console.log(currentProject)
+
+                message.loading({ content: 'Đang lưu dự án...', key: 'saveProject' });
+
                 if (projectId) {
                     const project = {
                         ...currentProject,
@@ -271,7 +310,7 @@ const BlocklyPage: React.FC = () => {
                         block: jsonString,
                     }
                     await updateProject(project, projectId)
-                    console.log('Project updated successfully')
+                    message.success({ content: 'Dự án đã được cập nhật thành công!', key: 'saveProject' });
                 } else {
                     const project = {
                         name: projectName,
@@ -279,13 +318,15 @@ const BlocklyPage: React.FC = () => {
                         createdBy: user._id
                     }
                     await createProject(project)
-                    console.log('Project saved successfully')
+                    message.success({ content: 'Dự án đã được lưu thành công!', key: 'saveProject' });
                 }
             } catch (e) {
                 console.error('Error saving project', e)
+                message.error({ content: 'Có lỗi xảy ra khi lưu dự án!', key: 'saveProject' });
             }
         } else {
             console.error('Workspace not found')
+            message.error('Không tìm thấy workspace!');
         }
     }
 
@@ -416,36 +457,47 @@ const BlocklyPage: React.FC = () => {
 
     // Send the workspace file to the Python backend
     const sendFileToPythonBackend = async () => {
-        if (workspace) {
-            // Generate JSON representation of the workspace
-            const jsonWorkspace = Blockly.serialization.workspaces.save(workspace);
-            const jsonText = JSON.stringify(jsonWorkspace, null, 2);
-
-            // Prepare FormData for the JSON format
-            const jsonFormData = new FormData();
-            jsonFormData.append("file", new Blob([jsonText], { type: "application/json" }), "workspace.json");
-
-            try {
-                // Send the JSON file to the backend
-                const response = await fetch("http://127.0.0.1:5001/upload-json", {
-                    method: "POST",
-                    body: jsonFormData,
-                });
-
-                // Process the response
-                const result = await response.json();
-                console.log("JSON Response:", result);
-                // Optionally, display a success notification to the user
-            } catch (error) {
-                console.error("Error sending JSON file to Python backend:", error);
-            }
-        } else {
+        if (!workspace) {
+            message.error('Workspace chưa được khởi tạo!');
             console.error("Workspace is not initialized.");
+            return;
+        }
+
+        // Generate JSON representation of the workspace
+        const jsonWorkspace = Blockly.serialization.workspaces.save(workspace);
+        const jsonText = JSON.stringify(jsonWorkspace, null, 2);
+
+        // Prepare FormData for the JSON format
+        const jsonFormData = new FormData();
+        jsonFormData.append("file", new Blob([jsonText], { type: "application/json" }), "workspace.json");
+
+        try {
+            message.loading({ content: 'Đang gửi file...', key: 'sendFile' });
+
+            // Send the JSON file to the backend
+            const response = await fetch("http://127.0.0.1:5001/upload-json", {
+                method: "POST",
+                body: jsonFormData,
+            });
+
+            // Process the response
+            const result = await response.json();
+            console.log("JSON Response:", result);
+            message.success({ content: 'File đã được gửi thành công!', key: 'sendFile' });
+        } catch (error) {
+            console.error("Error sending JSON file to Python backend:", error);
+            message.error({ content: 'Lỗi khi gửi file!', key: 'sendFile' });
         }
     }
 
     return (
-        <Layout style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        <Layout
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100vh',
+            }}
+        >
             <Header className="header-blockly">
                 <div className="header-content">
                     <div className="logo-title">
@@ -455,8 +507,15 @@ const BlocklyPage: React.FC = () => {
                     </div>
 
                     <div className="menu-section">
-                        <Dropdown menu={{ items: taptinn }} trigger={['click']} onOpenChange={handleMenuClick}>
-                            <a className="dropdown-menu white-text" onClick={(e) => e.preventDefault()}>
+                        <Dropdown
+                            menu={{ items: taptinn }}
+                            trigger={['click']}
+                            onOpenChange={handleMenuClick}
+                        >
+                            <a
+                                className="dropdown-menu white-text"
+                                onClick={(e) => e.preventDefault()}
+                            >
                                 <Space>
                                     File
                                     <DownOutlined />
@@ -464,8 +523,15 @@ const BlocklyPage: React.FC = () => {
                             </a>
                         </Dropdown>
 
-                        <Dropdown menu={{ items: chinhsuaa }} trigger={['click']} onOpenChange={handleMenuClick}>
-                            <a className="dropdown-menu white-text" onClick={(e) => e.preventDefault()}>
+                        <Dropdown
+                            menu={{ items: chinhsuaa }}
+                            trigger={['click']}
+                            onOpenChange={handleMenuClick}
+                        >
+                            <a
+                                className="dropdown-menu white-text"
+                                onClick={(e) => e.preventDefault()}
+                            >
                                 <Space>
                                     Edit
                                     <DownOutlined />
@@ -473,8 +539,15 @@ const BlocklyPage: React.FC = () => {
                             </a>
                         </Dropdown>
 
-                        <Dropdown menu={{ items: hoatdong }} trigger={['click']} onOpenChange={handleMenuClick}>
-                            <a className="dropdown-menu white-text" onClick={(e) => e.preventDefault()}>
+                        <Dropdown
+                            menu={{ items: hoatdong }}
+                            trigger={['click']}
+                            onOpenChange={handleMenuClick}
+                        >
+                            <a
+                                className="dropdown-menu white-text"
+                                onClick={(e) => e.preventDefault()}
+                            >
                                 <Space>
                                     Action
                                     <DownOutlined />
@@ -489,20 +562,39 @@ const BlocklyPage: React.FC = () => {
                             onChange={(e) => setProjectName(e.target.value)}
                             style={{ width: '200px' }}
                         />
+
+                        {/* Nút Save Project mới */}
+                        <Button
+                            type="primary"
+                            icon={<SaveOutlined />}
+                            onClick={handleSaveProject}
+                            className={styles.saveProjectButton}
+                        >
+                            Lưu dự án
+                        </Button>
                     </div>
 
-                    <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange} />
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange}
+                    />
 
                     <div>
                         {isAuthenticated ? (
                             <Dropdown overlay={userMenu} trigger={['click']}>
                                 <div className="user-info">
                                     <Avatar icon={<UserOutlined />} />
-                                    <span className="username">{user.username}</span>
+                                    <span className="username">
+                                        {user.username}
+                                    </span>
                                 </div>
                             </Dropdown>
                         ) : (
-                            <Link to="/login" className="white-text">Đăng nhập</Link>
+                            <Link to="/login" className="white-text">
+                                Đăng nhập
+                            </Link>
                         )}
                     </div>
                 </div>
@@ -512,16 +604,22 @@ const BlocklyPage: React.FC = () => {
                 <div id="pageContainer">
                     <div id="outputPane">
                         <h3>Dịch khối thành mã nguồn</h3>
-                        <pre id="generatedCode"><code></code></pre>
+                        <pre id="generatedCode">
+                            <code></code>
+                        </pre>
 
-                        <h3>LED Simulator</h3>
-                        <div id="simulated-led" className={ledState}></div>
-
-                        <button id="executeButton" onClick={executeCode}>
-                            <PlayCircleOutlined /> Chạy và xem kết quả
+                        <button className={styles.saveDBbutton} id="saveCodeBlockToDB" onClick={saveCodeBlockToDB}>
+                            <PlayCircleOutlined /> Chạy trên phần cứng
                         </button>
+                        {/*<button className={styles.executeCode} id="executeButton" onClick={executeCode}>*/}
+                        {/*    <PlayCircleOutlined /> Chạy và xem kết quả*/}
+                        {/*</button>*/}
 
-                        <button id="sendFileButton" onClick={sendFileToPythonBackend}>
+                        <button
+                            className={styles.saveDBbutton}
+                            id="sendFileButton"
+                            onClick={sendFileToPythonBackend}
+                        >
                             <SaveOutlined /> Lưu tệp của bạn vào hệ thống
                         </button>
 
@@ -545,6 +643,7 @@ const BlocklyPage: React.FC = () => {
             </Content>
         </Layout>
     )
+
 }
 
 export default BlocklyPage

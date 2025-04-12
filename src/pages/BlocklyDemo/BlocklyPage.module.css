@@ -1,0 +1,11 @@
+.executeCode{
+    background-color: #FF9900; /* Green */
+}
+.saveDBbutton{
+    background-color: #00979D; /* Green */
+}
+.saveProjectButton{
+    background-color: #00979D; /* Green */
+    min-height: 100%;
+    margin: 0;
+}
