@@ -2,23 +2,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Oswald:wght@200..700&display=swap');
 @import "@/styles/common.scss";
 @import "@/styles/global.css";
+
 .section {
-  background-color: var(--background-transparent);
+    background-color: var(--background-transparent);
     position: relative;
     justify-content: center;
-    height: 50vh;
+    height: auto;
+    min-height: 50vh;
     overflow: hidden;
+    padding: 40px 0;
 }
+
 .backgroundImage {
     width: 100vw;
     height: auto;
     object-fit: cover;
     z-index: 2;
 }
+
 .container {
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: relative;
     width: 100%;
     height: 100%;
     display: flex;
@@ -27,66 +30,160 @@
 }
 
 .features {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  flex-wrap: wrap;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
 }
 
 .featureBox {
-  background-color: var(--background-color);
-  width: 280px;
-  height: 280px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  transition: transform 0.3s ease;
-
-  &:hover {
-    transform: translateY(-5px);
-  }
+    background-color: var(--background-color);
+    width: 280px;
+    height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border-radius: 10px;
 }
+
+.featureBox:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.featureBox.expanded {
+    height: 350px;
+    width: 320px;
+}
+
 .featureBox.easiness {
-    box-shadow: 0 4px 6px #994438; /* Màu xanh dương cho 'Dễ dàng' */
+    box-shadow: 0 4px 12px rgba(153, 68, 56, 0.5);
 }
 
 .featureBox.speed {
-    box-shadow: 0 4px 6px #5388FF; /* Màu cam cho 'Nhanh chóng' */
+    box-shadow: 0 4px 12px rgba(83, 136, 255, 0.5);
 }
 
 .featureBox.free {
-    box-shadow: 0 4px 6px #FBC427; /* Màu xanh lá cho 'Miễn phí' */
+    box-shadow: 0 4px 12px rgba(251, 196, 39, 0.5);
 }
 
+.featureBox.easiness:hover, .featureBox.easiness.expanded {
+    background: linear-gradient(135deg, #ffffff 0%, #ffede9 100%);
+}
+
+.featureBox.speed:hover, .featureBox.speed.expanded {
+    background: linear-gradient(135deg, #ffffff 0%, #e9f0ff 100%);
+}
+
+.featureBox.free:hover, .featureBox.free.expanded {
+    background: linear-gradient(135deg, #ffffff 0%, #fffbe9 100%);
+}
 
 .icon {
-  width: 80%;
-  height: 80%;
+    width: 100px;
+    height: 100px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.featureBox:hover .icon {
+    transform: scale(1.1);
+}
+
+.featureBox.expanded .icon {
+    transform: scale(0.8);
+    opacity: 0.8;
 }
 
 .text {
-  font-family: "Montserrat", sans-serif;
-  font-weight: 700;
-  color: var(--text-color);
-  margin: 0;
-  font-size: 20px;
-  text-align: center;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 20px 0 10px;
+    font-size: 20px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.featureBox.expanded .text {
+    transform: translateY(-10px);
+}
+
+.detailsContainer {
+    padding: 10px;
+    margin-top: 10px;
+    width: 100%;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.detailText {
+    font-family: "Montserrat", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: center;
+    color: var(--text-color);
+}
+
+.pulseIndicator {
+    position: absolute;
+    bottom: 10px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 12px;
+    color: var(--primary-color);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.featureBox:hover .pulseIndicator {
+    opacity: 1;
+}
+
+.featureBox.expanded .pulseIndicator {
+    opacity: 1;
+}
+
+.pulseIndicator span {
+    position: relative;
+}
+
+.pulseIndicator span::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--primary-color);
 }
 
 @media (max-width: 768px) {
-  .features {
-    gap: 20px;
-  }
+    .features {
+        gap: 20px;
+    }
 
-  .featureBox {
-    width: 240px;
-    height: 240px;
-  }
+    .featureBox {
+        width: 240px;
+        height: 240px;
+    }
 
-  .icon {
-    width: 60px;
-    height: 60px;
-  }
+    .featureBox.expanded {
+        height: 320px;
+        width: 280px;
+    }
+
+    .icon {
+        width: 80px;
+        height: 80px;
+    }
 }

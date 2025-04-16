@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux'
 interface QuizComponentProps {
     quiz: Quiz;
     quizNumber: number;
-    onSubmitAnswer: (quiz: Quiz, answer: string) => Promise<{ isCorrect: boolean, correctAnswer: string[] }>;
+    onSubmitAnswer: (quiz: Quiz, answer: string[]) => Promise<{ isCorrect: boolean, correctAnswer: string[] }>;
     onNextQuestion: () => void;
     time?: number;
     exerciseId: string;
@@ -110,8 +110,6 @@ const QuizComponent: React.FC<QuizComponentProps> = ({ quiz, quizNumber, onSubmi
             }
         });
     };
-
-
     const handleSubmit = async (isTimeout = false) => {
         if (isSubmitted) return;
 
@@ -119,22 +117,15 @@ const QuizComponent: React.FC<QuizComponentProps> = ({ quiz, quizNumber, onSubmi
             .map((answer, index) => (selectedAnswers[index] ? answer : null))
             .filter((answer) => answer !== null) as string[];
 
-        const submitData: SubmitAnswerReq = {
-            questionId: quiz._id,
-            exerciseId,
-            lessonId,
-            userId: user._id,
-            answer: answerArray
-        };
-
         try {
-            const response = await getAnsweredQuiz(submitData);
+            // Call the onSubmitAnswer prop function instead of making a direct API call
+            const response = await onSubmitAnswer(quiz, answerArray);
 
-            setIsCorrect(response.data.isCorrect);
-            setCorrectAnswers(response.data.correctAnswer);
+            setIsCorrect(response.isCorrect);
+            setCorrectAnswers(response.correctAnswer);
             setIsSubmitted(true);
 
-            if (response.data.isCorrect) {
+            if (response.isCorrect) {
                 setShowCelebration(true);
                 setTimeout(() => setShowCelebration(false), 3000);
             }

@@ -17,7 +17,6 @@ const Section4: React.FC = () => {
     return (
         <section className={styles.section}>
             <div className={styles.container}>
-                <h2 className={styles.title}>Tham gia học tập cùng Dino</h2>
                 <div className={styles.scrollContainer}>
                     <div className={styles.scrollContent}>
                         {[...schools, ...schools].map((school, index) => (

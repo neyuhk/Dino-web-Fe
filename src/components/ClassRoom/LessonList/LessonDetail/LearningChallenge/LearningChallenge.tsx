@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpen, AlertCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, BookOpen, AlertCircle, Loader2, Trophy } from 'lucide-react';
 import QuizComponent from './Quiz/QuizComponent.tsx';
 import { getAnsweredQuiz, getQuizByExerciseId } from '../../../../../services/lesson.ts'
 import { Exercise, Quiz, SubmitAnswerReq } from '../../../../../model/classroom.ts'
@@ -23,14 +23,19 @@ const LearningChallenge: React.FC = () => {
     const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
     const [quizCount, setQuizCount] = useState(0);
     const { user } = useSelector((state: any) => state.auth);
-
     const [showConfirmation, setShowConfirmation] = useState(true);
+
+    // Score tracking
+    const [quizResults, setQuizResults] = useState<Record<string, boolean>>({});
+    const [finalScore, setFinalScore] = useState<number | null>(null);
+    const scoreSubmitted = useRef(false);
 
     if(!user){
         return (
             <RequireAuth></RequireAuth>
         );
     }
+
     useEffect(() => {
         if (!exercise) {
             setLoading(false);
@@ -52,11 +57,6 @@ const LearningChallenge: React.FC = () => {
         fetchQuizzes();
     }, [exercise]);
 
-    // const handleGetNextQuiz = async (currentIndex: number) => {
-    //     const nextQuiz = await getNextQuiz(currentIndex) ?? null;
-    //     setCurrentQuiz(nextQuiz);
-    //     setProgress((currentIndex + 1) / quizList.length * 100);
-    // };
     const handleSubmitAnswer = async (quiz: Quiz, answer: string[]) => {
         if (!quiz) {
             console.error("Quiz not found!");
@@ -73,13 +73,25 @@ const LearningChallenge: React.FC = () => {
 
         try {
             const data = await getAnsweredQuiz(submitData);
-            const result = data.data
+            const result = data.data;
+
+            // Track individual quiz results - store this on each submit for later score calculation
+            setQuizResults(prev => ({
+                ...prev,
+                [quiz._id]: result.isCorrect
+            }));
+
             return {
                 isCorrect: result.isCorrect,
                 correctAnswer: result.correctAnswer
             };
         } catch (error) {
             console.error("Error submitting answer:", error);
+            // Make sure to mark this question as incorrect in our tracking
+            setQuizResults(prev => ({
+                ...prev,
+                [quiz._id]: false
+            }));
             return { isCorrect: false, correctAnswer: '' };
         }
     };
@@ -173,9 +185,41 @@ const LearningChallenge: React.FC = () => {
         }
     };
 
+    const calculateAndSubmitFinalScore = async () => {
+        if (scoreSubmitted.current) return;
+
+        try {
+            // Calculate correct answers from tracked results
+            const correctCount = Object.values(quizResults).filter(result => result === true).length;
+
+            // Calculate final score (out of 10)
+            const totalQuestions = quizList.length;
+            const score = Math.round((correctCount / totalQuestions) * 10);
+            setFinalScore(score);
+            await createScore({
+                userId: user._id,
+                exerciseId: exercise._id,
+                score: score
+            });
+
+            // Mark as submitted to prevent duplicate submissions
+            scoreSubmitted.current = true;
+
+            console.log(`Final score submitted: ${score}/10 (${correctCount}/${totalQuestions} correct)`);
+        } catch (error) {
+            console.error('Error calculating or submitting final score:', error);
+        }
+    };
+
     const handleConfirmExercise = () => {
         setShowConfirmation(false);
-        setQuizCount(1)
+        setQuizCount(1);
+        // Reset quiz tracking
+        setQuizResults({});
+        setFinalScore(null);
+        scoreSubmitted.current = false;
+        setCurrentQuizIndex(0);
+
         // Optional: Randomize questions here
         if (quizList.length > 0) {
             const randomizedQuizzes = [...quizList].sort(() => Math.random() - 0.5);
@@ -185,23 +229,24 @@ const LearningChallenge: React.FC = () => {
     };
 
     const handleNextQuestion = () => {
-        setProgress((currentQuizIndex + 1) / quizList.length * 100);
         const nextIndex = currentQuizIndex + 1;
+        setCurrentQuizIndex(nextIndex);
         setQuizCount(quizCount + 1);
+        setProgress((nextIndex) / quizList.length * 100);
+
         // Check if we've reached the end of the questions
         if (nextIndex >= quizList.length) {
             // Set currentQuiz to null to display the completion screen
             setCurrentQuiz(null);
             // Set progress to 100%
             setProgress(100);
+            // Calculate and submit final score
+            calculateAndSubmitFinalScore();
             return;
         }
 
         // Otherwise, move to the next question
-        setCurrentQuizIndex(nextIndex);
         setCurrentQuiz(quizList[nextIndex]);
-        // Update progress
-
     };
 
     if (loading) {
@@ -280,8 +325,8 @@ const LearningChallenge: React.FC = () => {
                     currentQuiz ? (
                         <QuizComponent
                             quiz={currentQuiz}
-                            quizNumber = {quizCount}
-                            onSubmitAnswer={(answer) => handleSubmitAnswer(currentQuiz, answer)}
+                            quizNumber={quizCount}
+                            onSubmitAnswer={handleSubmitAnswer}
                             onNextQuestion={handleNextQuestion}
                             time={exercise.time}
                             exerciseId={exercise._id}
@@ -295,7 +340,16 @@ const LearningChallenge: React.FC = () => {
                                 className={styles.completionImage}
                             />
                             <h2>Hoàn thành bài tập!</h2>
-                            <p>Bạn đã hoàn thành tất cả các câu hỏi.</p>
+                            <div className={styles.scoreDisplay}>
+                                <Trophy size={32} className={styles.trophyIcon} />
+                                <div className={styles.scoreInfo}>
+                                    <p className={styles.scoreLabel}>Điểm số của bạn:</p>
+                                    <h3 className={styles.scoreValue}>{finalScore}/10</h3>
+                                </div>
+                            </div>
+                            <p className={styles.scoreDetail}>
+                                Bạn đã trả lời đúng {Object.values(quizResults).filter(result => result === true).length}/{quizList.length} câu hỏi.
+                            </p>
                             <button
                                 className={styles.backButton}
                                 onClick={() => navigate(-1)}
@@ -313,7 +367,7 @@ const LearningChallenge: React.FC = () => {
                         lessonId={lessonId}
                         onSubmit={handleSubmitTest}  // Pass the function directly, not calling it
                     />
-                )  : (
+                ) : (
                     <div className={styles.errorContainer}>
                         <AlertCircle size={64} className={styles.errorIcon} />
                         <h2>Loại bài tập không hợp lệ</h2>

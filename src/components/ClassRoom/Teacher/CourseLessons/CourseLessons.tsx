@@ -383,7 +383,7 @@ const CourseLessons: React.FC<CourseLessonsProps> = ({ courseId }) => {
                 <EmptyStateNotification
                     title="Chưa có bài học nào"
                     message="Khóa học này chưa có bài học nào. Hãy nhấn nút 'Thêm bài học' để tạo bài học đầu tiên."
-                    image="/images/empty-lessons.png"
+                    image="https://i.pinimg.com/originals/9e/c9/c2/9ec9c2950dd625bc08cf52535f7ffa20.gif"
                 />
             )}
 

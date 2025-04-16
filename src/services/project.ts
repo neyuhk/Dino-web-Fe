@@ -1,6 +1,7 @@
 import { PROJECT_API } from '../constants/api.ts'
 import http from '../services/http/http'
 import httpAuth from './http/httpAuth.ts'
+import httpFile from './http/httpFile.ts'
 
 export const getProjects = async (page: number, perPage: number, name: string) => {
     return (await http.get(PROJECT_API.GET_PROJECTS, {
@@ -33,11 +34,11 @@ export const createProject = async (project: any) => {
 }
 
 export const updateProject = async (project: any, projectId: string) => {
-    return await http.put(PROJECT_API.UPDATE_PROJECT + projectId, project)
+    return await httpFile.put(PROJECT_API.UPDATE_PROJECT + projectId, project)
 }
 
 export const deleteProjectById = async (id: string) => {
-    return await http.delete(PROJECT_API.DELETE_PROJECT + id)
+    return await httpAuth.delete(PROJECT_API.DELETE_PROJECT + id)
 }
 
 export const getProjectByUserId = async (userId: string) => {

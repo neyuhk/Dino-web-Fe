@@ -89,20 +89,62 @@
     transform: scaleX(1);
 }
 
+/* Dropdown Menu Styles */
+.dropdown-trigger {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.nav-menu .ant-dropdown-menu {
+    background-color: var(--primary-color);
+    border-radius: 8px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.nav-menu .ant-dropdown-menu-item {
+    color: rgba(255, 255, 255, 0.85);
+    font-family: var(--font-secondary, 'Montserrat', sans-serif);
+    font-size: 0.95rem;
+    padding: 10px 16px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-menu .ant-dropdown-menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.nav-menu .ant-dropdown-menu-item a {
+    color: inherit;
+}
+
+.nav-menu .ant-dropdown-arrow {
+    border-top-color: var(--primary-color) !important;
+    border-left-color: var(--primary-color) !important;
+}
+
+/* Override Ant Design dropdown styles để phù hợp với thiết kế */
+.ant-dropdown-menu {
+    padding: 8px 0 !important;
+}
+
 /* User section */
 .auth-section {
     display: flex;
     align-items: center;
 }
 
+/* Điều chỉnh kích thước cho dropdown user profile */
 .user-profile {
     display: flex;
     align-items: center;
     gap: 8px;
     cursor: pointer;
-    padding: 6px 12px;
-    border-radius: 24px;
+    padding: 4px 10px;
+    border-radius: 20px;
     transition: all 0.2s ease;
+    height: 36px;
 }
 
 .user-profile:hover {
@@ -119,22 +161,36 @@
     white-space: nowrap;
 }
 
+/* Điều chỉnh kích thước nút đăng nhập */
 .sign-in-btn {
     background-color: white;
     color: var(--primary-color);
     text-decoration: none;
-    padding: 8px 20px;
-    border-radius: 24px;
+    padding: 6px 16px;
+    border-radius: 20px;
     font-size: 0.9rem;
     font-weight: 500;
     transition: all 0.2s ease;
     display: inline-block;
+    height: 36px;
+    line-height: 24px;
 }
 
 .sign-in-btn:hover {
     background-color: rgba(255, 255, 255, 0.9);
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Dropdown menu cho user profile */
+.auth-section .ant-dropdown-menu {
+    min-width: 160px;
+    padding: 4px 0 !important;
+}
+
+.auth-section .ant-dropdown-menu-item {
+    padding: 8px 16px;
+    font-size: 0.9rem;
 }
 
 /* Mobile menu toggle */
@@ -271,8 +327,37 @@
         right: 16px;
     }
 
+    /* Responsive dropdown styling */
+    .dropdown-trigger {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .nav-menu .ant-dropdown {
+        width: 100%;
+        left: 0 !important;
+    }
+
+    .nav-menu .ant-dropdown-menu {
+        width: 100%;
+    }
+
     .user-name {
         display: none;
+    }
+
+    /* Điều chỉnh kích thước nút đăng nhập trên mobile */
+    .sign-in-btn {
+        padding: 4px 12px;
+        font-size: 0.85rem;
+        height: 32px;
+        line-height: 24px;
+    }
+
+    /* Điều chỉnh kích thước user profile trên mobile */
+    .user-profile {
+        padding: 4px 8px;
+        height: 32px;
     }
 }
 

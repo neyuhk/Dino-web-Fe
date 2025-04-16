@@ -602,7 +602,7 @@ const BlocklyPage: React.FC = () => {
                                 </div>
                             </Dropdown>
                         ) : (
-                            <Link to="/login" className="white-text">
+                            <Link to="/auth" className="white-text">
                                 Đăng nhập
                             </Link>
                         )}

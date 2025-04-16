@@ -136,6 +136,45 @@
     margin-bottom: 2rem;
     border-radius: 1rem;
 }
+.scoreDisplay {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 1rem;
+    border: 2px solid #e9ecef;
+    width: 100%;
+}
+
+.trophyIcon {
+    color: #ffc107;
+    animation: tada 1.5s ease infinite;
+}
+
+.scoreInfo {
+    text-align: left;
+    flex-grow: 1;
+}
+
+.scoreLabel {
+    color: #6c757d;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.scoreValue {
+    color: #212529;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0.25rem 0 0;
+}
+
+.scoreDetail {
+    color: #495057;
+    margin-bottom: 2rem;
+}
 
 @media (max-width: 480px) {
     .pageContainer {
@@ -181,4 +220,12 @@
         transition: none;
         animation: none;
     }
+}
+
+@keyframes tada {
+    0% {transform: scale(1);}
+    10%, 20% {transform: scale(0.9) rotate(-3deg);}
+    30%, 50%, 70%, 90% {transform: scale(1.1) rotate(3deg);}
+    40%, 60%, 80% {transform: scale(1.1) rotate(-3deg);}
+    100% {transform: scale(1) rotate(0);}
 }

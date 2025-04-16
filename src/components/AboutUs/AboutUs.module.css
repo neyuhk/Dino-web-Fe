@@ -1,0 +1,510 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Add animation keyframes */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.aboutContainer {
+    font-family: var(--font-secondary), 'Inter', sans-serif;
+    color: var(--text-color);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.mainTitle {
+    font-family: var(--font-primary);
+    font-size: 2.5rem;
+    color: white;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.sectionTitle {
+    font-family: var(--font-primary);
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+.icon {
+    font-size: 1.8rem;
+    color: var(--secondary-dark);
+}
+
+.description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+/* Animation for all sections */
+.sectionAnimation {
+    opacity: 0;
+    animation: fadeInUp 0.8s ease forwards;
+}
+
+/* Different animation delays for sections */
+.animateDelay1 {
+    animation-delay: 0.1s;
+}
+
+.animateDelay2 {
+    animation-delay: 0.3s;
+}
+
+.animateDelay3 {
+    animation-delay: 0.5s;
+}
+
+/* Hero Section */
+.heroSection {
+    position: relative;
+    text-align: center;
+    padding: 6rem 1rem;
+    border-radius: 12px;
+    margin-bottom: 3rem;
+    overflow: hidden;
+    color: white;
+}
+
+.heroBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://cdn.shopify.com/s/files/1/0070/5901/3716/files/picture01.jpg?v=1725502352&width=2048');
+    background-size: cover;
+    background-position: center;
+    z-index: 1;
+}
+
+.heroOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* lớp đen mờ */
+    z-index: 2;
+}
+
+.heroContent {
+    position: relative;
+    z-index: 3;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.mainTitle {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+}
+
+.description {
+    font-size: 1.125rem;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+/* Mission Section */
+.missionSection {
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background-color: var(--background-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.missionSection:hover {
+    transform: translateY(-5px);
+}
+
+.missionList {
+    list-style-type: none;
+    padding-left: 1rem;
+}
+
+.missionList li {
+    margin-bottom: 0.8rem;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.missionList li:before {
+    content: "•";
+    color: var(--primary-light);
+    font-weight: bold;
+    font-size: 1.5rem;
+    position: absolute;
+    left: 0;
+    top: -0.3rem;
+}
+
+/* Fields Section */
+.fieldsSection {
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background-color: var(--background-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.fieldsSection:hover {
+    transform: translateY(-5px);
+}
+
+.fieldsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.fieldCard {
+    background-color: var(--background-primary);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.fieldCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(56, 121, 113, 0.15);
+}
+
+.fieldIcon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.fieldTitle {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* Story Section */
+.storySection {
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background-color: var(--background-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.storySection:hover {
+    transform: translateY(-5px);
+}
+
+.storyBlock {
+    margin-bottom: 2rem;
+}
+
+.storyBlock h3 {
+    font-size: 1.3rem;
+    color: var(--primary-light);
+    margin-bottom: 1rem;
+}
+
+.storyBlock ul {
+    padding-left: 1.5rem;
+}
+
+.storyBlock li {
+    margin-bottom: 0.5rem;
+}
+
+/* Values Section */
+.valuesSection {
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background-color: var(--background-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.valuesSection:hover {
+    transform: translateY(-5px);
+}
+
+.valuesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.valueCard {
+    background-color: var(--background-primary);
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.valueCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(56, 121, 113, 0.15);
+}
+
+.valueIcon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.valueCard h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+/* Team Section */
+.teamSection {
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background-color: var(--background-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.teamSection:hover {
+    transform: translateY(-5px);
+}
+
+.teamGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.teamCard {
+    background-color: var(--background-primary);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.teamCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(56, 121, 113, 0.15);
+}
+
+.teamMemberImg {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 1.5rem;
+    border: 4px solid var(--primary-light);
+}
+
+.teamMemberImg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.teamCard h3 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+}
+
+.teamRole {
+    color: var(--primary-light);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.teamDesc {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.teamNote {
+    text-align: center;
+    font-style: italic;
+    margin-top: 2rem;
+    color: var(--text-secondary);
+}
+
+/* Contact Section */
+.contactSection {
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background-color: var(--background-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.contactSection:hover {
+    transform: translateY(-5px);
+}
+
+.contactGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.contactItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: var(--background-primary);
+    border-radius: 8px;
+}
+
+.contactIcon {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.contactButton {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.primaryButton {
+    background-color: var(--primary-color);
+    color: var(--text-lighter);
+    font-weight: 600;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-size: 1rem;
+}
+
+.primaryButton:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+/* Gallery Section */
+.gallerySection {
+    margin: 40px 0;
+    padding: 2rem;
+    background-color: var(--background-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.gallerySection:hover {
+    transform: translateY(-5px);
+}
+
+.galleryGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+}
+
+.galleryItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-color: transparent;
+}
+
+.galleryItem p {
+    width: 100%;
+    color: var(--text-secondary);
+    padding: 1rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+.mediaWrapper {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 2px solid var(--secondary-light);
+}
+
+.mediaWrapper img,
+.mediaWrapper video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.mediaWrapper img:hover,
+.mediaWrapper video:hover {
+    transform: scale(1.03);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .mainTitle {
+        font-size: 2rem;
+    }
+
+    .sectionTitle {
+        font-size: 1.5rem;
+    }
+
+    .fieldsGrid,
+    .valuesGrid,
+    .teamGrid,
+    .contactGrid,
+    .galleryGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .teamMemberImg {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+/* Links styling */
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--primary-light);
+    text-decoration: underline;
+}
+
+/* Title with gradient (optional for main title) */
+.gradientTitle {
+    background: var(--gradient-colors);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: var(--primary-color);
+}

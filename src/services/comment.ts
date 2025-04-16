@@ -17,5 +17,5 @@ export const deleteComment = async (commentId: string) => {
 }
 
 export const likeComment = async (commentId: string, userId: string) => {
-    return await http.post(COMMENT_API.LIKE_COMMENT, {commentId, userId});
+    return await httpAuth.post(COMMENT_API.LIKE_COMMENT, {commentId, userId});
 }

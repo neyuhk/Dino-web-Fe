@@ -5,9 +5,9 @@
 
 .projectsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem;
-    max-width: 1200px;
+    grid-template-columns: repeat(4, 1fr); /* 4 projects per row */
+    gap: 1.5rem;
+    max-width: 1400px; /* Increased max width to accommodate 4 items */
     margin: 0 auto;
 }
 
@@ -44,20 +44,23 @@
 }
 
 .projectContent {
-    padding: 1.5rem;
+    padding: 1.25rem;
 }
 
 .projectTitle {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
     color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .projectAuthor {
     font-size: 0.875rem;
     color: #666;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 .projectDescription {
@@ -65,6 +68,10 @@
     color: #444;
     line-height: 1.5;
     margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .readMore {
@@ -76,7 +83,7 @@
 .interactions {
     display: flex;
     gap: 1rem;
-    padding-top: 1rem;
+    padding-top: 0.75rem;
     border-top: 1px solid #eee;
 }
 
@@ -108,7 +115,117 @@
     color: #3B82F6;
 }
 
-@media (max-width: 1023px) {
+.loadingContainer,
+.noResults {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 0;
+    font-size: 1.25rem;
+    color: #6B7280;
+}
+
+.paginationContainer {
+    display: flex;
+    justify-content: center;
+    padding: 24px 0;
+    margin-top: 24px;
+    border-top: 1px solid #E5E7EB;
+    font-family: 'Montserrat', sans-serif;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.paginationContainer :global(.ant-pagination) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.paginationContainer :global(.ant-pagination-item),
+.paginationContainer :global(.ant-pagination-prev button),
+.paginationContainer :global(.ant-pagination-next button) {
+    min-width: 32px;
+    height: 32px;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    background-color: white;
+    margin: 0 !important;
+}
+
+.paginationContainer :global(.ant-pagination-item-active) {
+    background-color: #3B82F6;
+    border-color: #3B82F6;
+}
+
+.paginationContainer :global(.ant-pagination-item-active a) {
+    color: white;
+}
+
+.paginationContainer :global(.ant-pagination-item:hover) {
+    background-color: #EFF6FF;
+    border-color: #93C5FD;
+}
+
+.paginationContainer :global(.ant-pagination-item:hover a) {
+    color: #2563EB;
+}
+
+.paginationContainer :global(.ant-pagination-prev),
+.paginationContainer :global(.ant-pagination-next) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 !important;
+}
+
+.paginationContainer :global(.ant-pagination-prev .ant-pagination-item-link),
+.paginationContainer :global(.ant-pagination-next .ant-pagination-item-link) {
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+}
+
+.paginationContainer :global(.ant-pagination-prev:hover .ant-pagination-item-link),
+.paginationContainer :global(.ant-pagination-next:hover .ant-pagination-item-link) {
+    background-color: #F3F4F6;
+    color: #111827;
+}
+
+.paginationContainer :global(.ant-pagination-options) {
+    display: flex;
+    align-items: center;
+    margin-left: 16px;
+}
+
+.paginationContainer :global(.ant-pagination-options-size-changer.ant-select) {
+    margin-right: 8px;
+}
+
+.paginationContainer :global(.ant-select-selector) {
+    height: 32px !important;
+    border-radius: 6px !important;
+    display: flex;
+    align-items: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .projectsGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
     .projectsGrid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -125,5 +242,16 @@
 
     .projectContent {
         padding: 1rem;
+    }
+
+    .paginationContainer {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .paginationContainer :global(.ant-pagination-options) {
+        margin-left: 0;
+        margin-top: 10px;
     }
 }

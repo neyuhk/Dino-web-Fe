@@ -55,6 +55,7 @@
 }
 
 .section-title {
+    text-align: center;
     color: var(--primary-color, #387971);
     font-size: 1.2rem;
     margin-bottom: 1.2rem;

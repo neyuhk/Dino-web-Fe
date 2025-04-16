@@ -52,7 +52,7 @@ export const LESSON_API = {
 export const SCORE_API = {
     GET_SCORES: '/score',
     GET_SCORE_BY_USER_ID: '/score/user/',
-    GET_SCORE_BY_LESSON_ID: '/score/lesson/',
+    GET_SCORE_BY_COURSE_ID: '/score/course/',
     GET_SCORE_BY_EXERCISE_ID: '/score/exercise/',
     CREATE_SCORE: '/score',
     UPDATE_SCORE: '/score/',
@@ -67,12 +67,13 @@ export const EXERCISE_API = {
     DELETE_EXERCISE: '/exercise/',
     GET_QUIZ_BY_EXERCISE_ID: '/quiz/exercise/',
     GET_ANSWER_QUIZ: '/quiz/answer',
+    GET_EXERCISE_DETAIL_FOR_TEACHER: 'quiz/exercise/teacher/',
     GET_EXERCISE_FOR_TEACHER: '/exercise/teacher/',
     GET_EXERCISE_FOR_STUDENT: 'exercise/lesson/', // +:lessonid/user/:userId
 }
 
 export const COMMENT_API = {
-    GET_COMMENTS: '/comment/all-comments/',
+    GET_COMMENTS: '/comment/commentable/',
 
     GET_COMMENT_BY_ID: '/comment/',
     CREATE_COMMENT: '/comment',
@@ -82,6 +83,7 @@ export const COMMENT_API = {
 }
 
 export const FORUM_API = {
+    GET_MY_FORUMS: '/forum/user/',
     GET_FORUMS: '/forum/userId/',
     GET_FORUM_BY_ID: '/forum/',
     GET_LIKE_FORUM_BY_ID: '/forum/like/user/',

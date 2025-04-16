@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { GraduationCap, Book, CheckCircle, AlertCircle, ChevronRight, ChevronLeft } from 'lucide-react';
+import { GraduationCap, Book, CheckCircle, AlertCircle, ChevronRight, ChevronLeft, ArrowRight, ChevronFirst, ChevronLast } from 'lucide-react';
 import styles from './LessonList.module.css';
 import { Lesson } from '../../../model/classroom.ts';
 import { getLessonByCourseId } from '../../../services/lesson.ts';
@@ -18,6 +18,10 @@ const LessonList: React.FC<LessonListProps> = ({ courseId }) => {
     const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<'all' | 'completed' | 'incomplete'>('all');
     const navigate = useNavigate();
+
+    // Pagination states
+    const [currentPage, setCurrentPage] = useState(1);
+    const [lessonsPerPage] = useState(5);
 
     useEffect(() => {
         fetchLessons();
@@ -46,6 +50,44 @@ const LessonList: React.FC<LessonListProps> = ({ courseId }) => {
         return lesson.exercises.filter(ex => !ex.isCompleted).length;
     };
 
+    // Filter lessons based on active tab
+    const getFilteredLessons = () => {
+        return lessons.filter(lesson => {
+            switch (activeTab) {
+                case 'completed':
+                    return lesson.isCompleted;
+                case 'incomplete':
+                    return !lesson.isCompleted;
+                default:
+                    return true;
+            }
+        });
+    };
+
+    // Get current lessons for pagination
+    const filteredLessons = getFilteredLessons();
+    const indexOfLastLesson = currentPage * lessonsPerPage;
+    const indexOfFirstLesson = indexOfLastLesson - lessonsPerPage;
+    const currentLessons = filteredLessons.slice(indexOfFirstLesson, indexOfLastLesson);
+    const totalPages = Math.ceil(filteredLessons.length / lessonsPerPage);
+
+    // Change page
+    const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+    const goToNextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
+    const goToPrevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
+    const goToFirstPage = () => setCurrentPage(1);
+    const goToLastPage = () => setCurrentPage(totalPages);
+
+    useEffect(() => {
+        // Reset pagination when tab changes
+        setCurrentPage(1);
+    }, [activeTab]);
+
+    // Navigate to course list
+    const handleViewCourses = () => {
+        navigate('/classroom');
+    };
+
     if (!user) {
         return <RequireAuth />;
     }
@@ -56,7 +98,7 @@ const LessonList: React.FC<LessonListProps> = ({ courseId }) => {
                 <div className={styles.loadingSpinner}>
                     <GraduationCap size={32} className={styles.loadingIcon} />
                 </div>
-                <p>Chờ xíuuuu... Hông ai iu anh bằng tôi iu anh..</p>
+                <p>Chờ xíuuuu...</p>
             </div>
         );
     }
@@ -73,24 +115,66 @@ const LessonList: React.FC<LessonListProps> = ({ courseId }) => {
         );
     }
 
-    const filteredLessons = lessons.filter(lesson => {
-        switch (activeTab) {
-            case 'completed':
-                return lesson.isCompleted;
-            case 'incomplete':
-                return !lesson.isCompleted;
-            default:
-                return true;
-        }
-    });
+    // Empty state check
+    if (lessons.length === 0) {
+        return (
+            <div className={styles.emptyState}>
+                <div className={styles.emptyContent}>
+                    <div className={styles.emptyIcon}>
+                        <GraduationCap size={48} />
+                    </div>
+                    <h2 className={styles.emptyTitle}>Bắt đầu hành trình học tập của bạn</h2>
+                    <p className={styles.emptyDescription}>
+                        Lớp học hiện chưa có bài học nào. Hãy chờ giáo viên thêm nội dung trong thời gian tới nhé!
+                    </p>
+                    <button className={styles.emptyButton} onClick={handleViewCourses}>
+                        Xem các lớp học
+                        <ArrowRight size={16} />
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    // Empty state check for filtered tabs
+    if (filteredLessons.length === 0) {
+        const emptyMessage = activeTab === 'completed'
+            ? 'Bạn chưa hoàn thành bài học nào trong khóa học này.'
+            : 'Tất cả các bài học đã được hoàn thành. Thật xuất sắc!';
+
+        return (
+            <div className={styles.container}>
+                <div className={styles.tabContainer}>
+                    {['all', 'completed', 'incomplete'].map((tab) => (
+                        <button
+                            key={tab}
+                            className={`${styles.tabButton} ${activeTab === tab ? styles.activeTab : ''}`}
+                            onClick={() => setActiveTab(tab as 'all' | 'completed' | 'incomplete')}
+                        >
+                            {tab === 'all' ? 'Tất cả' : tab === 'completed' ? 'Đã hoàn thành' : 'Chưa hoàn thành'}
+                        </button>
+                    ))}
+                </div>
+
+                <div className={styles.emptyState}>
+                    <div className={styles.emptyContent}>
+                        <div className={styles.emptyIcon}>
+                            {activeTab === 'completed'
+                                ? <Book size={48} />
+                                : <CheckCircle size={48} />}
+                        </div>
+                        <h2 className={styles.emptyTitle}>
+                            {activeTab === 'completed' ? 'Chưa có bài học nào hoàn thành' : 'Tất cả đã hoàn thành'}
+                        </h2>
+                        <p className={styles.emptyDescription}>{emptyMessage}</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.container}>
-            {/*<button className={styles.backButton} onClick={() => navigate(-1)}>*/}
-            {/*    <ChevronLeft size={20} />*/}
-            {/*    Quay lại lớp học*/}
-            {/*</button>*/}
-
             <div className={styles.tabContainer}>
                 {['all', 'completed', 'incomplete'].map((tab) => (
                     <button
@@ -104,7 +188,7 @@ const LessonList: React.FC<LessonListProps> = ({ courseId }) => {
             </div>
 
             <div className={styles.lessonList}>
-                {filteredLessons.map((lesson) => (
+                {currentLessons.map((lesson) => (
                     <div key={lesson._id} className={styles.lessonCard}>
                         <div className={styles.lessonHeader} onClick={() => handleLessonClick(lesson._id)}>
                             <div className={styles.lessonInfo}>
@@ -130,6 +214,45 @@ const LessonList: React.FC<LessonListProps> = ({ courseId }) => {
                     </div>
                 ))}
             </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className={styles.paginationContainer}>
+                    <button
+                        className={`${styles.pageButton} ${currentPage === 1 ? styles.disabled : ''}`}
+                        onClick={goToFirstPage}
+                        disabled={currentPage === 1}
+                    >
+                        <ChevronFirst size={16} />
+                    </button>
+                    <button
+                        className={`${styles.pageButton} ${currentPage === 1 ? styles.disabled : ''}`}
+                        onClick={goToPrevPage}
+                        disabled={currentPage === 1}
+                    >
+                        <ChevronLeft size={16} />
+                    </button>
+
+                    <span className={styles.pageInfo}>
+                        Trang {currentPage} / {totalPages}
+                    </span>
+
+                    <button
+                        className={`${styles.pageButton} ${currentPage === totalPages ? styles.disabled : ''}`}
+                        onClick={goToNextPage}
+                        disabled={currentPage === totalPages}
+                    >
+                        <ChevronRight size={16} />
+                    </button>
+                    <button
+                        className={`${styles.pageButton} ${currentPage === totalPages ? styles.disabled : ''}`}
+                        onClick={goToLastPage}
+                        disabled={currentPage === totalPages}
+                    >
+                        <ChevronLast size={16} />
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

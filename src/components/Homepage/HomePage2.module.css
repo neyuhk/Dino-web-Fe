@@ -1,0 +1,545 @@
+/* Base Styles */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    font-family: var(--font-secondary), sans-serif;
+    color: var(--text-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    font-weight: 700;
+    font-family: var(--font-primary), sans-serif;
+    color: var(--text-dark);
+}
+
+p {
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+/* Gradient Title */
+.titleGradient {
+    color: var(--primary-color);
+}
+
+/* Button Styles */
+.primaryBtn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.primaryBtn:hover {
+    background-color: var(--primary-dark);
+}
+
+.secondaryBtn {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    border-radius: 4px;
+    padding: 10px 22px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.secondaryBtn:hover {
+    background-color: rgba(56, 121, 113, 0.1);
+}
+
+/* Section Common Styles */
+.sectionHeader {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.sectionHeader h2 {
+    font-size: 36px;
+    margin-bottom: 12px;
+}
+
+.sectionHeader p {
+    font-size: 18px;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Hero Section */
+@keyframes fadeUp {
+    0% {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.heroSection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 80px 0;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+/* Hiển thị khi được kích hoạt */
+.heroSection.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.heroContent {
+    flex: 1;
+    padding-right: 40px;
+}
+
+.heroContent h1 {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.heroContent p {
+    font-size: 20px;
+    margin-bottom: 32px;
+}
+
+.heroBtns {
+    display: flex;
+    gap: 16px;
+}
+
+.heroImage {
+    flex: 1;
+    text-align: right;
+}
+
+.heroImage img {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+/* Explore Section */
+.exploreSection {
+    padding: 80px 0;
+    /*background-color: var(--background-secondary);*/
+}
+
+.videoContainer {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.videoCard {
+    flex: 1;
+    background-color: var(--background-color);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.videoCard:hover {
+    transform: translateY(-5px);
+}
+
+.videoWrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3; /* Giữ tỷ lệ cho cả video & ảnh */
+    overflow: hidden;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000; /* tránh nhấp nháy khi load */
+}
+.videoWrapper video,
+.videoWrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.videoCard h3 {
+    padding: 16px 16px 8px;
+    font-size: 20px;
+}
+
+.videoCard p {
+    padding: 0 16px 16px;
+    font-size: 16px;
+}
+
+/* Create Section */
+.createSection {
+    padding: 80px 0;
+}
+
+.projectShowcase {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.projectVideo {
+    flex: 1;
+    position: relative;
+}
+
+.projectVideo img {
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.projectInfo {
+    flex: 1;
+}
+
+.projectInfo h3 {
+    font-size: 28px;
+    margin-bottom: 16px;
+}
+
+.projectInfo p {
+    margin-bottom: 24px;
+    font-size: 17px;
+}
+
+/* CyberPi Section */
+.cyberpiSection {
+    padding: 80px 0;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.cyberpiContent {
+    flex: 1;
+}
+
+.cyberpiContent h2 {
+    font-size: 32px;
+    margin-bottom: 16px;
+}
+
+.cyberpiContent p {
+    margin-bottom: 24px;
+    font-size: 17px;
+}
+
+.featureList {
+    margin-bottom: 32px;
+    padding-left: 24px;
+}
+
+.featureList li {
+    margin-bottom: 12px;
+    font-size: 16px;
+    color: var(--text-secondary);
+}
+
+.cyberpiGallery {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.galleryImg {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.galleryImg:hover {
+    transform: scale(1.05);
+}
+
+/* School Offers Section */
+.schoolOffersSection {
+    padding: 80px 20px;
+    background-color: var(--background-primary);
+}
+
+.offersContainer {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.offerCard {
+    flex: 1;
+    min-width: 250px;
+    background-color: var(--background-color);
+    border-radius: 8px;
+    padding: 32px 24px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.offerCard:hover {
+    transform: translateY(-5px);
+}
+
+.offerIcon {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 16px;
+}
+
+.offerCard h3 {
+    margin-bottom: 12px;
+    font-size: 20px;
+}
+
+.offerCard p {
+    font-size: 16px;
+}
+
+/* Testimonials Section */
+.testimonialsSection {
+    padding: 80px 0;
+}
+
+.testimonialCards {
+    display: flex;
+    gap: 24px;
+    justify-content: space-between;
+}
+
+.testimonialCard {
+    flex: 1;
+    background-color: var(--background-color);
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.testimonialContent {
+    margin-bottom: 24px;
+}
+
+.testimonialContent p {
+    font-size: 16px;
+    font-style: italic;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+.testimonialAuthor {
+    display: flex;
+    align-items: center;
+}
+
+.authorAvatar {
+    width: 60px;
+    height: auto;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-right: 16px;
+}
+
+.testimonialAuthor h4 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.testimonialAuthor p {
+    margin: 4px 0 0;
+    font-size: 14px;
+    color: var(--gray-dark);
+}
+
+/* Shop Confidently Section */
+.shopConfidentlySection {
+    padding: 80px 0;
+    background-color: var(--background-secondary);
+}
+
+.servicesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+}
+
+.serviceCard {
+    background-color: var(--background-color);
+    border-radius: 8px;
+    padding: 32px 24px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.serviceIcon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+}
+
+.serviceCard h3 {
+    margin-bottom: 12px;
+    font-size: 20px;
+}
+
+.serviceCard p {
+    font-size: 16px;
+}
+
+/* Call to Action Section */
+.ctaSection {
+    padding: 80px 0;
+    text-align: center;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 8px;
+    margin: 40px 0;
+}
+
+.ctaSection h2 {
+    color: white;
+    margin-bottom: 16px;
+    font-size: 32px;
+}
+
+.ctaSection p {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 32px;
+    font-size: 18px;
+}
+
+.ctaForm {
+    display: flex;
+    max-width: 500px;
+    margin: 0 auto;
+    align-items: center;
+    justify-content: center;
+}
+
+.ctaInput {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 4px 0 0 4px;
+    font-size: 16px;
+}
+
+.ctaForm .primaryBtn {
+    border-radius: 0 4px 4px 0;
+    background-color: var(--primary-dark);
+    color: white;
+}
+
+.ctaForm .primaryBtn:hover {
+    background-color: var(--text-dark);
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+    .heroSection {
+        flex-direction: column;
+        text-align: center;
+        padding: 60px 0;
+    }
+
+    .heroContent {
+        padding-right: 0;
+        margin-bottom: 40px;
+    }
+
+    .heroBtns {
+        justify-content: center;
+    }
+
+    .videoContainer,
+    .testimonialCards {
+        flex-direction: column;
+    }
+
+    .projectShowcase,
+    .cyberpiSection {
+        flex-direction: column;
+        gap: 60px;
+    }
+
+    .cyberpiSection {
+        text-align: center;
+    }
+
+    .featureList {
+        text-align: left;
+        max-width: 400px;
+        margin: 0 auto 32px;
+    }
+
+    .videoCard,
+    .testimonialCard {
+        margin-bottom: 24px;
+    }
+
+    .ctaForm {
+        flex-direction: column;
+    }
+
+    .ctaInput {
+        margin-bottom: 16px;
+        border-radius: 4px;
+    }
+
+    .ctaForm .primaryBtn {
+        border-radius: 4px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sectionHeader h2 {
+        font-size: 28px;
+    }
+
+    .heroContent h1 {
+        font-size: 36px;
+    }
+
+    .heroBtns {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .secondaryBtn {
+        margin-bottom: 8px;
+    }
+
+    .offersContainer {
+        flex-direction: column;
+    }
+
+    .offerCard {
+        margin-bottom: 16px;
+    }
+}

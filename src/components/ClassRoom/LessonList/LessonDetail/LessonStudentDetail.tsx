@@ -115,7 +115,7 @@ const LessonStudentDetail: React.FC = () => {
                                 {lesson.images.map((img, index) => (
                                     <img
                                         key={index}
-                                        src={img}
+                                        src={img || "https://i.pinimg.com/736x/90/53/4d/90534d6e946c9a335218fa69245ead02.jpg"}
                                         alt={`Lesson image ${index + 1}`}
                                         className={styles.lessonImage}
                                     />
@@ -145,8 +145,12 @@ const LessonStudentDetail: React.FC = () => {
                                 return (
                                     <div
                                         key={exercise._id}
-                                        className={`${styles.exerciseItem} ${expired || exercise.score ? styles.exerciseExpired : ''}`}
-                                        onClick={() => handleSelectExercise(exercise, lesson._id)}
+                                        className={`${styles.exerciseItem} ${expired || exercise.score !== null ? styles.exerciseExpired : ''}`}
+                                        onClick={() => {
+                                            if (!expired && exercise.score === null) {
+                                                handleSelectExercise(exercise, lesson._id);
+                                            }
+                                        }}
                                     >
                                         <div className={styles.exerciseInfo}>
                                             <span className={styles.exerciseTitle}>{exercise.title}</span>
@@ -160,7 +164,7 @@ const LessonStudentDetail: React.FC = () => {
                                                     </span>
                                                 </div>
                                             )}
-                                            {(exercise.score !== undefined || expired) && (
+                                            {(exercise.score !== null || expired) && (
                                                 <span className={styles.exerciseScore}>
                                                     Điểm: {expired && !exercise.isCompleted ? '0' : exercise.score ?? 0}/10
                                                 </span>
@@ -169,10 +173,10 @@ const LessonStudentDetail: React.FC = () => {
                                         <span className={`
                                             ${styles.exerciseStatus} 
                                             
-                                            ${exercise.score ? styles.completed : ''} 
+                                            ${exercise.score !== null ? styles.completed : ''} 
                                             ${expired && !exercise.score ? styles.expired : ''}
                                         `}>
-                                            {exercise.score
+                                            {exercise.score !== null
                                                 ? 'Đã hoàn thành'
                                                 : 'Chưa hoàn thành'}
                                         </span>

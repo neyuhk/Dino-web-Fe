@@ -13,7 +13,7 @@ interface Section3Props {
 const Section3: React.FC<Section3Props> = ({ searchQuery }) => {
     const [projects, setProjects] = useState<Project[]>([])
     const [page, setPage] = useState(1)
-    const [perPage, setPerPage] = useState(10)
+    const [perPage, setPerPage] = useState(12) // Default to 12 (divisible by 4)
     const [total, setTotal] = useState(0)
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate();
@@ -90,6 +90,16 @@ const Section3: React.FC<Section3Props> = ({ searchQuery }) => {
         navigate(`/projects/project-detail/${projectId}`);
     };
 
+    // Prevent event bubbling for interaction buttons
+    const handleInteractionClick = (
+        e: React.MouseEvent,
+        projectId: string,
+        type: 'like' | 'save' | 'download'
+    ) => {
+        e.stopPropagation();
+        handleInteraction(projectId, type);
+    };
+
     return (
         <section className={styles.section3}>
             <div className={styles.projectsGrid}>
@@ -137,8 +147,9 @@ const Section3: React.FC<Section3Props> = ({ searchQuery }) => {
                                 <div className={styles.interactions}>
                                     <button
                                         className={`${styles.interactionButton} ${interactions[project._id]?.liked ? styles.liked : ''}`}
-                                        onClick={() =>
-                                            handleInteraction(
+                                        onClick={(e) =>
+                                            handleInteractionClick(
+                                                e,
                                                 project._id,
                                                 'like'
                                             )
@@ -149,8 +160,9 @@ const Section3: React.FC<Section3Props> = ({ searchQuery }) => {
                                     </button>
                                     <button
                                         className={`${styles.interactionButton} ${interactions[project._id]?.saved ? styles.saved : ''}`}
-                                        onClick={() =>
-                                            handleInteraction(
+                                        onClick={(e) =>
+                                            handleInteractionClick(
+                                                e,
                                                 project._id,
                                                 'save'
                                             )
@@ -161,8 +173,9 @@ const Section3: React.FC<Section3Props> = ({ searchQuery }) => {
                                     </button>
                                     <button
                                         className={styles.interactionButton}
-                                        onClick={() =>
-                                            handleInteraction(
+                                        onClick={(e) =>
+                                            handleInteractionClick(
+                                                e,
                                                 project._id,
                                                 'download'
                                             )
@@ -185,8 +198,7 @@ const Section3: React.FC<Section3Props> = ({ searchQuery }) => {
                     total={total}
                     onChange={handlePageChange}
                     showSizeChanger
-                    align="end"
-                    pageSizeOptions={['5', '10', '20', '50']}
+                    pageSizeOptions={['4', '8', '12', '16', '20', '24']} // All divisible by 4
                     showTotal={(total) => `${total} projects in total`}
                 />
             </div>

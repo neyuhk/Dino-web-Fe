@@ -1,19 +1,22 @@
-// Post.tsx
-import React, { useEffect, useState } from 'react'
-import { Heart, MessageCircle, Repeat2, Share2 } from 'lucide-react'
+// Post.tsx - Cập nhật component
+import React, { useEffect, useState, useRef } from 'react'
+import { Heart, MessageCircle, Repeat2, Share2, Trash2, ChevronUp, ChevronDown } from 'lucide-react'
 import styles from './post.module.css';
 import { Forum } from '../../../model/model.ts'
 import CommentComponent from '../../Comment/Comment.tsx'
 import { convertDateTimeToDate } from '../../../helpers/convertDateTime.ts'
-import { likePost, repost } from '../../../services/forum.ts'
+import { likePost, repost, deleteForum } from '../../../services/forum.ts'
 import { useSelector } from 'react-redux'
 import { COMMENT_TYPE } from '../../../enum/commentTableType.ts'
+import { Popconfirm, message } from 'antd'
 
 interface ExtendedPostProps extends Forum {
-    // commentableType: string;
-    // onComment: (id: string) => void;
+    onLikeStatusChange?: (postId: string, isLikedNew: boolean) => void;
+    onRepostStatusChange?: (postId: string, isRepostedNew: boolean) => void;
+    onDeletePost?: (postId: string) => void;
+    scrollToPost: () => void;
+    postRef: (el: HTMLDivElement | null) => void;
 }
-
 
 const Post: React.FC<ExtendedPostProps> = ({
                                                _id,
@@ -26,57 +29,136 @@ const Post: React.FC<ExtendedPostProps> = ({
                                                comment_count,
                                                repost_count,
                                                createdAt,
-                                               // commentableType,
                                                is_liked,
                                                is_reposted,
-                                               // onComment,
+                                               onLikeStatusChange,
+                                               onRepostStatusChange,
+                                               onDeletePost,
+                                               scrollToPost,
+                                               postRef,
                                            }) => {
     const { user } = useSelector((state: any) => state.auth)
+    const commentSectionRef = useRef<HTMLDivElement>(null);
+    const postElementRef = useRef<HTMLDivElement>(null);
 
     const [showComments, setShowComments] = useState(false);
     const [isLiked, setIsLiked] = useState(is_liked)
     const [isReposted, setIsReposted] = useState(is_reposted)
     const [likeCount, setLikeCount] = useState(like_count)
     const [repostCount, setRepostCount] = useState(repost_count)
-    const handleCommentClick = (postId: string) => {
-        setShowComments(!showComments);
-        // onComment(postId);
+    const [localCommentCount, setLocalCommentCount] = useState(comment_count);
+
+    const isCurrentUserPost = user_id === user._id || user_id._id === user._id;
+    const authorInfo = isCurrentUserPost ? {
+        _id: user._id,
+        username: user.username,
+        avatar: user.avatar,
+        // Thêm các thông tin khác nếu cần
+    } : user_id;
+
+    // Kết nối ref với ref callback từ parent component
+    useEffect(() => {
+        if (postElementRef.current) {
+            postRef(postElementRef.current);
+        }
+
+        // Cleanup function
+        return () => {
+            postRef(null);
+        };
+    }, [postRef]);
+
+    const handleCommentClick = () => {
+        const nextState = !showComments;
+        setShowComments(nextState);
+
+        setTimeout(() => {
+            if (nextState) {
+                // Nếu sắp hiển thị comment → scroll tới comment section
+                if (commentSectionRef.current) {
+                    commentSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            } else {
+                scrollToPost();
+            }
+        }, 100);
     };
 
-    useEffect(() => {
-        const fetchPostData = async () => {
+    const onLike = async (id: string) => {
+        const newLikeStatus = !isLiked;
+        setIsLiked(newLikeStatus);
+        setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
+        await likePost(id, user._id);
 
+        // Thông báo cho component cha về sự thay đổi
+        if (onLikeStatusChange) {
+            onLikeStatusChange(id, newLikeStatus);
         }
-    }, [])
-
-   const onLike = async (id : string) => {
-        setIsLiked(!isLiked)
-       setLikeCount(isLiked ? likeCount - 1 : likeCount + 1)
-       await likePost(id, user._id)
     }
 
-    const onRepost = async (id : string) => {
-        setIsReposted(!isReposted)
-        setRepostCount(isReposted ? repostCount - 1 : repostCount + 1)
-        await repost(id, user._id)
+    const onRepost = async (id: string) => {
+        const newRepostStatus = !isReposted;
+        setIsReposted(newRepostStatus);
+        setRepostCount(isReposted ? repostCount - 1 : repostCount + 1);
+        await repost(id, user._id);
+
+        // Thông báo cho component cha về sự thay đổi
+        if (onRepostStatusChange) {
+            onRepostStatusChange(id, newRepostStatus);
+        }
     }
+
+    // Callback to update comment count when a comment is added or deleted
+    const handleCommentCountChange = (count: number) => {
+        setLocalCommentCount(count);
+    };
+
+    const handleDeletePost = async () => {
+        try {
+            await deleteForum(_id);
+            message.success('Xóa bài đăng thành công');
+
+            // Thông báo cho component cha để cập nhật UI
+            if (onDeletePost) {
+                onDeletePost(_id);
+            }
+        } catch (error) {
+            console.error('Lỗi khi xóa bài đăng:', error);
+            message.error('Không thể xóa bài đăng. Vui lòng thử lại sau.');
+        }
+    };
 
     return (
-        <div className={styles.container}>
+        <div className={styles.container} ref={postElementRef}>
             <div className={styles.header}>
                 <img
-                    src={user_id.avatar || "https://i.pinimg.com/474x/9f/07/27/9f072737e28d2e21dc7adbd35db8aede.jpg"}
-                    alt={`${user_id.username}'s avatar`}
+                    src={authorInfo.avatar || "/MockData/avt-def.jpg"}
+                    alt={`${authorInfo.username}'s avatar`}
                     className={styles.avatar}
                 />
                 <div className={styles.authorInfo}>
-                    <h3 className={styles.authorName}>{user_id.username}</h3>
+                    <h3 className={styles.authorName}>{authorInfo.username}</h3>
                     <p className={styles.time}>{convertDateTimeToDate(createdAt)}</p>
                 </div>
+
+                {/* Nút xóa bài đăng - chỉ hiển thị nếu là người đăng */}
+                {isCurrentUserPost && (
+                    <Popconfirm
+                        title="Xóa bài đăng"
+                        description="Bạn có chắc chắn muốn xóa bài đăng này không?"
+                        onConfirm={handleDeletePost}
+                        okText="Có"
+                        cancelText="Không"
+                    >
+                        <button className={styles.deleteButton}>
+                            <Trash2 size={20} className={styles.deleteIcon} />
+                        </button>
+                    </Popconfirm>
+                )}
             </div>
 
             <div className={styles.content}>
-                {title && <h2 className={styles.title}>{title}</h2> }
+                {title && <h2 className={styles.title}>{title}</h2>}
                 {description && <p className={styles.text}>{description}</p>}
                 {images && (
                     <img
@@ -100,14 +182,14 @@ const Post: React.FC<ExtendedPostProps> = ({
                 </button>
 
                 <button
-                    onClick={() => handleCommentClick(_id)}
+                    onClick={handleCommentClick}
                     className={styles.actionButton}
                 >
                     <MessageCircle
                         size={20}
                         className={showComments ? styles.commentActive : styles.actionIcon}
                     />
-                    <span className={styles.actionCount}>{comment_count}</span>
+                    <span className={styles.actionCount}>{localCommentCount}</span>
                 </button>
 
                 <button
@@ -122,14 +204,29 @@ const Post: React.FC<ExtendedPostProps> = ({
                 </button>
             </div>
 
-            <div className={`${styles.commentSection} ${showComments ? styles.commentSectionExpanded : ''}`}>
+            <div
+                ref={commentSectionRef}
+                className={`${styles.commentSection} ${showComments ? styles.commentSectionExpanded : ''}`}
+            >
                 {showComments && (
                     <CommentComponent
                         commentableId={_id}
-                        commentableType = {COMMENT_TYPE.FORUM}
+                        commentableType={COMMENT_TYPE.FORUM}
+                        onCommentCountChange={handleCommentCountChange}
                     />
                 )}
             </div>
+
+            {/* Bottom comment toggle button - visible when comments are expanded */}
+            {showComments && (
+                <button
+                    className={`${styles.commentToggleButton} ${styles.bottomToggle}`}
+                    onClick={handleCommentClick}
+                >
+                    <ChevronUp size={16} className={styles.commentToggleIcon} />
+                    <span>Ẩn bình luận</span>
+                </button>
+            )}
         </div>
     );
 };

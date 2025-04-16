@@ -23,7 +23,6 @@ const ProjectsPage: React.FC = () => {
     return (
         <div className={styles.projectsPage}>
             <Section1  onSearch={handleSearch}/>
-            {/*<Section2 onSearch={handleSearch} />*/}
             <Section3 searchQuery={searchQuery} />
         </div>
     );

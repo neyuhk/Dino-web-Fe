@@ -333,3 +333,19 @@
         box-shadow: none;
     }
 }
+.loadMoreTrigger{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.loadingContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.loadingIcon{
+    color: var(--primary-color);
+}
+.textPrimary {
+    color: var(--primary-color);
+}

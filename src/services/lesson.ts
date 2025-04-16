@@ -60,7 +60,7 @@ export const getQuizByExerciseId = async (exerciseId: string) => {
 }
 
 export const getQuizForTeacher = async (exerciseId: string) => {
-    return (await http.get(EXERCISE_API.GET_EXERCISE_FOR_TEACHER + exerciseId)).data
+    return (await http.get(EXERCISE_API.GET_EXERCISE_DETAIL_FOR_TEACHER + exerciseId)).data
 }
 
 export const getAnsweredQuiz = async (submitAnswerReq : SubmitAnswerReq) => {

@@ -2,7 +2,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Oswald:wght@200..700&display=swap');
 
 .section {
-    background-color: var(--background-transparent);
     padding: 0px 10px 80px;
 }
 
@@ -42,6 +41,7 @@
     display: flex;
     animation: scroll 30s linear infinite;
     gap: 20px;
+    padding: 10px;
 }
 
 .schoolCard {
@@ -52,6 +52,7 @@
     display: flex;
     align-items: center;
     gap: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);;
 }
 
 .schoolLogo {

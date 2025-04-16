@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Avatar, Button, Dropdown, Modal } from 'antd';
-import { UserOutlined, MenuOutlined, CloseOutlined } from '@ant-design/icons';
+import { UserOutlined, MenuOutlined, CloseOutlined, DownOutlined } from '@ant-design/icons';
 import './styles/header.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { PATHS } from '../../router/path.ts';
@@ -82,8 +82,20 @@ const HeaderComponent: React.FC = () => {
         },
         {
             key: 'classroom',
-            title: 'Lớp học',
+            title: 'Khóa học của tôi',
             href: PATHS.CLASSROOM || '/classroom',
+        },
+    ];
+
+    // Tạo menu dropdown cho tab Giới thiệu
+    const aboutDropdownItems = [
+        {
+            key: 'our-product',
+            label: <Link to="/our-product" onClick={(e) => handleNavigation(e, '/our-product')}>Sản phẩm của chúng tôi</Link>,
+        },
+        {
+            key: 'about-us',
+            label: <Link to="/about-us" onClick={(e) => handleNavigation(e, '/about-us')}>Về chúng tôi</Link>,
         },
     ];
 
@@ -103,6 +115,11 @@ const HeaderComponent: React.FC = () => {
         return location.pathname.startsWith(path);
     };
 
+    // Kiểm tra nếu đang ở trang about-us hoặc our-product
+    const isAboutSectionActive = () => {
+        return isActive('/about-us') || isActive('/our-product');
+    };
+
     return (
         <>
             <header className={`modern-header ${isTransitioning ? 'transitioning' : ''}`}>
@@ -112,7 +129,7 @@ const HeaderComponent: React.FC = () => {
                         className="logo"
                         onClick={(e) => handleNavigation(e, '/')}
                     >
-                        <img className="logo" src={'src/assets/dinologo-nobgr.png'}/>
+                        <img className="logo" src={'https://raw.githubusercontent.com/NguyenBaHoangKim/store-image/main/quiz/dinologo-nobgr.pngcbfecc1c-0b6c-4fab-abb8-00fbd9dc97f0-1744633033359'}/>
                     </Link>
 
                     <div className="mobile-toggle" onClick={toggleMobileMenu}>
@@ -133,6 +150,17 @@ const HeaderComponent: React.FC = () => {
                                 {item.title}
                             </Link>
                         ))}
+
+                        {/* Dropdown menu cho Giới thiệu */}
+                        <Dropdown
+                            menu={{ items: aboutDropdownItems }}
+                            placement="bottom"
+                            trigger={['click']}
+                        >
+                            <div className={`nav-item dropdown-trigger ${isAboutSectionActive() ? 'active' : ''}`}>
+                                Giới thiệu <DownOutlined style={{ fontSize: '12px', marginLeft: '5px' }} />
+                            </div>
+                        </Dropdown>
                     </nav>
 
                     <div className="auth-section">

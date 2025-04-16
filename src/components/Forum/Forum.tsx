@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { PlusCircle, Home, BookOpen, ThumbsUp, MessageSquare, Repeat, User, ChevronDown } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react'
+import { PlusCircle, Home, BookOpen, ThumbsUp, MessageSquare, Repeat, User, ChevronDown, Loader } from 'lucide-react';
 import styles from './Forum.module.css';
 import Post from './Post/Post.tsx'
 import { Forum } from '../../model/model.ts';
 import { useSelector } from 'react-redux';
-import { getForums, getLikeForum, getRepostForum } from '../../services/forum.ts'
+import { getForums, getLikeForum, getMyForums, getRepostForum } from '../../services/forum.ts'
 import { message, Drawer } from 'antd';
 import EmptyState from './EmptyState/EmptyState.tsx'
 import CreatePostModal from './CreatePost/CreatePostModal.tsx'
@@ -26,12 +26,20 @@ const ForumPage: React.FC = () => {
     const [selectedMenu, setSelectedMenu] = useState('home');
     const [forumList, setForumList] = useState<Forum[]>([]);
     const [isLoading, setLoading] = useState(true);
+    const [isLoadingMore, setLoadingMore] = useState(false);
     const [hasError, fetchDataForumError] = useState(false);
+    const [hasMorePosts, setHasMorePosts] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const perPage = 5;
 
     const [selectedClass, setSelectedClass] = useState<string | null>(null);
     const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
     const [isClassExpanded, setIsClassExpanded] = useState(false);
+
+    const postsContainerRef = useRef<HTMLDivElement>(null);
+    const observerRef = useRef<IntersectionObserver | null>(null);
+    const loadMoreTriggerRef = useRef<HTMLDivElement>(null);
 
     const myClasses: ClassItem[] = [
         { id: 'class1', name: 'Lớp Toán', image: 'https://i.pinimg.com/474x/f0/97/91/f097913bdf5b919f5d336036f06ebc15.jpg' },
@@ -40,37 +48,107 @@ const ForumPage: React.FC = () => {
     ];
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                let postList;
-                switch (selectedMenu) {
-                    case 'home':
-                        postList = await getForums(user._id);
-                        break;
-                    case 'reposted':
-                        postList = await getRepostForum(user._id);
-                        break;
-                    case 'liked':
-                        postList = await getLikeForum(user._id);
-                        break;
-                    default:
-                        postList = [];
-                        break;
-                }
+    const postRefs = useRef<Record<string, HTMLDivElement | null>>({});
+    const scrollToPost = (postId: string) => {
+        const postEl = postRefs.current[postId];
+        if (postEl) {
+            postEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); // 👈 scroll ra giữa
+        }
+    };
 
-                setLoading(false)
-                setForumList(postList.data)
-                // setFilteredData(forums.data)
-            } catch (error) {
-                message.error('Failed to fetch forums')
-                fetchDataForumError(true);
-                setLoading(false)
+    const fetchData = async (page: number, reset: boolean = false) => {
+        try {
+            let endpoint;
+            let loadingState = page === 1 ? setLoading : setLoadingMore;
+
+            loadingState(true);
+
+            switch (selectedMenu) {
+                case 'home':
+                    endpoint = getForums;
+                    break;
+                case 'reposted':
+                    endpoint = getRepostForum;
+                    break;
+                case 'liked':
+                    endpoint = getLikeForum;
+                    break;
+                case 'me':
+                    endpoint = getMyForums;
+                    break;
+                default:
+                    endpoint = getForums;
+                    break;
             }
+
+            const response = await endpoint(user._id, page, perPage);
+
+            if (reset) {
+                setForumList(response.data);
+            } else {
+                setForumList(prev => [...prev, ...response.data]);
+            }
+
+            // Kiểm tra xem còn bài viết để tải không
+            setHasMorePosts(response.data.length === perPage);
+
+            loadingState(false);
+            fetchDataForumError(false);
+        } catch (error) {
+            message.error('Không thể tải bài viết. Vui lòng thử lại sau.');
+            fetchDataForumError(true);
+            setLoading(false);
+            setLoadingMore(false);
+        }
+    };
+
+    // Khởi tạo và thiết lập Intersection Observer
+    useEffect(() => {
+        const options = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.5,
         };
 
-        fetchData();
+        const observer = new IntersectionObserver((entries) => {
+            const [entry] = entries;
+            if (entry.isIntersecting && hasMorePosts && !isLoadingMore && !isLoading) {
+                loadMorePosts();
+            }
+        }, options);
+
+        observerRef.current = observer;
+
+        return () => {
+            if (observerRef.current) {
+                observerRef.current.disconnect();
+            }
+        };
+    }, [hasMorePosts, isLoadingMore, isLoading]);
+
+    // Quan sát element trigger
+    useEffect(() => {
+        if (loadMoreTriggerRef.current && observerRef.current) {
+            observerRef.current.disconnect();
+            observerRef.current.observe(loadMoreTriggerRef.current);
+        }
+    }, [forumList]);
+
+    // Gọi API ban đầu khi component mount hoặc khi selectedMenu thay đổi
+    useEffect(() => {
+        setCurrentPage(1);
+        setForumList([]);
+        setHasMorePosts(true);
+        fetchData(1, true);
     }, [selectedMenu]);
+
+    const loadMorePosts = () => {
+        if (!isLoadingMore && hasMorePosts) {
+            const nextPage = currentPage + 1;
+            setCurrentPage(nextPage);
+            fetchData(nextPage);
+        }
+    };
 
     const handleMenuClick = (menuId: string) => {
         console.log("menuId", menuId);
@@ -92,6 +170,26 @@ const ForumPage: React.FC = () => {
         setIsMobileDrawerOpen(false);
     };
 
+    const handleLikeStatusChange = (postId: string, isLikedNew: boolean) => {
+        if (selectedMenu === 'liked' && !isLikedNew) {
+            setForumList(prev => {
+                const newList = prev.filter(post => post._id !== postId);
+                return newList;
+            });
+        }
+    };
+
+    const handleRepostStatusChange = (postId: string, isRepostedNew: boolean) => {
+        if (selectedMenu === 'reposted' && !isRepostedNew) {
+            setForumList(prev => prev.filter(post => post._id !== postId));
+        }
+    };
+
+    const handleDeletePost = (postId: string) => {
+        // Loại bỏ bài đăng đã xóa khỏi danh sách
+        setForumList(prev => prev.filter(post => post._id !== postId));
+    };
+
     const menuItems: MenuItem[] = [
         { id: 'home', icon: Home, label: 'Trang chủ' },
         { id: 'class', icon: BookOpen, label: 'Lớp học' },
@@ -108,7 +206,9 @@ const ForumPage: React.FC = () => {
                 onClose={() => setIsCreateModalOpen(false)}
                 userId={user._id}
                 onSuccess={() => {
-                    window.location.reload()
+                    // Refresh lại danh sách bài post sau khi tạo mới
+                    setCurrentPage(1);
+                    fetchData(1, true);
                 }}
             />
 
@@ -179,8 +279,8 @@ const ForumPage: React.FC = () => {
                                             isClassExpanded
                                                 ? styles.classSubmenuActive
                                                 : !isClassExpanded
-                                                  ? styles.classSubmenuClosing
-                                                  : ''
+                                                    ? styles.classSubmenuClosing
+                                                    : ''
                                         }`}
                                     >
                                         {myClasses.map((classItem) => (
@@ -227,31 +327,61 @@ const ForumPage: React.FC = () => {
                         alt="User Avatar"
                         className={styles.avatar}
                     />
-                    <button className={styles.mobileCreateButton}>
+                    <button className={styles.mobileCreateButton} onClick={() => setIsCreateModalOpen(true)}>
                         <PlusCircle size={24} />
                     </button>
                 </div>
-
-                <div className={styles.postsContainer}>
+                <div className={styles.postsContainer} ref={postsContainerRef}>
+                    {/* Hiển thị loading state cho lần load đầu tiên */}
                     {isLoading ? (
                         <div className="flex justify-center items-center h-64">
-                            <p>Đang tải...</p>
+                            <Loader size={24} className={styles.loadingIcon} />
+                            <p className="ml-2">Đang tải...</p>
                         </div>
-                    ) : hasError ? ( // Kiểm tra lỗi trước tiên
+                    ) : hasError ? (
                         <EmptyState
                             selectedMenu={selectedMenu}
-                            isError={false} // Đặt cờ lỗi true nhows suwra laij
-                            errorMessage="Không thể tải dữ liệu. Vui lòng thử lại." // Thông báo lỗi tùy chỉnh
+                            isError={true}
+                            errorMessage="Không thể tải dữ liệu. Vui lòng thử lại."
                         />
-                    ) : forumList.length > 0 ? ( // Hiển thị danh sách bài viết nếu có dữ liệu
-                        forumList.map((post) => (
-                            <Post key={post._id} {...post} />
-                        ))
+                    ) : forumList.length > 0 ? (
+                        <>
+                            {forumList.map((post) => (
+                                <Post
+                                    key={post._id}
+                                    {...post}
+                                    postRef={(el) => (postRefs.current[post._id] = el)}
+                                    scrollToPost={() => scrollToPost(post._id)}
+                                    onLikeStatusChange={handleLikeStatusChange}
+                                    onRepostStatusChange={handleRepostStatusChange}
+                                    onDeletePost={handleDeletePost}
+                                />
+                            ))}
+
+                            {/* Load more trigger div - quan sát khi người dùng cuộn đến đây */}
+                            <div
+                                ref={loadMoreTriggerRef}
+                                className={styles.loadMoreTrigger}
+                                style={{ height: '20px', margin: '20px 0' }}
+                            >
+                                {isLoadingMore && (
+                                    <div className={styles.loadingContainer}>
+                                        <Loader size={24} className={styles.loadingIcon} />
+                                        <p className="ml-2">Đang tải thêm...</p>
+                                    </div>
+                                )}
+
+                                {!hasMorePosts && !isLoadingMore && forumList.length > 0 && (
+                                    <div  className={styles.textPrimary}>
+                                        Đã hiển thị tất cả bài viết
+                                    </div>
+                                )}
+                            </div>
+                        </>
                     ) : (
-                        // Trường hợp không có dữ liệu nhưng không lỗi
                         <EmptyState
                             selectedMenu={selectedMenu}
-                            isError={false} // Không phải trạng thái lỗi
+                            isError={false}
                         />
                     )}
                 </div>

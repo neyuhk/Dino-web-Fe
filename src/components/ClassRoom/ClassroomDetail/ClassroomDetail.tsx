@@ -141,23 +141,6 @@ const ClassroomDetailPage: React.FC = () => {
                 <h2>Khóa học</h2>
                 <LessonList courseId={classroom._id} />
             </div>
-
-            {/* Students Section */}
-            {/*<div className={styles.studentsSection}>*/}
-            {/*    <h2>Học viên ({classroom.students?.length || 0})</h2>*/}
-            {/*    <div className={styles.studentGrid}>*/}
-            {/*        {classroom.students?.map((student) => (*/}
-            {/*            <div key={student._id} className={styles.studentCard}>*/}
-            {/*                <img src={student.avatar} alt={student.name} />*/}
-            {/*                <h4>{student.username}</h4>*/}
-            {/*                <p>{student.email}</p>*/}
-            {/*                <p className={styles.phoneNumber}>*/}
-            {/*                    {student.phonenumber}*/}
-            {/*                </p>*/}
-            {/*            </div>*/}
-            {/*        ))}*/}
-            {/*    </div>*/}
-            {/*</div>*/}
         </div>
     )
 };

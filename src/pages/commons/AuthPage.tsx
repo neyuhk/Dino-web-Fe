@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Alert,
     Button,
     Card,
-    Col,
     Form,
     Input, message,
-    Row,
     Typography,
 } from 'antd'
 import { GoogleOutlined, LockOutlined, UserOutlined } from '@ant-design/icons';
@@ -25,14 +23,30 @@ const AuthPage = () => {
     const [submitLoading, setSubmitLoading] = useState(false);
     const [error, setError] = useState('');
     const [isLoginView, setIsLoginView] = useState(true);
+    const [isAnimating, setIsAnimating] = useState(false);
     const dispatch: AppDispatch = useDispatch();
+
+    // Reset animation flag
+    useEffect(() => {
+        if (isAnimating) {
+            const timer = setTimeout(() => {
+                setIsAnimating(false);
+            }, 500); // Match transition duration
+            return () => clearTimeout(timer);
+        }
+    }, [isAnimating]);
+
+    const toggleView = () => {
+        setIsAnimating(true);
+        setIsLoginView(!isLoginView);
+    };
 
     const onFinishLogin = async (values: any) => {
         setError('');
         setSubmitLoading(true);
         try {
             await dispatch(loginAction(values)).unwrap();
-            message.success('Login successful!');
+            message.success('Đăng nhập thành công!');
             await dispatch(getCurrentUserAction()).unwrap();
             window.location.href = PATHS.HOME;
         } catch (e: any) {
@@ -48,7 +62,7 @@ const AuthPage = () => {
         setSubmitLoading(true);
         try {
             await register(values);
-            message.success('Registration successful! Please log in.');
+            message.success('Đăng ký thành công! Vui lòng đăng nhập.');
             setIsLoginView(true);
         } catch (e: any) {
             console.error(e);
@@ -61,13 +75,11 @@ const AuthPage = () => {
     return (
         <div className={styles.authPage}>
             <div
-                className={`${styles.welcome} ${isLoginView ? '' : styles.shiftRight}`}
+                className={`${styles.welcome} ${!isLoginView ? styles.shiftRight : ''}`}
                 style={{
                     backgroundImage: 'url("src/assets/login.png")',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
-                    transform: isLoginView ? 'translateX(0)' : 'translateX(100%)',
-                    transition: 'transform 0.3s ease-in-out',
                 }}
             >
                 <div className={styles.container}>
@@ -83,26 +95,24 @@ const AuthPage = () => {
                     </Paragraph>
                     <Button
                         type="primary"
-                        onClick={() => setIsLoginView(!isLoginView)}
+                        onClick={toggleView}
                         className={styles.toggleButton}
+                        disabled={isAnimating}
                     >
-                        {isLoginView ? 'Đăng kí' : 'Đăng nhập'}
+                        {isLoginView ? 'Đăng ký' : 'Đăng nhập'}
                     </Button>
                 </div>
-
             </div>
             <div
-                className={`${styles.formContainer} ${isLoginView ? '' : styles.shiftLeft}`}
+                className={`${styles.formContainer} ${!isLoginView ? styles.shiftLeft : ''}`}
                 style={{
                     backgroundImage: 'url("src/assets/login2.png")',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
-                    transform: isLoginView ? 'translateX(0)' : 'translateX(-100%)',
-                    transition: 'transform 0.3s ease-in-out',
                 }}
             >
                 <Card className={styles.formCard}>
-                    {error && <Alert message={error} type="error" />}
+                    {error && <Alert message={error} type="error" style={{ marginBottom: '1rem' }} />}
                     {isLoginView ? (
                         <Form
                             name="login"
@@ -111,109 +121,30 @@ const AuthPage = () => {
                             onFinish={onFinishLogin}
                             className={styles.form}
                         >
-                            <h2  className={styles.formTitle}>Đăng nhập với Dino</h2>
+                            <h2 className={styles.formTitle}>Đăng nhập với Dino</h2>
                             <Button
                                 className={styles.googleButton}
                                 type="default"
-                                style={{
-                                    borderColor: 'var(--primary-color)',
-                                    color: 'var(--primary-color)',
-                                    backgroundColor: 'transparent',
-                                }}
+                                icon={<GoogleOutlined />}
                             >
-                                <GoogleOutlined />
                                 Đăng nhập với Google
                             </Button>
-                            <Paragraph className={styles.formOr}>hoặc với tài khoản của bạn</Paragraph>
+                            <div className={styles.formOr}>hoặc với tài khoản của bạn</div>
                             <Form.Item
                                 name="email"
                                 label="Email"
                                 rules={[{ required: true, message: 'Vui lòng nhập email của bạn!' }]}
-
                             >
                                 <Input className={styles.formItem}
-                                    allowClear
-                                    prefix={<UserOutlined />}
-                                    placeholder="Nhập email"
+                                       allowClear
+                                       prefix={<UserOutlined />}
+                                       placeholder="Nhập email"
                                 />
                             </Form.Item>
                             <Form.Item
                                 name="password"
                                 label="Mật khẩu"
                                 rules={[{ required: true, message: 'Vui lòng nhập mật khẩu của bạn!' }]}
-                            >
-                                <Input.Password
-                                    className={styles.formItem}
-                                    allowClear
-                                    visibilityToggle={{
-                                        visible: passwordVisible,
-                                        onVisibleChange: setPasswordVisible,
-                                    }}
-                                    prefix={<LockOutlined />}
-                                    placeholder="Nhập mật khẩu"
-                                />
-                            </Form.Item>
-                            <Form.Item >
-                                <Button className={styles.confirmButton}
-                                    type="primary"
-                                    htmlType="submit"
-                                    loading={submitLoading}
-                                >
-                                    Đăng nhập
-                                </Button>
-                            </Form.Item>
-                            <Paragraph className={styles.forgotPassword}>Quên mật khẩu?</Paragraph>
-                        </Form>
-                    ) : (
-                        <Form
-                            name="register"
-                            layout="vertical"
-                            initialValues={{ remember: true }}
-                            onFinish={onFinishRegister}
-                            className={styles.form}
-                        >
-                            <h2 className={styles.formTitle}>Tạo tài khoản mới</h2>
-                            <Button
-                                className={styles.googleButton}
-                                type="default"
-                                style={{
-                                    borderColor: 'var(--primary-color)',
-                                    color: 'var(--primary-color)',
-                                    backgroundColor: 'transparent',
-                                }}
-                            >
-                                <GoogleOutlined />
-                                Đăng ký với Google
-                            </Button>
-                            <Form.Item
-                                name="username"
-                                label="Tên đăng nhập"
-                                rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập!' }]}
-                            >
-                                <Input className={styles.formItem}
-                                    allowClear
-                                    prefix={<UserOutlined />}
-                                    placeholder="Nhập tên đăng nhập"
-                                />
-                            </Form.Item>
-                            <Form.Item
-                                name="email"
-                                label="Email"
-                                rules={[{ required: true, message: 'Vui lòng nhập email của bạn!' }]}
-
-                            >
-                                <Input
-                                    allowClear
-                                    prefix={<UserOutlined />}
-                                    placeholder="Nhập email"
-                                    style={{ color: 'black' }}
-                                />
-                            </Form.Item>
-                            <Form.Item
-                                name="password"
-                                label="Mật khẩu"
-                                rules={[{ required: true, message: 'Vui lòng nhập mật khẩu của bạn!' }]}
-
                             >
                                 <Input.Password
                                     className={styles.formItem}
@@ -228,14 +159,80 @@ const AuthPage = () => {
                             </Form.Item>
                             <Form.Item>
                                 <Button className={styles.confirmButton}
-                                    type="primary"
-                                    htmlType="submit"
-                                    loading={submitLoading}
+                                        type="primary"
+                                        htmlType="submit"
+                                        loading={submitLoading}
+                                >
+                                    Đăng nhập
+                                </Button>
+                            </Form.Item>
+                            <div className={styles.forgotPassword}>Quên mật khẩu?</div>
+                        </Form>
+                    ) : (
+                        <Form
+                            name="register"
+                            layout="vertical"
+                            initialValues={{ remember: true }}
+                            onFinish={onFinishRegister}
+                            className={styles.form}
+                        >
+                            <h2 className={styles.formTitle}>Tạo tài khoản mới</h2>
+                            <Button
+                                className={styles.googleButton}
+                                type="default"
+                                icon={<GoogleOutlined />}
+                            >
+                                Đăng ký với Google
+                            </Button>
+                            <div className={styles.formOr}>hoặc với tài khoản của bạn</div>
+                            <Form.Item
+                                name="username"
+                                label="Tên đăng nhập"
+                                rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập!' }]}
+                            >
+                                <Input className={styles.formItem}
+                                       allowClear
+                                       prefix={<UserOutlined />}
+                                       placeholder="Nhập tên đăng nhập"
+                                />
+                            </Form.Item>
+                            <Form.Item
+                                name="email"
+                                label="Email"
+                                rules={[{ required: true, message: 'Vui lòng nhập email của bạn!' }]}
+                            >
+                                <Input
+                                    className={styles.formItem}
+                                    allowClear
+                                    prefix={<UserOutlined />}
+                                    placeholder="Nhập email"
+                                />
+                            </Form.Item>
+                            <Form.Item
+                                name="password"
+                                label="Mật khẩu"
+                                rules={[{ required: true, message: 'Vui lòng nhập mật khẩu của bạn!' }]}
+                            >
+                                <Input.Password
+                                    className={styles.formItem}
+                                    allowClear
+                                    visibilityToggle={{
+                                        visible: passwordVisible,
+                                        onVisibleChange: setPasswordVisible,
+                                    }}
+                                    prefix={<LockOutlined />}
+                                    placeholder="Nhập mật khẩu"
+                                />
+                            </Form.Item>
+                            <Form.Item>
+                                <Button className={styles.confirmButton}
+                                        type="primary"
+                                        htmlType="submit"
+                                        loading={submitLoading}
                                 >
                                     Đăng ký
                                 </Button>
                             </Form.Item>
-
                         </Form>
                     )}
                 </Card>

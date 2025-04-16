@@ -26,18 +26,7 @@ const FooterComponent = () => {
                         <li><a href="/projects">Dự Án</a></li>
                         <li><a href="/classroom">Lớp Học</a></li>
                         <li><a href="/forum">Diễn Đàn</a></li>
-                        <li><a href="/about">Về Chúng Tôi</a></li>
-                    </ul>
-                </div>
-
-                <div className="footer-section resources-section">
-                    <h3 className="section-title">Tài Nguyên</h3>
-                    <ul className="footer-links">
-                        <li><a href="/tutorials">Hướng Dẫn</a></li>
-                        <li><a href="/blog">Blog</a></li>
-                        <li><a href="/documents">Tài Liệu</a></li>
-                        <li><a href="/faq">FAQ</a></li>
-                        <li><a href="/support">Hỗ Trợ</a></li>
+                        <li><a href="/about-us">Về Chúng Tôi</a></li>
                     </ul>
                 </div>
 

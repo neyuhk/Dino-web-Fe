@@ -44,6 +44,11 @@ import ExerciseForm from '../components/ClassRoom/Teacher/LessonDetail/ExerciseF
 import ExamplePage from '../components/ClassRoom/Teacher/LessonDetail/ExerciseForm/ExampleUsage.tsx'
 import ExerciseDetail from '../components/ClassRoom/Teacher/LessonDetail/ExerciseDetail/ExerciseDetail.tsx'
 import LessonStudentDetail from '../components/ClassRoom/LessonList/LessonDetail/LessonStudentDetail.tsx'
+import AboutUs from '../components/AboutUs/AboutUs.tsx'
+import AboutUsPage from '../pages/commons/AboutUsPage.tsx'
+import HomePage2 from '../components/Homepage/HomePage2.tsx'
+import OurProductPage from '../pages/commons/OurProductPage.tsx'
+import OurProduct from '../components/OurProduct/OurProduct.tsx'
 
 
 export const router = [
@@ -56,9 +61,25 @@ export const router = [
         },
     },
     {
-        path: PATHS.LOGIN,
-        component: LoginPage,
-        layout: NotAuthenticatedLayout,
+        path: PATHS.HOME2,
+        component: HomePage2,
+        layout: DefaultLayout,
+        meta: {
+            requiresAuth: false,
+        },
+    },
+    {
+        path: PATHS.ABOUT_US,
+        component: AboutUsPage,
+        layout: DefaultLayout,
+        meta: {
+            requiresAuth: false,
+        },
+    },
+    {
+        path: PATHS.OUR_PRODUCT,
+        component: OurProduct,
+        layout: DefaultLayout,
         meta: {
             requiresAuth: false,
         },
@@ -66,14 +87,6 @@ export const router = [
     {
         path: PATHS.AUTH,
         component: AuthPage,
-        layout: NotAuthenticatedLayout,
-        meta: {
-            requiresAuth: false,
-        },
-    },
-    {
-        path: PATHS.REGISTER,
-        component: RegisterPage,
         layout: NotAuthenticatedLayout,
         meta: {
             requiresAuth: false,
@@ -153,7 +166,7 @@ export const router = [
     },
     {
         path: PATHS.PROJECT_DETAIL,
-        component: ProjectDetailPage, //ProjectDetail
+        component: ProjectDetail,
         layout: DefaultLayout,
         meta: {
             requiresAuth: false,

@@ -8,7 +8,6 @@ interface RectangleProps {
     imageSrc: string;
     backgroundColor: string;
     textAlign: 'left' | 'right';
-    href: string;
 }
 
 const Rectangle: React.FC<RectangleProps> = ({
@@ -18,11 +17,9 @@ const Rectangle: React.FC<RectangleProps> = ({
                                                  imageSrc,
                                                  backgroundColor,
                                                  textAlign,
-                                                 href
                                              }) => {
     return (
         <a
-            href={href}
             className={`${styles.rectangle} ${textAlign === 'right' ? styles.reverseLayout : ''}`}
             style={{ backgroundColor }}
         >
@@ -54,7 +51,6 @@ const Section5: React.FC = () => {
             imageSrc: "src/components/Homepage/Section5/image/ss4.png",
             backgroundColor: "#BFF0DB",
             textAlign: "right",
-            href: "#"
         },
         {
             title: "Khoá học",
@@ -63,7 +59,6 @@ const Section5: React.FC = () => {
             imageSrc: "src/components/Homepage/Section5/image/ss3.png",
             backgroundColor: "#FAE0C1",
             textAlign: "left",
-            href: "courses"
         },
         {
             title: "Diễn đàn",
@@ -72,7 +67,6 @@ const Section5: React.FC = () => {
             imageSrc: "src/components/Homepage/Section5/image/ss2.png",
             backgroundColor: "#F3C5C5",
             textAlign: "right",
-            href: "#"
         },
         {
             title: "Dự án mẫu",
@@ -81,7 +75,6 @@ const Section5: React.FC = () => {
             imageSrc: "src/components/Homepage/Section5/image/ss1.png",
             backgroundColor: "#D6D2FF",
             textAlign: "left",
-            href: "projects"
         }
     ];
 
