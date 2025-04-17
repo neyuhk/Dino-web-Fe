@@ -26,6 +26,7 @@ button {
     border: none;
     outline: none;
     font-family: inherit;
+    margin: 0;
 }
 
 /* Variables are not supported in CSS directly, so we will replace them with actual values */

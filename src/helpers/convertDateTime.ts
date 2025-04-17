@@ -74,3 +74,30 @@ export const convertDateTimeToDate = (str: string | number | Date | null) => {
         return `${dayString}/${monthString}/${year}`
     }
 }
+export const convertDateTimeToDate2 = (str: string | number | Date | null) => {
+    if (str === null) {
+        return ''
+    } else {
+        const dateObject = new Date(str)
+        let dayString = ''
+        let monthString = ''
+
+        const year = dateObject.getFullYear()
+        const month = dateObject.getMonth() + 1
+        if (1 <= month && month <= 9) {
+            monthString = `0${month}`
+        } else {
+            monthString = `${month}`
+        }
+
+        const day = dateObject.getDate()
+        if (1 <= day && day <= 9) {
+            dayString = `0${day}`
+        } else {
+            dayString = `${day}`
+        }
+        const hours = dateObject.getHours()
+
+        return `${year}-${monthString}-${dayString}`
+    }
+}

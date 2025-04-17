@@ -122,7 +122,7 @@ const Section3: React.FC<Section3Props> = ({ searchQuery }) => {
                         >
                             <div className={styles.imageContainer}>
                                 <img
-                                    src={project.images[0]}
+                                    src={project.images[0] || "https://i.pinimg.com/736x/95/6f/0f/956f0fef63faac5be7b95715f6207fea.jpg"}
                                     alt={project.name}
                                     className={styles.projectImage}
                                 />

@@ -255,3 +255,10 @@
         margin-top: 10px;
     }
 }
+button{
+    box-shadow: none;
+}
+button:hover{
+    box-shadow: none;
+    background-color: transparent;
+}

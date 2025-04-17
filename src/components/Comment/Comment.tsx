@@ -50,7 +50,7 @@ const CommentComponent: React.FC<CommentProps> = ({ commentableId, commentableTy
     const fetchComments = async () => {
         try {
             setIsLoading(true);
-            const response = await getCommentsByCommentableId(commentableId);
+            const response = await getCommentsByCommentableId(commentableId, user._id, 1, 5);
 
             // Sort comments to show newest first
             const sortedComments = [...response.data].sort((a, b) => {

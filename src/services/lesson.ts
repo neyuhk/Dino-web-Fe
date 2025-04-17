@@ -7,6 +7,14 @@ import httpAuth from './http/httpAuth.ts'
 export const getLessonByCourseId = async (id:string) => {
     return (await http.get(LESSON_API.GET_LESSONS_COURSE_ID + id)).data
 }
+export const getLessonByCourseIdStudent = async (courseId: string, userId: string) => {
+    return (
+        await http.post(LESSON_API.GET_LESSONS_COURSE_ID_STUDENT, {
+            courseId,
+            userId,
+        })
+    ).data;
+};
 export const addLesson = async (courseId: string, lessonData: FormData) => {
     try {
         const response = await httpAuth.post(

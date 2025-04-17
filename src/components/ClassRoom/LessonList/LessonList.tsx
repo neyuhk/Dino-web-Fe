@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { GraduationCap, Book, CheckCircle, AlertCircle, ChevronRight, ChevronLeft, ArrowRight, ChevronFirst, ChevronLast } from 'lucide-react';
 import styles from './LessonList.module.css';
 import { Lesson } from '../../../model/classroom.ts';
-import { getLessonByCourseId } from '../../../services/lesson.ts';
+import { getLessonByCourseId, getLessonByCourseIdStudent } from '../../../services/lesson.ts'
 import { useSelector } from 'react-redux';
 import RequireAuth from '../../commons/RequireAuth/RequireAuth.tsx';
 import { useNavigate } from 'react-router-dom';
@@ -30,7 +30,7 @@ const LessonList: React.FC<LessonListProps> = ({ courseId }) => {
     const fetchLessons = async () => {
         try {
             setIsLoading(true);
-            const data = await getLessonByCourseId(courseId);
+            const data = await getLessonByCourseIdStudent(courseId, user._id);
             setLessons(data.data);
         } catch (err) {
             setError('Có lỗi xảy ra khi tải bài học. Vui lòng thử lại sau!');
@@ -47,17 +47,19 @@ const LessonList: React.FC<LessonListProps> = ({ courseId }) => {
     };
 
     const getIncompleteExercises = (lesson: Lesson) => {
-        return lesson.exercises.filter(ex => !ex.isCompleted).length;
+        return lesson.unFinished;
     };
 
     // Filter lessons based on active tab
     const getFilteredLessons = () => {
+
         return lessons.filter(lesson => {
+            const isCompleted = lesson.unFinished === 0;
             switch (activeTab) {
                 case 'completed':
-                    return lesson.isCompleted;
+                    return isCompleted;
                 case 'incomplete':
-                    return !lesson.isCompleted;
+                    return !isCompleted;
                 default:
                     return true;
             }

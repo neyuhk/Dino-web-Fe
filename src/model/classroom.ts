@@ -37,7 +37,7 @@ export interface Lesson {
     course_id: string;
     createdAt: string;
     updatedAt: string;
-
+    unFinished: number;
     exercises: Exercise[];
     order: number;
     duration: number;

@@ -27,7 +27,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                                                      }) => {
     const navigate = useNavigate();
     const [answers, setAnswers] = useState<Record<string, string[]>>({});
-    const [timeLeft, setTimeLeft] = useState<number>(exercise.time * 60);
+    const [timeLeft, setTimeLeft] = useState<number>(exercise.time);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [isCompleted, setIsCompleted] = useState<boolean>(exercise.isCompleted);
     const [score, setScore] = useState<number | undefined>(exercise.score);
@@ -61,7 +61,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
     }, [isCompleted, timeLeft]);
 
     const handleSubmit = async () => {
-        // If time is still remaining, show confirmation modal
         if (timeLeft > 0) {
             setShowConfirmModal(true);
             return;
@@ -147,10 +146,18 @@ const TestComponent: React.FC<TestComponentProps> = ({
         return '';
     };
     const formatTime = (seconds: number): string => {
-        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
         const remainingSeconds = seconds % 60;
-        return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+
+        const paddedMinutes = minutes < 10 ? '0' + minutes : minutes;
+        const paddedSeconds = remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds;
+
+        return hours > 0
+            ? `${hours}:${paddedMinutes}:${paddedSeconds}`
+            : `${minutes}:${paddedSeconds}`;
     };
+
 
     const renderConfirmationModal = () => {
         return (

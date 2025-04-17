@@ -9,6 +9,20 @@
     min-height: 90vh;
 }
 
+.header{
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    .headerButton{
+        display: flex;
+        justify-content: flex-end;
+    }
+    button:hover{
+        background-color: var(--primary-color);
+        color: white;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+}
 .title {
     text-align: center;
     color: var(--primary-color);

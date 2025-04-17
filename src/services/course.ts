@@ -15,6 +15,9 @@ export const getCourseById = async (id: string) => {
 export const addCourse = async (data: any) => {
     return (await httpFile.post(COURSE_API.CREATE_COURSE, data)).data;
 }
+export const cloneCourse = async (formData: any) => {
+    return (await httpFile.post(COURSE_API.CLONE_COURSE, formData)).data
+}
 
 export const deleteCourse = async (id: string) => {
     return await http.delete(COURSE_API.DELETE_COURSE + id);

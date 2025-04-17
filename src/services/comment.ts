@@ -3,9 +3,34 @@ import http from '@/services/http/http'
 import { CommentReq } from '../model/model.ts'
 import httpAuth from './http/httpAuth.ts'
 
-export const getCommentsByCommentableId = async (commentableId: string) => {
-    return (await http.get(COMMENT_API.GET_COMMENTS + commentableId)).data
-}
+export const getCommentsByCommentableId = async (
+    commentableId: string,
+    userId: string,
+    page: number,
+    perPage: number
+) => {
+    return (
+        await http.post(COMMENT_API.GET_COMMENTS,
+            { commentableId, userId }, // body
+            { params: { page, perPage } } // query params
+        )
+    ).data;
+};
+
+export const getSubComment = async (
+    parentId: string,
+    userId: string,
+    page: number,
+    perPage: number
+) => {
+    return (
+        await http.post(COMMENT_API.GET_COMMENTS,
+            { parentId, userId }, // body
+            { params: { page, perPage } } // query params
+        )
+    ).data;
+};
+
 
 export const addComment = async (comment: CommentReq) => {
     console.log(comment)

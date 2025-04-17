@@ -8,12 +8,19 @@ import {PATHS} from '../../../../router/path.ts'
 import RequireAuth from '../../../commons/RequireAuth/RequireAuth.tsx'
 import {convertDateTimeToDate} from '../../../../helpers/convertDateTime.ts'
 import {getExerciseForStudent} from "../../../../services/exercise.ts";
+import ExerciseDetail from '../../ExerciseDetail/ExerciseDetail.tsx'
 
 const LessonStudentDetail: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const {user} = useSelector((state: any) => state.auth);
     const [exercises, setExercises] = useState<Exercise[]>([]);
+    const [showExerciseDetail, setShowExerciseDetail] = useState(false);
+    const [selectedExercise, setSelectedExercise] = useState<{
+        exerciseId: string;
+        userId: string;
+        userName: string;
+    } | null>(null);
 
     const {lesson} = location.state as { lesson: Lesson };
 
@@ -41,13 +48,24 @@ const LessonStudentDetail: React.FC = () => {
         return new Date(exercise.end_date) < new Date();
     };
 
+    const openExerciseDetail = (exercise: Exercise) => {
+        setSelectedExercise({
+            exerciseId: exercise._id,
+            userId: user._id,
+            userName: user.username
+        });
+        setShowExerciseDetail(true);
+    };
+
     const handleSelectExercise = (exercise: Exercise, lessonId: string) => {
-        // Prevent navigation if exercise is expired
-        if (isExerciseExpired(exercise) || exercise.score) {
-            return;
+        // Kiểm tra nếu bài tập đã hoàn thành hoặc hết hạn
+        if (exercise.score !== null || isExerciseExpired(exercise)) {
+            // Nếu đã hoàn thành, mở ExerciseDetail
+            openExerciseDetail(exercise);
+        } else {
+            // Nếu chưa hoàn thành và chưa hết hạn, điều hướng đến trang làm bài
+            navigate(PATHS.CLASSROOM_LEARNING, {state: {exercise, lessonId}});
         }
-        console.log(exercise);
-        navigate(PATHS.CLASSROOM_LEARNING, {state: {exercise, lessonId}});
     };
 
     const convertYoutubeUrl = (url: string): string => {
@@ -145,12 +163,8 @@ const LessonStudentDetail: React.FC = () => {
                                 return (
                                     <div
                                         key={exercise._id}
-                                        className={`${styles.exerciseItem} ${expired || exercise.score !== null ? styles.exerciseExpired : ''}`}
-                                        onClick={() => {
-                                            if (!expired && exercise.score === null) {
-                                                handleSelectExercise(exercise, lesson._id);
-                                            }
-                                        }}
+                                        className={`${styles.exerciseItem} ${expired && exercise.score === null ? styles.exerciseExpired : ''}`}
+                                        onClick={() => handleSelectExercise(exercise, lesson._id)}
                                     >
                                         <div className={styles.exerciseInfo}>
                                             <span className={styles.exerciseTitle}>{exercise.title}</span>
@@ -172,7 +186,6 @@ const LessonStudentDetail: React.FC = () => {
                                         </div>
                                         <span className={`
                                             ${styles.exerciseStatus} 
-                                            
                                             ${exercise.score !== null ? styles.completed : ''} 
                                             ${expired && !exercise.score ? styles.expired : ''}
                                         `}>
@@ -206,6 +219,16 @@ const LessonStudentDetail: React.FC = () => {
                     </div>
                 )}
             </div>
+
+            {/* Hiển thị modal ExerciseDetail khi cần */}
+            {showExerciseDetail && selectedExercise && (
+                <ExerciseDetail
+                    userId={selectedExercise.userId}
+                    userName={selectedExercise.userName}
+                    exerciseId={selectedExercise.exerciseId}
+                    onClose={() => setShowExerciseDetail(false)}
+                />
+            )}
         </div>
     )
 };

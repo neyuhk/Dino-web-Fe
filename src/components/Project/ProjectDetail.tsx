@@ -214,7 +214,7 @@ const ProjectDetail: React.FC = () => {
                     {isEditing ? (
                         <div className={styles.editImageContainer}>
                             <img
-                                src={previewImage || images[0] || '/MockData/flapybird.jpg'}
+                                src={previewImage || images[0] || 'https://i.pinimg.com/736x/95/6f/0f/956f0fef63faac5be7b95715f6207fea.jpg'}
                                 alt={name}
                                 className={styles.projectImage}
                             />
@@ -237,7 +237,7 @@ const ProjectDetail: React.FC = () => {
                         </div>
                     ) : (
                         <img
-                            src={images[0] || '/MockData/flapybird.jpg'}
+                            src={images[0] || 'https://i.pinimg.com/736x/95/6f/0f/956f0fef63faac5be7b95715f6207fea.jpg'}
                             alt={name}
                             className={styles.projectImage}
                         />

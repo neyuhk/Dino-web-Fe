@@ -15,9 +15,16 @@ export const getUserById = async (id: string) => {
     return (await httpAuth.get(USER_API.GET_USER_BY_ID + id)).data
 }
 
-export const findUser = async (query: string) => {
-    return (await httpAuth.get(USER_API.FIND_USER, {
-        params: { search: query }
-    })).data;
+export const findUser = async (query: string, page: number, perPage: number) => {
+    return (
+        await httpAuth.get(USER_API.FIND_USER, {
+            params: {
+                search: query,
+                page,
+                perPage
+            }
+        })
+    ).data;
 };
+
 

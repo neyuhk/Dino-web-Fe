@@ -174,17 +174,22 @@ const TeacherClassroom: React.FC = () => {
             )
         }
     }
+    const addCourseList = (newCourse: Course) => {
+        setCourses(prevCourses => [...prevCourses, newCourse]);
+    };
 
     return (
         <div className={styles.container}>
             <div className={styles.header}>
                 <h1 className={styles.title}>Quản lý khóa học</h1>
-                <button
-                    className={styles.addCourseButton}
-                    onClick={() => setIsAddCourseOpen(true)}
-                >
-                    <FaPlus /> Thêm khóa học
-                </button>
+                <div className={styles.headerButton}>
+                    <button
+                        className={styles.addCourseButton}
+                        onClick={() => setIsAddCourseOpen(true)}
+                    >
+                        <FaPlus /> Thêm khóa học
+                    </button>
+                </div>
             </div>
 
             {/* Courses Content - Centered */}
@@ -205,7 +210,7 @@ const TeacherClassroom: React.FC = () => {
                                             course.images &&
                                             course.images.length > 0
                                                 ? course.images[0]
-                                                : 'https://i.pinimg.com/474x/cd/4b/d9/cd4bd9b0ea2807611ba3a67c331bff0b.jpg'
+                                                : 'https://i.pinimg.com/736x/95/6f/0f/956f0fef63faac5be7b95715f6207fea.jpg'
                                         }
                                         alt={course.title}
                                         className={styles.courseImage}
@@ -299,6 +304,8 @@ const TeacherClassroom: React.FC = () => {
                 <AddCoursePopup
                     onClose={() => setIsAddCourseOpen(false)}
                     onSubmit={handleAddCourse}
+                    onAddCourse={addCourseList}
+                    courses={courses} // Pass the courses to the popup
                 />
             )}
 

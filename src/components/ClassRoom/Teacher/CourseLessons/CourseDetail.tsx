@@ -10,13 +10,14 @@ import { User } from '../../../../model/model.ts'
 import {
     getStudentByCourseId,
     editCourse,
-    deleteCourse,
+    deleteCourse, getCourseById,
 } from '../../../../services/course.ts'
 import { FaTimes } from 'react-icons/fa'
 import { Button, Upload } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
-import { convertDateTimeToDate } from '../../../../helpers/convertDateTime.ts'
+import { convertDateTimeToDate, convertDateTimeToDate2 } from '../../../../helpers/convertDateTime.ts'
 import CourseScore from './CourseScore.tsx'
+import { Course } from '../../../../model/classroom.ts'
 
 interface ToastMessage {
     show: boolean
@@ -30,7 +31,8 @@ const CourseDetail: React.FC = () => {
     const { courseId } = useParams<{ courseId: string }>()
     const navigate = useNavigate()
     const location = useLocation()
-    const course = location.state?.course || null
+    // const course = location.state?.course || null
+    const [course, setCourse] = useState<Course>()
     const [activeTab, setActiveTab] = useState<'lessons' | 'students' | 'scores'>(
         'lessons'
     )
@@ -49,7 +51,6 @@ const CourseDetail: React.FC = () => {
         description: course?.description || '',
         startDate: course?.start_date || '',
         endDate: course?.end_date || '',
-        status: course?.status || 'ACTIVE',
     })
 
     const [toast, setToast] = useState<ToastMessage>({
@@ -66,6 +67,8 @@ const CourseDetail: React.FC = () => {
 
                 // Fetch students for this course
                 if (courseId) {
+                    const getCourse = await getCourseById(courseId)
+                    setCourse(getCourse.data)
                     const students = await getStudentByCourseId(courseId)
                     setListStudent(students.data)
                 }
@@ -77,7 +80,6 @@ const CourseDetail: React.FC = () => {
                         description: course.description || '',
                         startDate: course.start_date || '',
                         endDate: course.end_date || '',
-                        status: course.status || 'ACTIVE',
                     })
                 }
 
@@ -109,7 +111,7 @@ const CourseDetail: React.FC = () => {
         }
 
         fetchCourseDetail()
-    }, [courseId, course])
+    }, [courseId])
 
     const handleBack = () => {
         navigate(-1) // Go back to previous page
@@ -122,6 +124,21 @@ const CourseDetail: React.FC = () => {
     // Handle opening edit modal
     const handleOpenEditModal = () => {
         setShowEditModal(true)
+        setEditFormData(
+            course
+                ? {
+                      title: course.title || '',
+                      description: course.description || '',
+                      startDate: convertDateTimeToDate2(course.start_date)  || '',
+                      endDate: convertDateTimeToDate2(course.end_date)  || '',
+                  }
+                : {
+                      title: '',
+                      description: '',
+                      startDate: '',
+                      endDate: '',
+                  }
+        )
         console.log('Opening edit modal, showEditModal set to:', true)
     }
 
@@ -160,7 +177,6 @@ const CourseDetail: React.FC = () => {
             formDataToSend.append('description', editFormData.description)
             formDataToSend.append('startDate', editFormData.startDate)
             formDataToSend.append('endDate', editFormData.endDate)
-            formDataToSend.append('status', editFormData.status)
 
             // Add image if selected
             if (selectedImage && selectedImage.originFileObj) {
@@ -174,7 +190,8 @@ const CourseDetail: React.FC = () => {
                 for (let pair of formDataToSend.entries()) {
                     console.log(`${pair[0]}:`, pair[1])
                 }
-                await editCourse(courseId, formDataToSend)
+                const updateCourse = await editCourse(courseId, formDataToSend)
+                setCourse(updateCourse.data)
             }
 
             setToast({
@@ -184,12 +201,6 @@ const CourseDetail: React.FC = () => {
                 message: 'Cập nhật khóa học thành công',
                 image: '/images/success.png',
             })
-
-            // setTimeout(() => {
-            //     setShowEditModal(false)
-            //     // Refresh page to show updated data
-            //     window.location.reload()
-            // }, 1500)
         } catch (error) {
             console.error('Error updating course:', error)
             setToast({
@@ -203,44 +214,6 @@ const CourseDetail: React.FC = () => {
             setIsSubmitting(false)
         }
     }
-
-    // Delete course handler
-    // const handleDeleteCourse = async () => {
-    //     if (!window.confirm('Bạn có chắc chắn muốn xóa khóa học này không?')) {
-    //         return
-    //     }
-    //
-    //     setIsSubmitting(true)
-    //
-    //     try {
-    //         if (courseId) {
-    //             await deleteCourse(courseId)
-    //         }
-    //
-    //         setToast({
-    //             show: true,
-    //             type: 'success',
-    //             title: 'Thành công',
-    //             message: 'Đã xóa khóa học',
-    //             image: '/images/success.png',
-    //         })
-    //
-    //         setTimeout(() => {
-    //             navigate(-1)
-    //         }, 1500)
-    //     } catch (error) {
-    //         console.error('Error deleting course:', error)
-    //         setToast({
-    //             show: true,
-    //             type: 'error',
-    //             title: 'Lỗi',
-    //             message: 'Không thể xóa khóa học',
-    //             image: '/images/error.png',
-    //         })
-    //     } finally {
-    //         setIsSubmitting(false)
-    //     }
-    // }
 
     const confirmDeleteCourse = async () => {
         setIsSubmitting(true)
@@ -284,10 +257,6 @@ const CourseDetail: React.FC = () => {
         return <div className={styles.loadingContainer}>Đang tải...</div>
     }
 
-    function onClick(event: MouseEvent<HTMLButtonElement, MouseEvent>): void {
-        throw new Error('Function not implemented.')
-    }
-
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -311,7 +280,7 @@ const CourseDetail: React.FC = () => {
                         <img
                             src={
                                 (course.images && course.images[0]) ||
-                                '/images/default-course.jpg'
+                                'https://i.pinimg.com/474x/95/6f/0f/956f0fef63faac5be7b95715f6207fea.jpg'
                             }
                             alt={course.title}
                             className={styles.courseImage}
@@ -487,20 +456,6 @@ const CourseDetail: React.FC = () => {
                             </div>
 
                             <div className={styles.formGroup}>
-                                <label htmlFor="status">Trạng thái</label>
-                                <select
-                                    id="status"
-                                    name="status"
-                                    value={editFormData.status}
-                                    onChange={handleEditChange}
-                                >
-                                    <option value="ACTIVE">ACTIVE</option>
-                                    <option value="INACTIVE">INACTIVE</option>
-                                    <option value="DRAFT">DRAFT</option>
-                                </select>
-                            </div>
-
-                            <div className={styles.formGroup}>
                                 <label htmlFor="file">Ảnh bìa khóa học</label>
                                 <Upload
                                     listType="picture"
@@ -597,19 +552,10 @@ const CourseDetail: React.FC = () => {
                 </div>
             )}
 
-            {/* Toast notification */}
-            {/*{toast.show && (*/}
-            {/*    <Toast*/}
-            {/*        type={toast.type || 'info'}*/}
-            {/*        title={toast.title || ''}*/}
-            {/*        message={toast.message || ''}*/}
-            {/*        image={toast.image || ''}*/}
-            {/*        onClose={hideToast}*/}
-            {/*    />*/}
-            {/*)}*/}
-            {/*{toast.show && (*/}
-            {/*    <Toast toast={toast} onClose={hideToast} />*/}
-            {/*)}*/}
+             {/*Toast notification*/}
+            {toast.show && (
+                <Toast toast={toast} onClose={hideToast} />
+            )}
         </div>
     )
 }

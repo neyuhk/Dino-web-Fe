@@ -10,6 +10,7 @@ export interface ToastMessage {
 }
 
 interface ToastProps {
+    type: string;
     toast: ToastMessage;
     onClose: () => void;
     autoClose?: boolean;

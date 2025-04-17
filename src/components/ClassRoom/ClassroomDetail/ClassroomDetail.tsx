@@ -89,7 +89,7 @@ const ClassroomDetailPage: React.FC = () => {
                     backgroundImage: `url(${
                         classroom.images && classroom.images.length > 0
                             ? classroom.images[0]
-                            : '/default-classroom.jpg'
+                            : 'https://i.pinimg.com/736x/95/6f/0f/956f0fef63faac5be7b95715f6207fea.jpg'
                     })`,
                 }}
             >
