@@ -26,7 +26,6 @@ import { logout } from '../../stores/authSlice.ts'
 import store from '../../stores'
 import { pushCodeToDb, saveCodeBlock } from '../../services/codeBlock.ts'
 import styles from './BlocklyPage.module.css'
-import JSZip from 'jszip';
 
 const { Header, Content } = Layout
 const { Title } = Typography
