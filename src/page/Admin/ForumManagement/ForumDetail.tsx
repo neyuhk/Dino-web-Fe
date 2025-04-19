@@ -1,58 +1,58 @@
-import React, { useEffect, useState } from 'react';
-import { Card, Typography, Row, Col, Image, Space } from 'antd';
-import { useParams } from 'react-router-dom';
-import moment from 'moment';
-import { getForumById } from '../../../services/forum.ts';
-import { Forum } from '../../../model/model.ts';
+import React, { useEffect, useState } from 'react'
+import { Card, Typography, Row, Col, Image, Space } from 'antd'
+import { useParams } from 'react-router-dom'
+import moment from 'moment'
+import { getForumById } from '../../../services/forum.ts'
+import { Forum } from '../../../model/model.ts'
 import CommentComponent from '../../../components/Comment/Comment.tsx'
 import { addComment } from '../../../services/comment.ts'
 
-const { Title, Paragraph, Text } = Typography;
+const { Title, Paragraph, Text } = Typography
 
 const ForumDetailPage: React.FC = () => {
-    const { forumId } = useParams<{ forumId: string }>();
-    const [forumData, setForumData] = useState<Forum | null>(null);
-    const [isLoading, setLoading] = useState(true);
-    const userId = '6716836ed25d75774c39730d'; // Replace with actual userId from local storage
+    const { forumId } = useParams<{ forumId: string }>()
+    const [forumData, setForumData] = useState<Forum | null>(null)
+    const [isLoading, setLoading] = useState(true)
+    const userId = '6716836ed25d75774c39730d' // Replace with actual userId from local storage
 
     useEffect(() => {
         const fetchForumData = async () => {
             try {
-                const forumResponse = await getForumById(forumId ? forumId : '');
-                setForumData(forumResponse.data);
-                console.log('fetchdata forum',forumData);
-                setLoading(false);
+                const forumResponse = await getForumById(forumId ? forumId : '')
+                setForumData(forumResponse.data)
+                console.log('fetchdata forum', forumData)
+                setLoading(false)
             } catch (error) {
-                console.error('Failed to fetch forum data:', error);
-                setLoading(false);
+                console.error('Failed to fetch forum data:', error)
+                setLoading(false)
             }
-        };
+        }
 
-        fetchForumData();
-    }, [forumId]);
+        fetchForumData()
+    }, [forumId])
 
     if (!forumData) {
         return (
             <Card>
                 <div className="text-center">No forum data available</div>
             </Card>
-        );
+        )
     }
 
     const handleAddComment = async (values: { content: string }) => {
         try {
             const comment = {
                 content: values.content,
-                commentableId: forumId,
+                commentableId: forumId || '', // Provide a fallback value
                 commentableType: 'FORUM',
                 userId: userId, // Replace with actual userId from local storage
-                parentId: null, // Adjust as needed
-            };
-            await addComment(comment);
+                parentId: '', // Use an empty string instead of null
+            }
+            await addComment(comment)
         } catch (error) {
-            console.error('Failed to add comment:', error);
+            console.error('Failed to add comment:', error)
         }
-    };
+    }
 
     const {
         title = 'Unknown',
@@ -60,7 +60,7 @@ const ForumDetailPage: React.FC = () => {
         images = [],
         user_id = { username: 'Unknown' },
         createdAt = 'Unknown',
-    } = forumData;
+    } = forumData
 
     return (
         <Card className="max-w-4xl mx-auto">
@@ -115,12 +115,12 @@ const ForumDetailPage: React.FC = () => {
                 <Col span={24}>
                     <Card>
                         <Title level={2}>Bình luận</Title>
-                        <CommentComponent commentableId={forumId ? forumId : ''} commentableType={"FORUM"}/>
+                        <CommentComponent commentableId={forumId ? forumId : ''} commentableType={'FORUM'} />
                     </Card>
                 </Col>
             </Row>
         </Card>
-    );
-};
+    )
+}
 
-export default ForumDetailPage;
+export default ForumDetailPage

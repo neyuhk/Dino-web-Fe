@@ -27,7 +27,7 @@ import CommentComponent from '../Comment/Comment.tsx'
 import { getProjectById, isLikedProject, likeProject, updateProject } from '../../services/project.ts'
 import styles from './ProjectDetail.module.css'
 
-const { Title, Paragraph, Text, TextArea } = Typography
+const { Title, Paragraph, Text } = Typography
 const { TextArea: AntTextArea } = Input;
 
 const ProjectDetail: React.FC = () => {

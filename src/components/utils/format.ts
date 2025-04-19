@@ -1,4 +1,4 @@
-const getYoutubeEmbedUrl = (url) => {
+const getYoutubeEmbedUrl = (url: string) => {
     if (!url) return '';
     let videoId = '';
     const watchRegex = /youtube\.com\/watch\?v=([^&]+)/;

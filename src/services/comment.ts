@@ -1,7 +1,8 @@
 import { COMMENT_API } from '../constants/api.ts'
+// @ts-ignore
 import http from '@/services/http/http'
 import { CommentReq } from '../model/model.ts'
-import httpAuth from './http/httpAuth.ts'
+import { httpAuth } from './http/httpAuth.ts'
 
 export const getCommentsByCommentableId = async (
     commentableId: string,
@@ -24,7 +25,7 @@ export const getSubComment = async (
     perPage: number
 ) => {
     return (
-        await http.post(COMMENT_API.GET_COMMENTS,
+        await http.post(COMMENT_API.GET_SUB_COMMENT,
             { parentId, userId }, // body
             { params: { page, perPage } } // query params
         )

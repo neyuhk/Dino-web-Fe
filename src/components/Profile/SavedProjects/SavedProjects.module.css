@@ -4,12 +4,28 @@
 }
 
 .title {
-    margin-bottom: 24px ;
+    margin-bottom: 24px;
     font-size: 24px !important;
     color: var(--primary-color) !important;
     font-weight: bold !important;
 }
 
+.searchContainer {
+    margin-bottom: 24px;
+}
+
+.searchInput {
+    width: 100%;
+}
+Space{
+    width: 100%;
+}
+.actionButton{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
 .grid {
     display: grid;
     grid-template-columns: repeat(1, 1fr);
@@ -28,12 +44,9 @@
     }
 }
 
-.imagePopup{
-    width: 200px;
-}
-
 .cardCover {
     position: relative;
+    cursor: pointer;
 }
 
 .cardImage {
@@ -43,11 +56,42 @@
     width: 100%;
 }
 
-.heartIcon {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    color: #ff4d4f;
-    font-size: 20px;
-    cursor: pointer;
+.saveButton {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.saveButton:hover {
+    background-color: var(--primary-color-dark);
+    border-color: var(--primary-color-dark);
+}
+
+/* Modal styles */
+.modalContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 16px;
+}
+
+.modalImage {
+    width: 150px;
+    height: 150px;
+    margin-bottom: 16px;
+}
+
+.modalTitle {
+    margin-bottom: 16px !important;
+    color: #ff4d4f !important;
+}
+
+.modalText {
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.85);
+}
+
+.confirmModal :global(.ant-modal-content) {
+    border-radius: 12px;
+    overflow: hidden;
 }

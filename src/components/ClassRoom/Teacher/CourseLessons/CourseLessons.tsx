@@ -414,7 +414,7 @@ const CourseLessons: React.FC<CourseLessonsProps> = ({ courseId }) => {
                 />
             )}
 
-            {toast.show && <Toast toast={toast} onClose={hideToast} />}
+            {toast.show && <Toast toast={toast} onClose={hideToast} type={''} />}
         </div>
     )
 };

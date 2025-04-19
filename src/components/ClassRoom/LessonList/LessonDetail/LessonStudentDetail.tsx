@@ -9,12 +9,15 @@ import RequireAuth from '../../../commons/RequireAuth/RequireAuth.tsx'
 import {convertDateTimeToDate} from '../../../../helpers/convertDateTime.ts'
 import {getExerciseForStudent} from "../../../../services/exercise.ts";
 import ExerciseDetail from '../../ExerciseDetail/ExerciseDetail.tsx'
+import { getLessonById } from '../../../../services/lesson.ts'
 
 const LessonStudentDetail: React.FC = () => {
-    const location = useLocation();
+    const { lessonId } = useParams<{ lessonId: string }>();
+    console.log(lessonId);
     const navigate = useNavigate();
     const {user} = useSelector((state: any) => state.auth);
-    const [exercises, setExercises] = useState<Exercise[]>([]);
+    const [lesson, setLesson] = useState<Lesson | null>(null);
+    const [exercises, setExercises] = useState<Exercise[] | null>([]);
     const [showExerciseDetail, setShowExerciseDetail] = useState(false);
     const [selectedExercise, setSelectedExercise] = useState<{
         exerciseId: string;
@@ -22,15 +25,23 @@ const LessonStudentDetail: React.FC = () => {
         userName: string;
     } | null>(null);
 
-    const {lesson} = location.state as { lesson: Lesson };
-
     useEffect(() => {
+
         const fetchData = async () => {
-            const response = await getExerciseForStudent(lesson._id, user._id);
-            setExercises(response.data);
+            console.log("lesson navigate detail", lessonId);
+            if(lessonId){
+                const data = await getLessonById(lessonId)
+                setLesson(data.data)
+                const response = await getExerciseForStudent(lessonId, user._id);
+                setExercises(response.data);
+            }
+            else{
+                setLesson(null);
+                setExercises(null);
+            }
         }
         fetchData()
-    }, [lesson, navigate]);
+    }, [lessonId, navigate]);
 
     if (!lesson) {
         return (

@@ -129,7 +129,7 @@ const ClassroomDetailPage: React.FC = () => {
                         </p>
                         <p>
                             Số điện thoại:{' '}
-                            {teacher?.phonenumber?.trim() ||
+                            {teacher?.phoneNumber?.trim() ||
                                 'Chưa cập nhật số điện thoại'}
                         </p>
                     </div>

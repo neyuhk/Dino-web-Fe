@@ -1,9 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
+// @ts-ignore
 import { AUTH_API, USER_API } from '@/constants/api'
+// @ts-ignore
 import { getCurrentUser } from '@/services/user'
 import { login, refreshToken } from '../services/auth.ts'
-import { string } from 'blockly/core/utils'
-
+import { User } from '../model/model.ts'
+export const UPDATE_USER = 'UPDATE_USER';
 export const loginAction = createAsyncThunk(
     AUTH_API.LOGIN,
     async (credentials: { email: string, password: string }, { rejectWithValue }) => {
@@ -13,6 +15,7 @@ export const loginAction = createAsyncThunk(
             const accessToken = res.headers['Authorization'] || res.headers['authorization']
             return { data: res, accessToken }
         } catch (error) {
+            // @ts-ignore
             return rejectWithValue(error.response.data)
         }
     },
@@ -26,6 +29,7 @@ export const getCurrentUserAction = createAsyncThunk(
             console.log(res)
             return res.data
         } catch (error) {
+            // @ts-ignore
             return rejectWithValue(error.response.data)
         }
     },
@@ -38,7 +42,16 @@ export const refreshTokenAction = createAsyncThunk(
             const res = await refreshToken()
             return res.data
         } catch (error) {
+            // @ts-ignore
             return rejectWithValue(error.response.data)
         }
     },
 )
+
+// Action Creators
+export const updateUser = (user: User) => {
+    return {
+        type: UPDATE_USER,
+        payload: user
+    };
+};

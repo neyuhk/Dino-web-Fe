@@ -38,7 +38,7 @@ const ExerciseDetail: React.FC<Props> = ({ userId, userName, exerciseId, onClose
                     console.log("oke ma")
                     setResults(response.data);
 
-                    const updateAt = response.data.reduce((latest, item) => {
+                    const updateAt = response.data.reduce((latest: any, item: any) => {
                         return new Date(item.updatedAt) > new Date(latest) ? item.updatedAt : latest;
                     }, response.data[0].updatedAt);
                     setLastUpdate(updateAt)
@@ -46,7 +46,7 @@ const ExerciseDetail: React.FC<Props> = ({ userId, userName, exerciseId, onClose
 
                     // Calculate score
                     const totalQuestions = response.data.length;  // Changed from response.length
-                    const correctAnswers = response.data.filter(item => item.is_correct).length;  // Changed from response.filter
+                    const correctAnswers = response.data.filter((item: { is_correct: any; }) => item.is_correct).length;  // Changed from response.filter
                     const percentage = totalQuestions > 0
                         ? Math.round((correctAnswers / totalQuestions) * 100)
                         : 0;
@@ -205,7 +205,7 @@ const ExerciseDetail: React.FC<Props> = ({ userId, userName, exerciseId, onClose
                                             </div>
 
                                             <div className={styles.answers}>
-                                                {result.question_id.answers.map((option, index) => {
+                                                {result.question_id.answers.map((option: any, index: any) => {
                                                     const isSelected = isOptionSelected(result.answer, option);
                                                     const isCorrect = isOptionCorrect(result.question_id.correct_answer, option);
 

@@ -183,7 +183,7 @@ const CourseScore: React.FC<Props> = ({ courseId }) => {
     };
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(e.target.value.trim());
+        setSearchTerm(e.target.value.toLowerCase());
     };
 
     const handleStatusFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -254,7 +254,7 @@ const CourseScore: React.FC<Props> = ({ courseId }) => {
 
         // Check if scoreId is null
         if (!scoreEntry.scoreId) {
-            showToast('error', 'Lỗi', 'Không thể cập nhật điểm số. Đang thiếu thông tin quan trọng.');
+            showToast('error', 'Lỗi', 'Không thể cập nhật điểm số nếu học sinh chưa làm');
             setEditingScore(null);
             return;
         }
@@ -429,9 +429,6 @@ const CourseScore: React.FC<Props> = ({ courseId }) => {
         // Khởi tạo cấu trúc rỗng với thứ tự đúng
         lessonOrder.forEach(lessonTitle => {
             groupedByLesson[lessonTitle] = {};
-            exerciseOrderMap[lessonTitle].forEach(exerciseId => {
-                groupedByLesson[lessonTitle][exerciseId] = [];
-            });
         });
 
         // Lọc dữ liệu trước khi thêm vào nhóm
@@ -463,6 +460,25 @@ const CourseScore: React.FC<Props> = ({ courseId }) => {
             }
         });
 
+        // Remove empty lessons or exercises
+        for (const lessonTitle in groupedByLesson) {
+            // Filter out exercises with no matching items
+            const exercisesWithItems = Object.keys(groupedByLesson[lessonTitle])
+                .filter(exerciseId => groupedByLesson[lessonTitle][exerciseId].length > 0);
+
+            // If no exercises have items, remove the lesson
+            if (exercisesWithItems.length === 0) {
+                delete groupedByLesson[lessonTitle];
+            } else {
+                // Keep only exercises with items
+                const filteredExercises: { [key: string]: any[] } = {};
+                exercisesWithItems.forEach(exerciseId => {
+                    filteredExercises[exerciseId] = groupedByLesson[lessonTitle][exerciseId];
+                });
+                groupedByLesson[lessonTitle] = filteredExercises;
+            }
+        }
+
         // Sort dữ liệu trong mỗi nhóm bài tập
         for (const lessonTitle in groupedByLesson) {
             for (const exerciseId in groupedByLesson[lessonTitle]) {
@@ -485,7 +501,6 @@ const CourseScore: React.FC<Props> = ({ courseId }) => {
 
         return groupedByLesson;
     }, [data, searchTerm, sortField, sortDirection, statusFilter]);
-
     const hasFilteredData = useMemo(() => {
         return Object.keys(groupedData).some(lessonTitle =>
             Object.keys(groupedData[lessonTitle]).some(exerciseId =>
@@ -728,7 +743,7 @@ const CourseScore: React.FC<Props> = ({ courseId }) => {
             {detailPopup.show && detailPopup.userId && detailPopup.exerciseId && (
                 <ExerciseDetail
                     userId={detailPopup.userId}
-                    userName={detailPopup.userName}
+                    userName={detailPopup.userName || ''}
                     exerciseId={detailPopup.exerciseId}
                     onClose={closeDetailPopup}
                 />
@@ -762,7 +777,7 @@ const CourseScore: React.FC<Props> = ({ courseId }) => {
                 </div>
             )}
             {toast.show && (
-                <Toast toast={toast} onClose={hideToast} />
+                <Toast toast={toast} onClose={hideToast} type={''} />
             )}
         </div>
 

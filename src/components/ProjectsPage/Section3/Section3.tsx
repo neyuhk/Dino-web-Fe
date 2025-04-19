@@ -23,7 +23,7 @@ const Section3: React.FC<Section3Props> = ({ searchQuery }) => {
             setLoading(true)
             console.log(searchQuery)
             try {
-                const data = await getProjects(page, perPage, searchQuery)
+                const data = await getProjects(page, perPage, searchQuery, '')
                 setProjects(data.data)
                 setTotal(data.total)
             } catch (error) {

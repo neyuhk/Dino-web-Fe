@@ -1,7 +1,9 @@
 import { Alert, Button, Card, Col, Form, Input, Row } from 'antd'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import React, { useState } from 'react'
+// @ts-ignore
 import { PATHS } from '@/router/path.ts'
+// @ts-ignore
 import { register } from '@/services/auth.ts'
 
 

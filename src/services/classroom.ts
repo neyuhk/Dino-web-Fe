@@ -1,8 +1,6 @@
-import { Assignment, Lesson, Student, Submission, User } from '../model/classroom.ts'
 import { CLASSROOM_API, COURSE_API } from '../constants/api.ts'
 import http from './http/http.ts'
-import httpAuth from './http/httpAuth.ts'
-// import { Course } from '../model/model.ts'
+import { httpAuth } from './http/httpAuth.ts'
 
 export const getClassroomList = async () => {
     return (await http.get(CLASSROOM_API.GET_CLASSROOMS)).data

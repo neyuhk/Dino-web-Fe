@@ -23,7 +23,7 @@ export interface User {
     createdAt: string;
     updatedAt: string;
     birthday: Date;
-    phonenumber: string;
+    phoneNumber: string;
 }
 
 export interface CourseReq {
@@ -34,15 +34,31 @@ export interface CourseReq {
     end_date: string;
 }
 
+export interface Course {
+    _id: string;
+    title: string;
+    description: string;
+    imageUrl: string;
+    level: 'Beginner' | 'Intermediate' | 'Advanced';
+    startDate: string;
+    certification: string
+    end_date: string;
+    start_date: string;
+    createdAt: string;
+    images: string[];
+    user_id: User;
+}
+
 export interface Comment {
     _id: string;
     content: string;
     user_id: User;
-    commentable_id: Project;
+    commentable_id: string;
     commentable_type: string;
     like_count: number;
-    sub_comments: SubComment[];
-    parent_id: string;
+    isLiked: boolean;
+    countSubComment: number;
+    parentId: string;
     createdAt: string;
 }
 

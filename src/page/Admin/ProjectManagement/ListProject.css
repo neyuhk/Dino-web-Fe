@@ -1,8 +1,299 @@
-/* Add this to your CSS file */
-.center-align {
-    text-align: center !important;
+/* ListProject.css */
+.project-dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-th.ant-table-cell {
-    text-align: center !important;
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.page-title {
+    font-size: 24px;
+    margin: 0;
+    color: #1a3353;
+}
+
+.filter-controls {
+    display: flex;
+    align-items: center;
+}
+
+.filter-toggle-button {
+    font-size: 16px;
+    height: 40px;
+    padding: 0 16px;
+}
+
+.filter-panel {
+    margin-bottom: 24px;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f5f7fa;
+    transition: all 0.3s ease;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+}
+
+.filter-visible {
+    max-height: 120px;
+    opacity: 1;
+    margin-bottom: 24px;
+}
+
+.search-input {
+    width: 100%;
+    height: 40px;
+}
+
+.search-input input {
+    font-size: 16px;
+    height: 40px;
+}
+
+.type-select {
+    width: 100%;
+    font-size: 16px;
+    height: 40px;
+}
+
+.projects-card {
+    margin-bottom: 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.table-header {
+    padding: 12px 0;
+    margin-bottom: 16px;
+    font-size: 18px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.projects-table {
+    margin-top: 12px;
+}
+
+.projects-table .ant-table-thead > tr > th {
+    background-color: #f0f5ff;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a3353;
+    padding: 16px 8px;
+}
+
+.projects-table .ant-table-tbody > tr > td {
+    padding: 16px 8px;
+    vertical-align: middle;
+}
+
+.project-row {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.project-row:hover {
+    background-color: #f0f7ff;
+}
+
+.project-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.project-image {
+    width: 80px;
+    height: 60px;
+    border-radius: 6px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.project-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.project-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.project-title {
+    font-size: 16px;
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+
+.project-description {
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.stats-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.stat-badge {
+    display: flex;
+    align-items: center;
+}
+
+.stat-icon {
+    font-size: 18px;
+    margin-right: 4px;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.action-button {
+    font-size: 18px;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-button:hover {
+    background-color: #f0f5ff;
+}
+
+.action-button.view:hover {
+    color: #1890ff;
+}
+
+.action-button.edit:hover {
+    color: #52c41a;
+}
+
+.action-button.delete:hover {
+    color: #ff4d4f;
+}
+
+.type-modal .ant-modal-content,
+.delete-modal .ant-modal-content {
+    border-radius: 8px;
+}
+
+.type-modal .ant-modal-header,
+.delete-modal .ant-modal-header {
+    border-radius: 8px 8px 0 0;
+    background-color: #f0f5ff;
+    padding: 16px 24px;
+}
+
+.type-modal .ant-modal-title,
+.delete-modal .ant-modal-title {
+    font-size: 18px;
+    color: #1a3353;
+}
+
+.type-modal .ant-modal-body,
+.delete-modal .ant-modal-body {
+    padding: 24px;
+}
+
+.type-modal .ant-form-item-label > label {
+    font-size: 16px;
+}
+
+.delete-confirmation {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.delete-icon {
+    font-size: 32px;
+    color: #ff4d4f;
+}
+
+.delete-message {
+    font-size: 16px;
+}
+
+.delete-message p:first-child {
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.project-detail-drawer .ant-drawer-content-wrapper {
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
+}
+
+.project-detail-drawer .ant-drawer-header {
+    padding: 16px 24px;
+    background-color: #f0f5ff;
+}
+
+.drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.drawer-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a3353;
+}
+
+.drawer-close {
+    font-size: 16px;
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+}
+
+.loading-message {
+    font-size: 16px;
+    color: #6c757d;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .filter-panel {
+        padding: 16px;
+    }
+
+    .project-detail-drawer .ant-drawer-content-wrapper {
+        width: 100% !important;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 8px;
+    }
 }

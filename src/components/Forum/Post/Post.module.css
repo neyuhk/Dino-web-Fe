@@ -3,6 +3,13 @@
     background-color: white;
     border-radius: 40px;
     padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.container:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .header {
@@ -17,41 +24,59 @@
     width: 2.5rem;
     height: 2.5rem;
     border-radius: 9999px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .authorInfo {
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
 }
 
 .authorName {
     font-weight: 600;
+    margin: 0;
 }
 
 .time {
     font-size: 0.875rem;
     color: #6B7280;
+    margin: 0;
 }
 
 .content {
     margin-bottom: 1rem;
-    .title{
-        text-align: left;
-    }
+}
+
+.title {
+    text-align: left;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+    color: #111827;
 }
 
 .text {
-    color: black;
+    color: #374151;
     margin-bottom: 1rem;
+    line-height: 1.5;
 }
 
 .image {
     width: 100%;
     max-width: 50%;
-    border-radius: 0.5rem;
-    @media (max-width: 768px) {
-        /*display: block;*/
-        /*margin: auto;*/
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.image:hover {
+    transform: scale(1.01);
+}
+
+@media (max-width: 768px) {
+    .image {
+        max-width: 100%;
     }
 }
 
@@ -59,44 +84,127 @@
     display: flex;
     align-items: center;
     gap: 1.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #f5f5f5;
+}
+
+.actionWrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
 }
 
 .actionButton {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0.25rem;
-    box-shadow: none;
+    padding: 0.5rem;
+    border-radius: 9999px;
+    transition: all 0.2s ease;
+}
+
+.actionButton:hover {
+    background-color: #f3f4f6;
 }
 
 .actionCount {
     font-size: 0.875rem;
     color: #6B7280;
-}
-.actionButton:hover{
-    background-color: white;
+    min-width: 1rem;
 }
 
 .likeActive {
     color: #EF4444;
+    fill: #EF4444;
 }
 
-.commentActive{
-    color: #65f470;
+.commentActive {
+    color: #10B981;
+    fill: #10B981;
 }
 
 .repostActive {
     color: #3B82F6;
+    fill: #3B82F6;
 }
 
 .actionIcon {
     color: #6B7280;
 }
-/* Add these styles to your post.module.css file */
 
+/* Options menu styles */
+.optionsContainer {
+    position: relative;
+}
+
+.optionsButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 9999px;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.optionsButton:hover {
+    background-color: #f3f4f6;
+}
+
+.optionsIcon {
+    color: #6B7280;
+}
+
+.optionsMenu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 160px;
+    z-index: 10;
+    overflow: hidden;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.optionItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    color: #374151;
+}
+
+.optionItem:hover {
+    background-color: #f9fafb;
+}
+
+.optionItem:first-child {
+    color: #3B82F6;
+}
+
+.optionItem:last-child {
+    color: #EF4444;
+}
+
+/* Comment section styles */
 .commentToggleButton {
     display: flex;
     align-items: center;
@@ -104,15 +212,17 @@
     background: #f5f5f5;
     border: none;
     padding: 8px 16px;
-    border-radius: 4px;
+    border-radius: 9999px;
     cursor: pointer;
     margin: 8px auto;
-    color: #1890ff;
+    color: #3B82F6;
     transition: all 0.3s ease;
+    font-weight: 500;
 }
 
 .commentToggleButton:hover {
     background: #e6f7ff;
+    transform: translateY(-1px);
 }
 
 .commentToggleIcon {
@@ -131,27 +241,166 @@
 }
 
 .commentSectionExpanded {
-    border-top: 0.5px solid #f0f0f0;
+    border-top: 1px solid #f0f0f0;
     max-height: none;
     overflow: visible;
     transition: max-height 0.3s ease;
     margin-top: 16px;
+    padding-top: 16px;
     padding-bottom: 16px;
 }
-.deleteButton {
-    margin-left: auto;
+
+/* Edit Modal Styles */
+.editModal {
+    border-radius: 1rem;
+}
+
+.editModalFooter {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.cancelButton {
+    padding: 0.5rem 1rem;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: #4b5563;
+    transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+    background: #e5e7eb;
+}
+
+.submitButton {
+    padding: 0.5rem 1rem;
+    background: #3B82F6;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: white;
+    transition: all 0.2s ease;
+}
+
+.submitButton:hover {
+    background: #2563eb;
+}
+
+/* Liked Users Box Styles */
+.likedUsersOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+.likedUsersBox {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    width: 350px;
+    max-height: 80vh;
+    overflow: hidden;
+    animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.likedUsersHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f0f0f0;
+    background: #f9fafb;
+}
+
+.likedUsersHeader h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #111827;
+    font-weight: 600;
+}
+
+.closeButton {
     background: none;
     border: none;
+    font-size: 1.5rem;
+    line-height: 1;
     cursor: pointer;
-    padding: 8px;
+    color: #6B7280;
+    padding: 0.25rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.likedUsersList {
+    padding: 0.75rem 1rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.likedUser {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0.5rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s ease;
+}
+
+.likedUser:hover {
+    background-color: #f9fafb;
+}
+
+.likedUserAvatar {
+    width: 2.5rem;
+    height: 2.5rem;
     border-radius: 50%;
-    transition: background-color 0.2s;
+    margin-right: 0.75rem;
+    object-fit: cover;
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.deleteButton:hover {
-    background-color: rgba(255, 0, 0, 0.1);
+.likedUsername {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #111827;
 }
 
-.deleteIcon {
-    color: #ff4d4f;
+.noLikesMessage {
+    padding: 2rem 0;
+    text-align: center;
+    color: #6B7280;
+    font-size: 0.875rem;
+}
+:global(.custom-popconfirm .ant-popconfirm-buttons) {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 8px;
 }

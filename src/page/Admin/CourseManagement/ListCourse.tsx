@@ -1,145 +1,161 @@
-import React, { useEffect, useState } from 'react'
-import { Space, Table, Input, Button, Modal, Form, Upload, DatePicker, message, Row, Tooltip } from 'antd'
-import type { TableProps } from 'antd'
-import { getCourses, addCourse, deleteCourse, editCourse } from '../../../services/course.ts'
-import { Course } from '../../../model/model.ts'
-import moment from 'moment'
-import { Link } from 'react-router-dom'
-import { AlignLeftOutlined, DeleteOutlined, EditOutlined, UploadOutlined } from '@ant-design/icons'
+import React, { useEffect, useState } from 'react';
+import { Space, Table, Input, Button, Modal, Form, Upload, DatePicker, message, Tooltip } from 'antd';
+import type { TableProps } from 'antd';
+import { getCourses, addCourse, deleteCourse, editCourse } from '../../../services/course.ts';
+import { Course } from '../../../model/model.ts';
+import moment from 'moment';
+import { Link } from 'react-router-dom';
+import { AlignLeftOutlined, DeleteOutlined, EditOutlined, UploadOutlined } from '@ant-design/icons';
 
-const { Search } = Input
+const { Search } = Input;
 
 const ListCourseManagement: React.FC = () => {
-    const [data, setData] = useState<Course[]>([])
-    const [isLoading, setLoading] = useState(true)
-    const [filteredData, setFilteredData] = useState<Course[]>([])
-    const [isModalVisible, setIsModalVisible] = useState(false)
-    const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false)
-    const [form] = Form.useForm()
-    const [selectedImage, setSelectedImage] = useState(null)
-    const [editingCourse, setEditingCourse] = useState<Course | null>(null)
-    const [courseToDelete, setCourseToDelete] = useState<string | null>(null)
+    const [data, setData] = useState<Course[]>([]);
+    const [isLoading, setLoading] = useState(true);
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+    const [searchTitle, setSearchTitle] = useState<string>('');
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+    const [form] = Form.useForm();
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [editingCourse, setEditingCourse] = useState<Course | null>(null);
+    const [courseToDelete, setCourseToDelete] = useState<string | null>(null);
+
+    const fetchData = async (page: number, perPage: number, title: string) => {
+        setLoading(true);
+        try {
+            const courses = await getCourses(page, perPage, title);
+            setData(courses.data);
+            console.log(courses.data);
+            setPagination({ current: page, pageSize: perPage, total: courses.totalCourses });
+        } catch (error) {
+            console.error('Failed to fetch courses:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-            const courses = await getCourses()
-            setLoading(false)
-            setData(courses.data)
-            setFilteredData(courses.data)
-        }
-
-        fetchData()
-    }, [])
+        fetchData(pagination.current, pagination.pageSize, searchTitle);
+    }, []);
 
     const handleSearch = (value: string) => {
-        const filtered = data.filter(course =>
-            course.title.toLowerCase().includes(value.toLowerCase()) ||
-            course.description.toLowerCase().includes(value.toLowerCase()),
-        )
-        setFilteredData(filtered)
-    }
+        setSearchTitle(value);
+        fetchData(1, pagination.pageSize, value);
+    };
+
+    const handleTableChange = (pagination: any) => {
+        fetchData(pagination.current, pagination.pageSize, searchTitle);
+    };
 
     const showModal = () => {
-        setIsModalVisible(true)
-    }
+        setIsModalVisible(true);
+    };
 
     const handleCancel = () => {
-        setIsModalVisible(false)
-        setEditingCourse(null)
-        form.resetFields()
-    }
+        setIsModalVisible(false);
+        setEditingCourse(null);
+        form.resetFields();
+    };
 
     const showDeleteModal = (id: string) => {
-        setCourseToDelete(id)
-        setIsDeleteModalVisible(true)
-    }
+        setCourseToDelete(id);
+        setIsDeleteModalVisible(true);
+    };
 
     const handleDeleteCancel = () => {
-        setIsDeleteModalVisible(false)
-        setCourseToDelete(null)
-    }
+        setIsDeleteModalVisible(false);
+        setCourseToDelete(null);
+    };
 
     const handleDeleteCourse = async () => {
-        if (!courseToDelete) return
+        if (!courseToDelete) return;
         try {
-            await deleteCourse(courseToDelete)
-            message.success('Course deleted successfully')
-            const courses = await getCourses()
-            setData(courses.data)
-            setFilteredData(courses.data)
-            setIsDeleteModalVisible(false)
-            setCourseToDelete(null)
+            await deleteCourse(courseToDelete);
+            message.success('Course deleted successfully');
+            fetchData(pagination.current, pagination.pageSize, searchTitle);
+            setIsDeleteModalVisible(false);
+            setCourseToDelete(null);
         } catch (error) {
-            message.error('Failed to delete course')
-            console.error('Failed to delete course:', error)
+            message.error('Failed to delete course');
+            console.error('Failed to delete course:', error);
         }
-    }
+    };
 
     const handleAddOrUpdateCourse = async (values: any) => {
-        console.log(values)
-        const formData = new FormData()
-        formData.append('title', values.title)
-        formData.append('description', values.description)
-        formData.append('startDate', values.startDate.format('YYYY-MM-DD'))
-        formData.append('endDate', values.endDate.format('YYYY-MM-DD'))
-        formData.append('certification', values.certification)
+        const formData = new FormData();
+        formData.append('title', values.title);
+        formData.append('description', values.description);
+        formData.append('startDate', values.startDate.format('YYYY-MM-DD'));
+        formData.append('endDate', values.endDate.format('YYYY-MM-DD'));
+        formData.append('certification', values.certification);
 
         if (selectedImage) {
-            formData.append('file', selectedImage.originFileObj)
+            // @ts-ignore
+            formData.append('file', selectedImage.originFileObj);
         }
         try {
             if (editingCourse) {
-                await editCourse(editingCourse._id, formData)
+                await editCourse(editingCourse._id, formData);
             } else {
-                await addCourse(formData)
+                await addCourse(formData);
             }
 
-            const courses = await getCourses()
-            setData(courses.data)
-            setFilteredData(courses.data)
-            setIsModalVisible(false)
-            form.resetFields()
+            fetchData(pagination.current, pagination.pageSize, searchTitle);
+            setIsModalVisible(false);
+            form.resetFields();
         } catch (error) {
-            console.error('Failed to add course:', error)
+            console.error('Failed to add course:', error);
         }
-    }
+    };
 
     const handleEditCourse = (course: Course) => {
-        setEditingCourse(course)
+        setEditingCourse(course);
         form.setFieldsValue({
             title: course.title,
             description: course.description,
             startDate: moment(course.start_date),
             endDate: moment(course.end_date),
             certification: course.certification,
-        })
-        setIsModalVisible(true)
-    }
+        });
+        setIsModalVisible(true);
+    };
 
+    // @ts-ignore
     const handleImageChange = ({ fileList }) => {
-        setSelectedImage(fileList[0])
-    }
+        setSelectedImage(fileList[0]);
+    };
 
     const columns: TableProps<Course>['columns'] = [
         {
             title: 'Title',
             dataIndex: 'title',
             key: 'title',
-            render: (text) => text ? <a>{text}</a> : 'Unknown',
+            render: (text) => (text ? <a>{text}</a> : 'Unknown'),
         },
         {
             title: 'Description',
             dataIndex: 'description',
             key: 'description',
-            render: (text) => text ? text : 'Unknown',
+            render: (text) => (text ? text : 'Unknown'),
         },
         {
             title: 'Image',
             key: 'images',
-            render: (record) => record.images ?
-                <img src={record.images[0]} alt={record.title} style={{ width: '100px', maxHeight: '100px' }} />
-                : <img src={'/MockData/default-course.jpg'} alt={record.title}
-                       style={{ width: '100px', maxHeight: '100px' }} />,
+            render: (record) =>
+                record.images ? (
+                    <img
+                        src={record.images[0]}
+                        alt={record.title}
+                        style={{ width: '100px', maxHeight: '100px' }}
+                    />
+                ) : (
+                    <img
+                        src={'/MockData/default-course.jpg'}
+                        alt={record.title}
+                        style={{ width: '100px', maxHeight: '100px' }}
+                    />
+                ),
         },
         {
             title: 'Start Date',
@@ -159,7 +175,9 @@ const ListCourseManagement: React.FC = () => {
             render: (record) => (
                 <Space size="middle">
                     <Tooltip title="View">
-                        <Link style={{color: 'black'}} to={`/admin/course/detail/${record._id}`}><AlignLeftOutlined /></Link>
+                        <Link style={{ color: 'black' }} to={`/admin/course/detail/${record._id}`}>
+                            <AlignLeftOutlined />
+                        </Link>
                     </Tooltip>
                     <Tooltip title="Edit">
                         <EditOutlined onClick={() => handleEditCourse(record)} />
@@ -170,32 +188,26 @@ const ListCourseManagement: React.FC = () => {
                 </Space>
             ),
         },
-    ]
+    ];
 
     return (
         <div>
             <Space style={{ marginBottom: 16, width: '100%', justifyContent: 'space-between' }}>
-                <Search
-                    placeholder="Search courses"
-                    onSearch={handleSearch}
-                    enterButton
-                />
+                <Search placeholder="Search courses" onSearch={handleSearch} enterButton />
                 <Button type="primary" onClick={showModal}>
                     Add Course
                 </Button>
             </Space>
             <div style={{ overflow: 'auto' }}>
-                <Table
-                    <Course>
+                <Table<Course>
                     columns={columns}
-                    dataSource={filteredData}
+                    dataSource={data}
                     loading={isLoading}
-                    onRow={(record) => {
-                        return {
-                            onClick: () => {
-
-                            },
-                        }
+                    pagination={{
+                        current: pagination.current,
+                        pageSize: pagination.pageSize,
+                        total: pagination.total,
+                        onChange: (page, pageSize) => handleTableChange({ current: page, pageSize }),
                     }}
                 />
             </div>
@@ -206,11 +218,7 @@ const ListCourseManagement: React.FC = () => {
                 onOk={() => form.submit()}
                 okText={editingCourse ? 'Update' : 'Add Course'}
             >
-                <Form
-                    form={form}
-                    layout="vertical"
-                    onFinish={handleAddOrUpdateCourse}
-                >
+                <Form form={form} layout="vertical" onFinish={handleAddOrUpdateCourse}>
                     <Form.Item
                         name="title"
                         label="Title"
@@ -225,7 +233,6 @@ const ListCourseManagement: React.FC = () => {
                     >
                         <Input.TextArea />
                     </Form.Item>
-
                     <Form.Item
                         name="startDate"
                         label="Start Date"
@@ -240,7 +247,6 @@ const ListCourseManagement: React.FC = () => {
                     >
                         <DatePicker />
                     </Form.Item>
-
                     <Form.Item
                         name="certification"
                         label="Certification"
@@ -276,7 +282,7 @@ const ListCourseManagement: React.FC = () => {
                 <p>Are you sure you want to delete this course?</p>
             </Modal>
         </div>
-    )
-}
+    );
+};
 
-export default ListCourseManagement
+export default ListCourseManagement;

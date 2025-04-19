@@ -1,5 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { PlusCircle, Home, BookOpen, ThumbsUp, MessageSquare, Repeat, User, ChevronDown, Loader } from 'lucide-react';
+import {
+    PlusCircle,
+    Home,
+    BookOpen,
+    ThumbsUp,
+    MessageSquare,
+    Repeat,
+    User,
+    ChevronDown,
+    Loader,
+    LucideIcon,
+} from 'lucide-react'
 import styles from './Forum.module.css';
 import Post from './Post/Post.tsx'
 import { Forum } from '../../model/model.ts';
@@ -11,7 +22,7 @@ import CreatePostModal from './CreatePost/CreatePostModal.tsx'
 
 interface MenuItem {
     id: string;
-    icon: React.FC<{ size?: number; className?: string }>;
+    icon: LucideIcon;
     label: string;
 }
 
@@ -185,16 +196,30 @@ const ForumPage: React.FC = () => {
         }
     };
 
+    const handleUpdatePost = (postId: string, updatedPost: any) => {
+        setForumList(prev => prev.map(post => {
+            if (post._id === postId) {
+                // Thay thế hoàn toàn post cũ bằng post mới từ API response
+                return {
+                    ...post,         // Giữ lại các thuộc tính không thay đổi từ post ban đầu
+                    ...updatedPost,  // Cập nhật với tất cả dữ liệu mới
+                    _id: postId      // Đảm bảo _id không bị thay đổi
+                };
+            }
+            return post;
+        }));
+    };
+
     const handleDeletePost = (postId: string) => {
         // Loại bỏ bài đăng đã xóa khỏi danh sách
         setForumList(prev => prev.filter(post => post._id !== postId));
     };
 
+    // @ts-ignore
     const menuItems: MenuItem[] = [
         { id: 'home', icon: Home, label: 'Trang chủ' },
         { id: 'class', icon: BookOpen, label: 'Lớp học' },
         { id: 'liked', icon: ThumbsUp, label: 'Bài đăng đã thích' },
-        { id: 'commented', icon: MessageSquare, label: 'Bài đăng đã bình luận' },
         { id: 'reposted', icon: Repeat, label: 'Bài đăng lại' },
         { id: 'me', icon: User, label: 'Nhà của tôi' },
     ];
@@ -216,7 +241,7 @@ const ForumPage: React.FC = () => {
                 <nav className={styles.desktopNav}>
                     <div className={styles.avatarContainer}>
                         <img
-                            src={user.avatar}
+                            src={user.avatar[0]? user.avatar :"https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg"}
                             alt="User Avatar"
                             className={styles.userAvatar}
                         />
@@ -323,7 +348,7 @@ const ForumPage: React.FC = () => {
             <div className={styles.mainContent}>
                 <div className={styles.mobileHeader}>
                     <img
-                        src={user.avatar}
+                        src={user.avatar[0]? user.avatar :"https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg"}
                         alt="User Avatar"
                         className={styles.avatar}
                     />
@@ -355,6 +380,8 @@ const ForumPage: React.FC = () => {
                                     onLikeStatusChange={handleLikeStatusChange}
                                     onRepostStatusChange={handleRepostStatusChange}
                                     onDeletePost={handleDeletePost}
+                                    onUpdatePost={handleUpdatePost}
+                                    selectedMenu={selectedMenu}
                                 />
                             ))}
 

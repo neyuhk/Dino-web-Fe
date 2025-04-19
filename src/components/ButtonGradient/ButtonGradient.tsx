@@ -4,6 +4,7 @@ import styles from './ButtonGradient.module.css';
 interface ButtonGradientProps {
     text: string;
     onClick?: () => void;
+    disabled?: boolean;
 }
 
 const ButtonGradient: React.FC<ButtonGradientProps> = ({ text, onClick }) => {

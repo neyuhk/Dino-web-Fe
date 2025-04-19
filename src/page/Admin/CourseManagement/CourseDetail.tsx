@@ -19,11 +19,13 @@ import {
 import { useParams } from 'react-router-dom'
 import moment from 'moment'
 import { getCourseById } from '../../../services/course.ts'
-import { Course, Lesson } from '../../../model/model.ts'
+import { Course } from '../../../model/model.ts'
 import { getLessonByCourseId, addLesson } from '../../../services/lesson.ts'
 import { PROJECT_TYPE } from '../../../enum/projectType.ts'
 import { AlignLeftOutlined, DeleteOutlined, EditOutlined, UploadOutlined } from '@ant-design/icons'
+// @ts-ignore
 import { debounce } from 'lodash'
+import { Lesson } from '../../../model/classroom.ts'
 
 const { Title, Paragraph, Text } = Typography
 const { Search } = Input
@@ -80,6 +82,7 @@ const CourseDetailPage: React.FC = () => {
         formData.append('body', values.body)
         formData.append('status', values.status)
         if (selectedImage) {
+            // @ts-ignore
             formData.append('images', selectedImage.originFileObj)
         }
 
@@ -102,6 +105,7 @@ const CourseDetailPage: React.FC = () => {
         form.resetFields()
     }
 
+    // @ts-ignore
     const handleImageChange = ({ fileList }) => {
         setSelectedImage(fileList[0])
     }

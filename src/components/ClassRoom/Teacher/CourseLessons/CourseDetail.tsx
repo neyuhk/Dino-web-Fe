@@ -72,7 +72,11 @@ const CourseDetail: React.FC = () => {
                     const students = await getStudentByCourseId(courseId)
                     setListStudent(students.data)
                 }
-
+                if (course?.images?.[0]) {
+                    console.log('Link ảnh cũ:', course.images[0]);
+                }else{
+                    console.log("k co anh", course)
+                }
                 if (course) {
                     // Update edit form data with course details
                     setEditFormData({
@@ -192,6 +196,7 @@ const CourseDetail: React.FC = () => {
                 }
                 const updateCourse = await editCourse(courseId, formDataToSend)
                 setCourse(updateCourse.data)
+                setShowEditModal(false)
             }
 
             setToast({
@@ -369,7 +374,7 @@ const CourseDetail: React.FC = () => {
                 ) : activeTab === 'students' ? (
                     <CourseStudents
                         courseId={courseId ? courseId : ''}
-                        students={listStudent}
+                        // students={listStudent}
                     />
                 ) : (
                     <CourseScore courseId={courseId ? courseId : ''} />
@@ -554,7 +559,7 @@ const CourseDetail: React.FC = () => {
 
              {/*Toast notification*/}
             {toast.show && (
-                <Toast toast={toast} onClose={hideToast} />
+                <Toast toast={toast} onClose={hideToast} type={''} />
             )}
         </div>
     )

@@ -2,22 +2,9 @@ import { Breadcrumb, Layout, theme, Button } from 'antd';
 import HeaderAdmin from '../components/commons/Admin/HeaderAdmin.tsx';
 import SiderAdmin from '../components/commons/Admin/SiderAdmin.tsx';
 import { useLocation } from 'react-router-dom';
-import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 
 const { Header, Content, Sider } = Layout;
-
-const siderStyle: React.CSSProperties = {
-    overflow: 'auto',
-    height: '100vh',
-    position: 'fixed',
-    insetInlineStart: 0,
-    top: 0,
-    bottom: 0,
-    scrollbarWidth: 'thin',
-    scrollbarGutter: 'stable',
-};
-
 // @ts-ignore
 const AdminLayout = ({ children }) => {
     const {

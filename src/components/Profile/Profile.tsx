@@ -4,121 +4,21 @@ import ProjectList from './ProjectList/ProjectList.tsx'
 import AboutMe from './AboutMe/AboutMe.tsx'
 import { Project, User } from '../../model/model.ts'
 import ProfileCourses from './Courses/Profile-Courses.tsx'
-import { Typography } from 'antd'
+import { Typography, Pagination } from 'antd'
 import SavedProjects from './SavedProjects/SavedProjects.tsx'
-import { useSelector } from 'react-redux'
-import { getListProjectsByUser, getProjects } from '../../services/project.ts'
+import { useSelector, useDispatch } from 'react-redux'
+import { getFavoriteProjects, searchProject } from '../../services/project.ts'
+import { updateUser } from '../../stores/authAction.ts'
 
 const Profile: React.FC = () => {
-    const [activeTab, setActiveTab] = useState('projects')
+    const [activeTab, setActiveTab] = useState('me')
     const { user } = useSelector((state: any) => state.auth)
+    const dispatch = useDispatch() // Get the dispatch function
     const { Title } = Typography
-
-
-
-
-    const mockProjects: Project[] = [
-        {
-            _id: "1",
-            name: "Dự án 1",
-            description: "Mô tả dự án 1",
-            direction: "Hướng Bắc",
-            images: ["https://i.pinimg.com/736x/8b/84/63/8b84630f622a272cfad466fd192b19ff.jpg"],
-            user_id: {
-                _id: "u1",
-                email: "example@example.com",
-                username: "username1",
-                name: "Nguyễn Văn A",
-                avatar: "https://i.pinimg.com/736x/8b/84/63/8b84630f622a272cfad466fd192b19ff.jpg",
-                role: "user",
-                createdAt: "2023-01-01T10:00:00Z",
-                updatedAt: "2023-01-01T10:00:00Z",
-                birthday: new Date("1990-05-20"),
-            },
-            like_count: 123,
-            view_count: 456,
-            project_type: "Kiến trúc",
-            createdAt: "2023-01-01T10:00:00Z",
-            updatedAt: "2023-01-02T12:00:00Z",
-            blocks: "Block 1, Block 2",
-        },
-        {
-            _id: "2",
-            name: "Dự án 2",
-            description: "Mô tả dự án 2",
-            direction: "Hướng Đông",
-            images: ["https://i.pinimg.com/736x/70/43/22/70432264e904355aaa4ad15a26797dcb.jpg"],
-            user_id: {
-                _id: "u2",
-                email: "example2@example.com",
-                username: "username2",
-                name: "Nguyễn Văn B",
-                avatar: "https://i.pinimg.com/736x/70/43/22/70432264e904355aaa4ad15a26797dcb.jpg",
-                role: "user",
-                createdAt: "2023-01-05T08:00:00Z",
-                updatedAt: "2023-01-05T08:00:00Z",
-                birthday: new Date("1992-10-10"),
-            },
-            like_count: 78,
-            view_count: 200,
-            project_type: "Xây dựng",
-            createdAt: "2023-01-03T14:00:00Z",
-            updatedAt: "2023-01-05T14:00:00Z",
-            blocks: "Block 3, Block 4",
-        },
-    ];
-
-
-    // const [user, setUser] = useState<User>({
-    //     _id: '',
-    //     email: 'user@example.com',
-    //     username: 'johndoe',
-    //     name: 'John Doe',
-    //     avatar: 'https://i.pinimg.com/736x/70/a2/36/70a236f90d2803f9da32d0558be75ba1.jpg',
-    //     role: 'User',
-    //     createdAt: '',
-    //     updatedAt: '',
-    //     birthday: new Date('1990-01-01'),
-    // })
-
-    const mockCourses = [
-        {
-            id: '1',
-            title: 'Learn Arduino from Scratch',
-            image: '/path/to/arduino-course.jpg',
-            startDate: new Date('2023-03-04'),
-            progress: 20,
-            totalLessons: 10,
-            completedLessons: 2,
-        },
-        {
-            id: '2',
-            title: 'Advanced React Development',
-            image: '/path/to/react-course.jpg',
-            startDate: new Date('2023-05-15'),
-            progress: 45,
-            totalLessons: 15,
-            completedLessons: 7,
-        },
-        {
-            id: '3',
-            title: 'Python for Data Science',
-            image: 'https://i.pinimg.com/736x/8b/84/63/8b84630f622a272cfad466fd192b19ff.jpg',
-            startDate: new Date('2023-01-20'),
-            progress: 75,
-            totalLessons: 20,
-            completedLessons: 15,
-        },
-    ]
-
-    const handleUpdateUser = (updatedUser: Partial<User>) => {
-        // setUser((prev) => ({
-        //     ...prev,
-        //     ...updatedUser,
-        //     updatedAt: new Date().toDateString(),
-        // }))
-    }
-    const [savedProjects, setSavedProjects] = useState(mockProjects);
+    const [savedProjects, setSavedProjects] = useState<Project[]>([]);
+    const [page, setPage] = useState<number>(1);
+    const [perPage, setPerPage] = useState<number>(10);
+    const [totalProjects, setTotalProjects] = useState<number>(0);
 
     const handleSaveToggle = (projectId: string) => {
         const updatedProjects = savedProjects.filter(
@@ -126,14 +26,43 @@ const Profile: React.FC = () => {
         );
         setSavedProjects(updatedProjects);
     };
+
+    const fetchSavedProjects = async (currentPage = page, itemsPerPage = perPage) => {
+        try {
+            const response = await searchProject(currentPage, itemsPerPage, '', 'false', user._id);
+            setSavedProjects(response.data);
+            setTotalProjects(response.total);
+        } catch (error) {
+            console.error('Error fetching saved projects:', error);
+        }
+    };
+
+    useEffect(() => {
+        if (activeTab === 'saved') {
+            fetchSavedProjects();
+        }
+    }, [activeTab, page, perPage])
+
+    const handlePageChange = (newPage: number, newPerPage?: number) => {
+        setPage(newPage);
+        if (newPerPage) {
+            setPerPage(newPerPage);
+        }
+    };
+
+    // Handle user update from AboutMe component
+    const handleUserUpdate = (updatedUser: User) => {
+        dispatch(updateUser(updatedUser)); // Dispatch the updateUser action
+    };
+
     return (
         <div className={styles.profileContainer}>
             <header className={styles.header}>
                 <div className={styles.avatar}>
                     <img
-                        src={user.avatar? user.avatar:'https://i.pinimg.com/474x/20/c0/0f/20c00f0f135c950096a54b7b465e45cc.jpg'}
+                        src={user.avatar[0] ? user.avatar:'https://i.pinimg.com/474x/20/c0/0f/20c00f0f135c950096a54b7b465e45cc.jpg'}
                         className={styles.avatar}
-                        />
+                    />
                 </div>
                 <div className={styles.userInfo}>
                     <h1 className={styles.userName}>{user.username}</h1>
@@ -157,14 +86,6 @@ const Profile: React.FC = () => {
                         </li>
                         <li
                             className={
-                                activeTab === 'classes' ? styles.active : ''
-                            }
-                            onClick={() => setActiveTab('classes')}
-                        >
-                            Lớp học
-                        </li>
-                        <li
-                            className={
                                 activeTab === 'saved' ? styles.active : ''
                             }
                             onClick={() => setActiveTab('saved')}
@@ -176,20 +97,28 @@ const Profile: React.FC = () => {
             </header>
             <main className={styles.content}>
                 {activeTab === 'me' ? (
-                    <AboutMe user={user} onUpdateUser={handleUpdateUser} />
+                    <AboutMe onUserUpdate={handleUserUpdate} />
                 ) : null}
 
                 {activeTab === 'projects' ? <ProjectList /> : null}
-
-                {activeTab === 'classes' ? (
-                    <ProfileCourses courses={mockCourses} />
-                ) : null}
-
                 {activeTab === 'saved' ? (
-                    <SavedProjects
-                        projects={savedProjects}
-                        onSaveToggle={handleSaveToggle}
-                    />
+                    <>
+                        <SavedProjects
+                            projects={savedProjects}
+                            onSaveToggle={handleSaveToggle}
+                        />
+                        <div className={styles.paginationContainer}>
+                            <Pagination
+                                current={page}
+                                pageSize={perPage}
+                                total={totalProjects}
+                                onChange={handlePageChange}
+                                showSizeChanger
+                                pageSizeOptions={['5', '10', '20', '50']}
+                                onShowSizeChange={(current, size) => handlePageChange(1, size)}
+                            />
+                        </div>
+                    </>
                 ) : null}
             </main>
         </div>

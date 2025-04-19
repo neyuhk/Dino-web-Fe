@@ -1,9 +1,9 @@
-import { EXERCISE_API, SCORE_API } from '../constants/api.ts'
+import { SCORE_API } from '../constants/api.ts'
 import http from './http/http.ts'
-import httpAuth from './http/httpAuth.ts'
+import { httpAuth } from './http/httpAuth.ts'
 
 export const createScore = async (body: any) => {
-    return (await http.post(SCORE_API.CREATE_SCORE, body)).data
+    return (await httpAuth.post(SCORE_API.CREATE_SCORE, body)).data
 }
 
 export const getScoreForCourse = async (exerciseId: string) => {
@@ -28,7 +28,7 @@ export const getAnswerResultByExerciseAndUser = async (
     userId: string
 ) => {
     return (
-        await http.post(SCORE_API.GET_SUBMITTED_SCORE, {
+        await httpAuth.post(SCORE_API.GET_SUBMITTED_SCORE, {
             exerciseId,
             userId,
         })

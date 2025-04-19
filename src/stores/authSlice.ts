@@ -1,7 +1,13 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { getLocalStorage, putLocalStorage, removeLocalStorage } from '@/helpers/localStorageHelper'
-import { LOCAL_STORAGE_KEYS } from '@/constants/localStorageKey'
-import { getCurrentUserAction, loginAction, refreshTokenAction } from './authAction'
+import { createSlice, PayloadAction, createAction } from '@reduxjs/toolkit';
+// @ts-ignore
+import { getLocalStorage, putLocalStorage, removeLocalStorage } from '@/helpers/localStorageHelper';
+// @ts-ignore
+import { LOCAL_STORAGE_KEYS } from '@/constants/localStorageKey';
+import { getCurrentUserAction, loginAction, refreshTokenAction } from './authAction';
+import { User } from '../model/model';
+
+// Define UPDATE_USER as a typed action creator
+export const UPDATE_USER = createAction<User>('UPDATE_USER');
 
 const authSlice = createSlice({
     name: 'auth',
@@ -11,37 +17,40 @@ const authSlice = createSlice({
     },
     reducers: {
         logout: (state) => {
-            state.isAuthenticated = false
-            state.user = null
-            removeLocalStorage(LOCAL_STORAGE_KEYS.INFO)
-            removeLocalStorage(LOCAL_STORAGE_KEYS.IS_LOGIN)
-            removeLocalStorage(LOCAL_STORAGE_KEYS.AUTHENTICATION_TOKEN)
+            console.log('dang xuat ne');
+            state.isAuthenticated = false;
+            state.user = null;
+            removeLocalStorage(LOCAL_STORAGE_KEYS.INFO);
+            removeLocalStorage(LOCAL_STORAGE_KEYS.IS_LOGIN);
+            removeLocalStorage(LOCAL_STORAGE_KEYS.AUTHENTICATION_TOKEN);
         },
     },
     extraReducers: (builder) => {
         builder
             .addCase(loginAction.fulfilled, (state, action) => {
-                // @ts-ignore
-                //putLocalStorage(LOCAL_STORAGE_KEYS.AUTHENTICATION_TOKEN, action.payload.accessToken)
-                console.log(action.payload)
-                putLocalStorage(LOCAL_STORAGE_KEYS.AUTHENTICATION_TOKEN, action.payload.data.data.accessToken)
+                console.log(action.payload);
+                putLocalStorage(LOCAL_STORAGE_KEYS.AUTHENTICATION_TOKEN, action.payload.data.data.accessToken);
             })
             .addCase(getCurrentUserAction.fulfilled, (state, action) => {
-                state.isAuthenticated = true
-                putLocalStorage(LOCAL_STORAGE_KEYS.INFO, JSON.stringify(action.payload))
-                putLocalStorage(LOCAL_STORAGE_KEYS.IS_LOGIN, true)
-                state.user = action.payload
+                state.isAuthenticated = true;
+                putLocalStorage(LOCAL_STORAGE_KEYS.INFO, JSON.stringify(action.payload));
+                putLocalStorage(LOCAL_STORAGE_KEYS.IS_LOGIN, true);
+                state.user = action.payload;
             })
             .addCase(refreshTokenAction.fulfilled, (state, action) => {
-                putLocalStorage(LOCAL_STORAGE_KEYS.AUTHENTICATION_TOKEN, action.payload.data.accessToken)
+                putLocalStorage(LOCAL_STORAGE_KEYS.AUTHENTICATION_TOKEN, action.payload.data.accessToken);
             })
             .addCase(getCurrentUserAction.rejected, (state, action) => {
-                // @ts-ignore
-                // state.isAuthenticated = false
-                // state.user = null
+                // Handle rejection if needed
             })
+            // Use the typed UPDATE_USER action creator
+            .addCase(UPDATE_USER, (state, action: PayloadAction<User>) => {
+                state.user = action.payload;
+                // Update local storage too
+                putLocalStorage(LOCAL_STORAGE_KEYS.INFO, JSON.stringify(action.payload));
+            });
     },
-})
+});
 
-export const { logout } = authSlice.actions
-export default authSlice.reducer
+export const { logout } = authSlice.actions;
+export default authSlice.reducer;

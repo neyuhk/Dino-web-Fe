@@ -12,12 +12,18 @@ export const USER_API = {
     GET_CURRENT_USER: '/user/me',
     GET_USERS: '/user',
     GET_USER_BY_ID: '/user/',
+    UPDATE_USERS: '/user/edit',
     FIND_USER: '/user/find',
+    DELETE_USERS: '/user/',
+    CHANGE_PASSWORD: '/user/change-password',
+    CHANGE_ROLE: '/user/change-role',
 }
 
 export const PROJECT_API = {
     GET_PROJECTS: '/project',
+    SEARCH_PROJECTS: '/project/search-type',
     GET_PROJECT_BY_ID: '/project/',
+    GET_FAVORITE_PROJECTS: '/project/favorite/',
     CREATE_PROJECT: '/project',
     UPDATE_PROJECT: '/project/',
     DELETE_PROJECT: '/project/',
@@ -26,6 +32,8 @@ export const PROJECT_API = {
     GET_PROJECT_BY_USER_ID: '/project/user/',
     GET_PROJECT_BY_TYPE: '/project/type/',
     CHANGE_PROJECT_TYPE: '/project/change-type',
+    SET_FAVORITE_PROJECT: '/project/favorite',
+    CLONE_PROJECT: '/project/clone',
 }
 
 export const COURSE_API = {
@@ -45,7 +53,7 @@ export const LESSON_API = {
     GET_LESSONS: '/lesson',
     GET_LESSONS_COURSE_ID: '/lesson/course/',
     GET_LESSONS_COURSE_ID_STUDENT: '/lesson/lesson-student/',
-    GET_LESSON_BY_ID: '/lesson/:id',
+    GET_LESSON_BY_ID: '/lesson/',
     CREATE_LESSON: '/lesson/course/',
     UPDATE_LESSON: '/lesson/',
     DELETE_LESSON: '/lesson/',
@@ -73,6 +81,7 @@ export const EXERCISE_API = {
     GET_EXERCISE_DETAIL_FOR_TEACHER: 'quiz/exercise/teacher/',
     GET_EXERCISE_FOR_TEACHER: '/exercise/teacher/',
     GET_EXERCISE_FOR_STUDENT: 'exercise/lesson/', // +:lessonid/user/:userId
+    EDIT_EXERCISE: '/exercise/',
 }
 
 export const COMMENT_API = {
@@ -91,10 +100,11 @@ export const FORUM_API = {
     GET_FORUM_BY_ID: '/forum/',
     GET_LIKE_FORUM_BY_ID: '/forum/like/user/',
     GET_REPOST_FORUM_BY_ID: '/forum/repost/',
+    GET_USER_LIKE_FORUM: '/forum/user-liked/',
     LIKE: '/forum/like',
     REPOST: '/forum/repost',
     CREATE_FORUM: '/forum',
-    UPDATE_FORUM: '/forum/:id',
+    UPDATE_FORUM: '/forum/',
     DELETE_FORUM: '/forum/',
 }
 

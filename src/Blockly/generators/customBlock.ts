@@ -406,7 +406,7 @@ forBlock['variable_declare'] = function(
     return `int ${variable};\n`;
 };
 // Generator for controls_for.
-forBlock['controls_for'] = function (block, generator) {
+forBlock['controls_for'] = function (block: any, generator: any) {
     const varName = generator.valueToCode(block, 'INT', generator.ORDER_NONE) || 'i';
     const from = generator.valueToCode(block, 'FROM', generator.ORDER_NONE) || '0';
     const to = generator.valueToCode(block, 'TO', generator.ORDER_NONE) || '0';
@@ -929,7 +929,7 @@ forBlock['custom_code_block'] = function(
 
 
 // Generator functions cho custom function block
-forBlock['custom_function_block'] = function(block, generator) {
+forBlock['custom_function_block'] = function(block: any, generator: any) {
     const functionBody =
         generator.valueToCode(block, 'FUNCTION_CODE', generator.ORDER_NONE) || '';
 
@@ -1025,7 +1025,7 @@ forBlock['print_format'] = function(block: Blockly.Block,
 const ORDER_NONE = 99;
 
 // Generator for lcd_init
-forBlock['lcd_init'] = function (block, generator) {
+forBlock['lcd_init'] = function (block: any, generator: any) {
     const rs = block.getFieldValue('RS') || '12';
     const en = block.getFieldValue('E') || '11';
     const d4 = block.getFieldValue('D4') || '5';
@@ -1047,12 +1047,12 @@ LiquidCrystal lcd(${rs}, ${en}, ${d4}, ${d5}, ${d6}, ${d7});
 
 
 // Generator for lcd_clear
-forBlock['lcd_clear'] = function(block, generator) {
+forBlock['lcd_clear'] = function(block: any, generator: any) {
     return 'lcd.clear();\n';
 };
 
 // Generator for lcd_print
-forBlock['lcd_print'] = function(block, generator) {
+forBlock['lcd_print'] = function(block: any, generator: any) {
     const text = block.getFieldValue('TEXT');
     const row = block.getFieldValue('ROW');
     const col = block.getFieldValue('COL');
@@ -1062,7 +1062,7 @@ forBlock['lcd_print'] = function(block, generator) {
 };
 
 // Generator for lcd_set_cursor
-forBlock['lcd_set_cursor'] = function(block, generator) {
+forBlock['lcd_set_cursor'] = function(block: any, generator: any) {
     const row = block.getFieldValue('ROW');
     const col = block.getFieldValue('COL');
 
@@ -1071,7 +1071,7 @@ forBlock['lcd_set_cursor'] = function(block, generator) {
 };
 
 // Generator for lcd_create_char
-forBlock['lcd_create_char'] = function(block, generator) {
+forBlock['lcd_create_char'] = function(block: any, generator: any) {
     const pos = block.getFieldValue('POS');
     const pattern = block.getFieldValue('PATTERN');
 
@@ -1090,19 +1090,19 @@ forBlock['lcd_create_char'] = function(block, generator) {
 };
 
 // Generator for lcd_backlight
-forBlock['lcd_backlight'] = function(block, generator) {
+forBlock['lcd_backlight'] = function(block: any, generator: any) {
     const state = block.getFieldValue('STATE');
     return state === 'ON' ? 'lcd.backlight();\n' : 'lcd.noBacklight();\n';
 };
 
 // Generator for lcd_display
-forBlock['lcd_display'] = function(block, generator) {
+forBlock['lcd_display'] = function(block: any, generator: any) {
     const state = block.getFieldValue('STATE');
     return state === 'ON' ? 'lcd.display();\n' : 'lcd.noDisplay();\n';
 };
 
 // Generator for lcd_print_custom_char
-forBlock['lcd_print_custom_char'] = function(block, generator) {
+forBlock['lcd_print_custom_char'] = function(block: any, generator: any) {
     const pos = block.getFieldValue('POS');
     return `lcd.write(byte(${pos}));\n`;
 };
@@ -1111,8 +1111,8 @@ forBlock['lcd_print_custom_char'] = function(block, generator) {
 // Button Press and Hold Block
 // Button Press and Hold Block - Improved
 forBlock['button_press_hold'] = function(
-    block,
-    generator
+    block: any,
+    generator: any
 ) {
     const pin = generator.valueToCode(block, 'PIN', 0) || '2';
     const doCode = generator.statementToCode(block, 'DO');
@@ -1172,8 +1172,8 @@ const unsigned long debounceDelay = 50;
 
 // Toggle Button Block - Improved
 forBlock['button_toggle'] = function(
-    block,
-    generator
+    block: any,
+    generator: any
 ) {
     const pin = generator.valueToCode(block, 'PIN', 0) || '2';
     const onAction = generator.statementToCode(block, 'ON_ACTION');
@@ -1243,8 +1243,8 @@ const unsigned long debounceDelay = 50;
 
 // Long Press Button Block - Improved
 forBlock['button_long_press'] = function(
-    block,
-    generator
+    block: any,
+    generator: any
 ) {
     const pin = generator.valueToCode(block, 'PIN', 0) || '2';
     const time = generator.valueToCode(block, 'TIME', 0) || '1000';
@@ -1336,8 +1336,8 @@ const unsigned long debounceDelay = 50;
 
 // Multi-Press Button Block - Improved
 forBlock['button_multi_press'] = function(
-    block,
-    generator
+    block: any,
+    generator: any
 ) {
     const pin = generator.valueToCode(block, 'PIN', 0) || '2';
     const timeout = generator.valueToCode(block, 'TIMEOUT', 0) || '800';
@@ -1427,8 +1427,8 @@ const unsigned long debounceDelay = 50;
 
 // Directional Control Buttons Block - Improved
 forBlock['button_directional'] = function(
-    block,
-    generator
+    block: any,
+    generator: any
 ) {
     const upPin = generator.valueToCode(block, 'UP_PIN', 0) || '2';
     const downPin = generator.valueToCode(block, 'DOWN_PIN', 0) || '3';
@@ -1498,8 +1498,8 @@ const unsigned long dirDebounceDelay = 50;
 
 // LCD/OLED Menu Navigation Block - Improved
 forBlock['button_lcd_menu'] = function(
-    block,
-    generator
+    block: any,
+    generator: any
 ) {
     const pages = generator.valueToCode(block, 'PAGES', 0) || '3';
     const nextPin = generator.valueToCode(block, 'NEXT_PIN', 0) || '2';

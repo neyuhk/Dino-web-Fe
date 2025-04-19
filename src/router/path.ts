@@ -30,7 +30,7 @@ export const PATHS = {
     CLASSROOM: '/classroom',
     CLASSROOM_DETAIL: '/classroom/detail',
     CLASSROOM_LESSON: '/classroom/courses',
-    CLASSROOM_LESSON_DETAIL: '/classroom/courses/lesson/:id',
+    CLASSROOM_LESSON_DETAIL: '/classroom/courses/lesson/:lessonId',
     CLASSROOM_LEARNING: '/classroom/courses/learning',
 
     //teacher
@@ -56,7 +56,4 @@ export const PATHS_ADMIN = {
 
     FORUM: '/admin/forum',
     FORUM_DETAIL: '/admin/forum/detail/:forumId',
-
-    CLASSROOM: '/admin/classroom',
-    CLASSROOM_DETAIL: '/admin/classroom/detail/:classroomId',
 }

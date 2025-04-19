@@ -83,3 +83,10 @@
     justify-content: center;
     margin-top: 20px;
 }
+/* styles.module.css */
+.paginationContainer {
+    display: flex;
+    justify-content: flex-end; /* Căn sang phải */
+    padding: 16px 0; /* Thêm khoảng cách trên dưới nếu cần */
+}
+

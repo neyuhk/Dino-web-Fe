@@ -92,7 +92,7 @@ const HeaderBlocklyComponent: React.FC = () => {
 
     return (
         <div style={{ display: 'flex', alignItems: 'center' }}>
-            <img src="/path/to/logo.png" alt="Logo" style={{ marginRight: '16px' }} />
+            <img src="https://i.pinimg.com/736x/1c/4d/13/1c4d134082403ddc3172a177458e14fa.jpg" alt="Logo" style={{ marginRight: '16px' }} />
             <div style={{ marginRight: '16px' }}>
                 <Dropdown menu={{ items: taptinn }} trigger={['click']} onOpenChange={handleMenuClick}>
                     <a className={`white-text `} onClick={(e) => e.preventDefault()}>

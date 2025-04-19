@@ -97,6 +97,7 @@ const UserDetailPage: React.FC = () => {
         createdAt = 'Unknown',
     } = userData
 
+    // @ts-ignore
     return (
         <Card className="max-w-4xl mx-auto">
             <Row gutter={[16, 16]}>
@@ -110,7 +111,7 @@ const UserDetailPage: React.FC = () => {
                         <Image
                             width="100%"
                             height={400}
-                            src={avatar}
+                            src={Array.isArray(avatar) ? avatar[0] : avatar}
                             alt={name}
                             preview={false}
                             style={{ objectFit: 'cover', borderRadius: '8px' }}

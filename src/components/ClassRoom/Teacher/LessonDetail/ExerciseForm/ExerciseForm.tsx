@@ -2,13 +2,17 @@ import React, { useState, useEffect } from 'react';
 import styles from './ExerciseForm.module.css';
 import { newExercise } from '../../../../../services/lesson.ts';
 import Toast, { ToastMessage } from '../../../../commons/Toast/Toast.tsx';
-import QuestionForm from '../QuestionForm/QuestionForm.tsx'
-import { useNavigate } from 'react-router-dom'
-import { FaLayerGroup } from 'react-icons/fa'
+import QuestionForm from '../QuestionForm/QuestionForm.tsx';
+import { useNavigate } from 'react-router-dom';
+import { FaLayerGroup } from 'react-icons/fa';
+import { Exercise } from '../../../../../model/classroom.ts';
+import { editExercise } from '../../../../../services/exercise.ts'
 
 interface ExerciseFormProps {
     lessonId: string;
-    onSuccess?: () => void;
+    onSuccess?: (updatedExercise?: Exercise) => void;
+    exerciseData?: Exercise;
+    isEditing?: boolean;
 }
 
 type ExerciseType = 'quiz' | 'test' | 'file';
@@ -23,7 +27,12 @@ interface FormData {
     end_date: string | 'unlimited';
 }
 
-const ExerciseForm: React.FC<ExerciseFormProps> = ({ lessonId, onSuccess }) => {
+const ExerciseForm: React.FC<ExerciseFormProps> = ({
+                                                       lessonId,
+                                                       onSuccess,
+                                                       exerciseData,
+                                                       isEditing = false
+                                                   }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showQuestionForm, setShowQuestionForm] = useState(false);
     const [exerciseId, setExerciseId] = useState<string | null>(null);
@@ -34,6 +43,7 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ lessonId, onSuccess }) => {
         title: '',
         message: ''
     });
+
     const [formData, setFormData] = useState<FormData>({
         lesson_id: lessonId,
         type: 'quiz',
@@ -45,8 +55,34 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ lessonId, onSuccess }) => {
     });
 
     useEffect(() => {
-        setFormData(prev => ({ ...prev, lesson_id: lessonId }));
-    }, [lessonId]);
+        if (isEditing && exerciseData) {
+            let time = exerciseData.time;
+            let timeUnit: 'seconds' | 'minutes' | 'hours' = 'seconds';
+
+            if (time % 3600 === 0) {
+                time = time / 3600;
+                timeUnit = 'hours';
+            } else if (time % 60 === 0) {
+                time = time / 60;
+                timeUnit = 'minutes';
+            }
+
+            setFormData({
+                lesson_id: lessonId,
+                type: exerciseData.type as ExerciseType,
+                title: exerciseData.title || '',
+                description: exerciseData.description || '',
+                time: time,
+                timeUnit: timeUnit,
+                end_date: exerciseData.end_date ? new Date(exerciseData.end_date).toISOString().split('T')[0] : 'unlimited',
+            });
+
+            setExerciseId(exerciseData._id);
+        } else {
+            // Si no estamos editando, solo actualizamos el lesson_id
+            setFormData(prev => ({ ...prev, lesson_id: lessonId }));
+        }
+    }, [lessonId, exerciseData, isEditing]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -72,7 +108,7 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ lessonId, onSuccess }) => {
 
         try {
             // Convert time based on selected unit to seconds
-            let timeInSeconds = formData.type === 'file'? 0 : formData.time;
+            let timeInSeconds = formData.type === 'file' ? 0 : formData.time;
             switch (formData.timeUnit) {
                 case 'minutes':
                     timeInSeconds = formData.time * 60;
@@ -95,35 +131,58 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ lessonId, onSuccess }) => {
                 end_date: end_date,
             };
 
-            // Call API to create exercise
-            const response = await newExercise(payload);
-            const newExerciseId = response.data._id; // Assuming the API returns the ID
-            setExerciseId(newExerciseId);
+            let response;
 
-            // Show success toast
-            setToast({
-                show: true,
-                type: 'success',
-                title: 'Thành công',
-                message: 'Tạo bài tập thành công. Bây giờ hãy thêm các câu hỏi.'
-            });
+            if (isEditing && exerciseId) {
+                response = await editExercise(exerciseId, payload);
 
-            // Show question form if it's quiz or test
-            if (formData.type === 'quiz' || formData.type === 'test') {
-                setShowQuestionForm(true);
-            } else {
-                if (onSuccess) onSuccess();
+                // Tạo object exercise đã cập nhật
+                const updatedExercise = {
+                    ...exerciseData,
+                    ...payload,
+                    _id: exerciseId,
+                };
+
+                // Hiển thị thông báo thành công
+                setToast({
+                    show: true,
+                    type: 'success',
+                    title: 'Thành công',
+                    message: 'Cập nhật bài tập thành công!'
+                });
+
+                if (onSuccess) { // @ts-ignore
+                    onSuccess(updatedExercise);
+                }
+            }  else {
+                response = await newExercise(payload);
+                const newExerciseId = response.data._id;
+                setExerciseId(newExerciseId);
+
+                setToast({
+                    show: true,
+                    type: 'success',
+                    title: 'Thành công',
+                    message: 'Tạo bài tập thành công. Bây giờ hãy thêm các câu hỏi.'
+                });
+
+                if (formData.type === 'quiz' || formData.type === 'test') {
+                    setShowQuestionForm(true);
+                } else {
+                    if (onSuccess) onSuccess();
+                }
             }
         } catch (error) {
             setToast({
                 show: true,
                 type: 'error',
                 title: 'Lỗi',
-                message: 'Tạo bài tập không thành công. Hãy thử lại sau.'
+                message: isEditing
+                    ? 'Cập nhật bài tập không thành công. Hãy thử lại sau.'
+                    : 'Tạo bài tập không thành công. Hãy thử lại sau.'
             });
-            console.error('Error creating exercise:', error);
+            console.error(isEditing ? 'Error updating exercise:' : 'Error creating exercise:', error);
         } finally {
-            console.log('question form', showQuestionForm, exerciseId)
             setIsSubmitting(false);
         }
     };
@@ -152,18 +211,21 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ lessonId, onSuccess }) => {
 
     const handleQuestionFormComplete = () => {
         // Reset everything
-        setShowQuestionForm(true);
-        setExerciseId(null);
-        setFormData({
-            lesson_id: lessonId,
-            type: 'quiz',
-            title: '',
-            description: '',
-            time: 30,
-            timeUnit: 'minutes',
-            end_date: 'unlimited',
-        });
-        console.log(exerciseId, showQuestionForm);
+        setShowQuestionForm(false);
+
+        if (!isEditing) {
+            setExerciseId(null);
+            setFormData({
+                lesson_id: lessonId,
+                type: 'quiz',
+                title: '',
+                description: '',
+                time: 30,
+                timeUnit: 'minutes',
+                end_date: 'unlimited',
+            });
+        }
+
         setToast({
             show: true,
             type: 'success',
@@ -183,39 +245,43 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ lessonId, onSuccess }) => {
                 onComplete={handleQuestionFormComplete}
                 onCancel={() => {
                     setShowQuestionForm(false);
-                    setExerciseId(null);
+                    if (!isEditing) {
+                        setExerciseId(null);
+                    }
                 }}
             />
         );
     }
+
     return (
         <div className={styles.formContainer}>
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '1rem',
-                }}
-            >
-                <button
-                    type="button"
-                    className="backButton"
-                    onClick={handleBack}
+            {!isEditing && (
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '1rem',
+                    }}
                 >
-                    ← Quay lại
-                </button>
-                <h2 className={styles.titleGradient}>Tạo bài tập mới</h2>
-                <button
-                    type="button"
-                    className={styles.cloneButton}
-                    onClick={handleClone}
-                >
-                    <FaLayerGroup />
-                    <span>Sao chép từ bài tập trước</span>
-
-                </button>
-            </div>
+                    <button
+                        type="button"
+                        className="backButton"
+                        onClick={handleBack}
+                    >
+                        ← Quay lại
+                    </button>
+                    <h2 className={styles.titleGradient}>Tạo bài tập mới</h2>
+                    <button
+                        type="button"
+                        className={styles.cloneButton}
+                        onClick={handleClone}
+                    >
+                        <FaLayerGroup />
+                        <span>Sao chép từ bài tập trước</span>
+                    </button>
+                </div>
+            )}
 
             <form onSubmit={handleSubmit} className={styles.form}>
                 <div className={styles.formGroup}>
@@ -354,14 +420,17 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ lessonId, onSuccess }) => {
                         className={styles.submitButton}
                         disabled={isSubmitting}
                     >
-                        {isSubmitting ? 'Đang tạo...' : 'Tạo bài tập'}
+                        {isSubmitting
+                            ? (isEditing ? 'Đang cập nhật...' : 'Đang tạo...')
+                            : (isEditing ? 'Cập nhật bài tập' : 'Tạo bài tập')
+                        }
                     </button>
                 </div>
             </form>
 
-            {toast.show && <Toast toast={toast} onClose={hideToast} />}
+            {toast.show && <Toast toast={toast} onClose={hideToast} type={''} />}
         </div>
-    )
+    );
 };
 
 export default ExerciseForm;

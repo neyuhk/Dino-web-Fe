@@ -25,6 +25,7 @@
 }
 
 .badge {
+    width: 150px;
     background-color: var(--secondary-color);
     color: var(--primary-color);
     padding: 0.5rem 1rem;
@@ -471,6 +472,9 @@
     }
 
     .badge {
+        display: flex;
+        width: 150px;
+        text-align: center !important;
         font-size: 0.8rem;
         padding: 0.25rem 0.75rem;
     }

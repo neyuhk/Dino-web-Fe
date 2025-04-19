@@ -135,9 +135,9 @@ const EditLessonPopup: React.FC<EditLessonPopupProps> = ({
             <div className={styles.modalContainer} ref={modalRef}>
                 <div className={styles.modalHeader}>
                     <h2 className={styles.modalTitle}>Chỉnh sửa bài học</h2>
-                    <button className={styles.closeButton} onClick={onClose}>
+                    <div className={styles.closeButton} onClick={onClose}>
                         <FaTimes />
-                    </button>
+                    </div>
                 </div>
 
                 <form className={styles.form} onSubmit={handleSubmit}>

@@ -1,0 +1,126 @@
+.siderContainer {
+    height: 100%;
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
+    background-color: var(--background-color);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+    z-index: 100;
+}
+
+.collapsed {
+    align-items: center;
+    width: 80px;
+}
+
+.expanded {
+    /*display: flex;*/
+    /*flex-direction: column;*/
+    /*align-items: center;*/
+    /*justify-content: center;*/
+    width: 250px;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+    padding-top: 16px;
+    border: none;
+    font-family: var(--font-secondary);
+    width: 100%;
+}
+
+.menu :global(.ant-menu-item) {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    margin: 4px 8px;
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.menu :global(.ant-menu-item-selected) {
+    background-color: var(--secondary-light);
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.menu :global(.ant-menu-item:hover:not(.ant-menu-item-selected)) {
+    background-color: var(--secondary-color);
+    color: var(--primary-dark);
+}
+
+.menu :global(.ant-menu-item-active) {
+    background-color: var(--secondary-light);
+}
+
+.menuIcon {
+    ;
+    align-self: center;
+    font-size: 18px;
+}
+
+.menu :global(.ant-menu-title-content) {
+    font-size: 15px;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.menu :global(.ant-menu-item-selected .ant-menu-title-content) {
+    font-weight: 500;
+}
+
+/* Thêm animation cho hiệu ứng hover */
+.siderContainer:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(56, 121, 113, 0.1)); /* Sử dụng màu chủ đạo */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.collapsed:hover:after {
+    opacity: 1;
+}
+
+/* Animation for sidebar hover */
+.siderContainer:hover {
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Clean up ant-design default styles */
+:global(.ant-layout-sider) {
+    background-color: var(--background-color) !important;
+}
+
+:global(.ant-menu-inline-collapsed) {
+    display: flex;
+
+    justify-content: center !important;
+    width: 80px !important;
+}
+
+:global(.ant-menu-inline-collapsed .ant-menu-item) {
+    padding: 0 calc(50% - 16px) !important;
+}
+
+/* Icon alignment for collapsed state */
+.collapsed :global(.ant-menu-item) {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    padding-left: 20px !important;
+}
+
+.expanded :global(.ant-menu-item) {
+    justify-content: flex-start;
+}

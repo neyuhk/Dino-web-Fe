@@ -1,243 +1,217 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react';
 import {
-    Card,
     Typography,
-    Row,
-    Col,
-    Image,
-    Statistic,
     Avatar,
     Space,
     Button,
-} from 'antd'
+    Card,
+    Row,
+    Col,
+    Statistic,
+    Tag,
+    Image,
+    Divider
+} from 'antd';
 import {
     HeartOutlined,
     HeartFilled,
     EyeOutlined,
-    MessageOutlined,
     UserOutlined,
-    StarOutlined,
     BlockOutlined,
-} from '@ant-design/icons'
-import { Project } from '../../../model/model.ts'
-import {
-    getProjectById,
-    isLikedProject,
-    likeProject,
-} from '../../../services/project.ts'
-import { useNavigate, useParams } from 'react-router-dom'
-import moment from 'moment/moment'
-import CommentComponent from '../../../components/Comment/Comment.tsx'
-import { useSelector } from 'react-redux'
+    MessageOutlined,
+    StarOutlined
+} from '@ant-design/icons';
+import { Project } from '../../../model/model.ts';
+import CommentComponent from '../../../components/Comment/Comment.tsx';
+import moment from 'moment';
+import './ProjectDetail.css';
 
-const { Title, Paragraph, Text } = Typography
+const { Title, Paragraph, Text } = Typography;
 
-const ProjectDetailPage: React.FC = () => {
-    const { user } = useSelector((state: any) => state.auth)
-    const { projectId } = useParams<{ projectId: string }>()
-    const [projectData, setProjectData] = useState<Project | null>(null)
-    const [isLiked, setIsLiked] = useState(false)
-    const userId = user._id // Replace with actual userId from local storage
-    const navigate = useNavigate()
+interface ProjectDetailComponentProps {
+    project: Project;
+    isLiked: boolean;
+    onLike: () => void;
+    relatedProjects: Project[];
+    onNavigateToProject: (project: Project) => void;
+}
 
-    useEffect(() => {
-        const fetchProjectData = async () => {
-            try {
-                const response = await getProjectById(
-                    projectId ? projectId : ''
-                )
-                setProjectData(response.data)
-                console.log(projectId, userId)
-                const liked = await isLikedProject(
-                    projectId ? projectId : '',
-                    userId
-                )
-                setIsLiked(liked.data)
-                console.log(liked.data)
-            } catch (error) {
-                console.error('Failed to fetch project data:', error)
-            }
+const ProjectDetailComponent: React.FC<ProjectDetailComponentProps> = ({
+                                                                           project,
+                                                                           isLiked,
+                                                                           onLike,
+                                                                           relatedProjects,
+                                                                           onNavigateToProject
+                                                                       }) => {
+    const getProjectTypeTag = (type: string) => {
+        let color = 'default';
+        switch(type) {
+            case 'DEFAULT':
+                color = 'green';
+                break;
+            case 'RECOMMENT':
+                color = 'blue';
+                break;
+            case 'PUBLIC':
+                color = 'purple';
+                break;
+            case 'EXAMPLE':
+                color = 'orange';
+                break;
+            default:
+                color = 'default';
         }
 
-        fetchProjectData()
-    }, [projectId])
+        return <Tag color={color}>{type}</Tag>;
+    };
 
-    const handleViewInBlockly = () => {
-        navigate(`/blockly/${projectId}`)
-    }
-
-    if (!projectData) {
-        return (
-            <Card>
-                <div className="text-center">No project data available</div>
-            </Card>
-        )
-    }
-
-    const {
-        name = 'Unknown',
-        description = 'Unknown',
-        images = [],
-        like_count = 0,
-        view_count = 0,
-        user_id = { username: 'Unknown' },
-        createdAt = 'Unknown',
-    } = projectData
-
-    const username = user_id ? user_id.username : 'Unknown'
-
-    const handleLikeProject = async () => {
-        try {
-            if (isLiked) {
-                setProjectData((prevData) =>
-                    prevData
-                        ? { ...prevData, like_count: prevData.like_count - 1 }
-                        : null
-                )
-            } else {
-                setProjectData((prevData) =>
-                    prevData
-                        ? { ...prevData, like_count: prevData.like_count + 1 }
-                        : null
-                )
-            }
-            setIsLiked(!isLiked)
-            console.log(isLiked)
-            await likeProject(projectId ? projectId : '', userId)
-        } catch (error) {
-            console.error('Failed to like project:', error)
-        }
-    }
     return (
-        <Card className="max-w-xl mx-auto">
-            <Row gutter={[16, 16]}>
-                <Col xs={24} sm={16}>
-                    {images[0] ? (
+        <div className="project-detail-content">
+            <div className="project-detail-hero">
+                <div className="project-detail-image">
+                    {project.images && project.images[0] ? (
                         <Image
-                            width="100%"
-                            height={400}
-                            src={images[0]}
-                            alt={name}
+                            src={project.images[0]}
+                            alt={project.name}
                             preview={false}
-                            style={{ objectFit: 'cover', borderRadius: '8px' }}
+                            className="main-image"
                         />
                     ) : (
                         <Image
-                            width="100%"
-                            height={400}
                             src={'/MockData/flapybird.jpg'}
-                            alt={'default'}
+                            alt="Default project image"
                             preview={false}
-                            style={{ objectFit: 'cover', borderRadius: '8px' }}
+                            className="main-image"
                         />
                     )}
-                </Col>
-                <Col xs={24} sm={8}>
-                    <Card>
-                        <Space direction="vertical" style={{ width: '100%' }}>
-                            <Space>
-                                <Avatar icon={<UserOutlined />} />
-                                <div>
-                                    <Title style={{ margin: '0' }} level={2}>
-                                        {name}
-                                    </Title>
-                                    <Text strong>by {username}</Text>
-                                    <br />
-                                    <Text type="secondary">
-                                        Created on{' '}
-                                        {createdAt !== 'Unknown'
-                                            ? moment(createdAt).format(
-                                                  'DD/MM/YYYY'
-                                              )
-                                            : 'Unknown'}
-                                    </Text>
-                                </div>
-                            </Space>
+                </div>
+
+                <Card className="project-detail-header">
+                    <div className="project-meta">
+                        <div className="project-title-wrapper">
+                            <Title level={3} className="project-title">{project.name || 'Không tên'}</Title>
+                            <div className="project-creator">
+                                <Avatar icon={<UserOutlined />} size="small" />
+                                <Text>{project.user_id ? project.user_id.username : 'Không xác định'}</Text>
+                            </div>
+                        </div>
+                        <div className="project-actions">
                             <Button
                                 type="primary"
                                 icon={<BlockOutlined />}
-                                onClick={handleViewInBlockly}
-                                style={{ marginTop: '16px', width: '100%' }}
+                                href={`/blockly/${project._id}`}
+                                className="blockly-button"
                             >
-                                View in Blockly
+                                Mở trong Blockly
                             </Button>
-                        </Space>
-                    </Card>
-                </Col>
-            </Row>
-            <Col xs={24} sm={16}>
-                <Row
-                    style={{ marginTop: '16px' }}
-                    gutter={[16, 16]}
-                    justify={'center'}
-                >
-                    <Col xs={24} sm={4}>
-                        <Statistic
-                            title="Likes"
-                            value={like_count}
-                            prefix={
-                                isLiked ? (
-                                    <HeartFilled
-                                        style={{ color: 'red' }}
-                                        onClick={handleLikeProject}
-                                    />
-                                ) : (
-                                    <HeartOutlined
-                                        style={{ color: 'red' }}
-                                        onClick={handleLikeProject}
-                                    />
-                                )
-                            }
-                        />
-                    </Col>
-                    <Col xs={24} sm={4}>
-                        <Statistic
-                            title="Views"
-                            value={view_count}
-                            prefix={<EyeOutlined style={{ color: 'blue' }} />}
-                        />
-                    </Col>
-                    <Col xs={24} sm={4}>
-                        <Statistic
-                            title="Favourites"
-                            value={0}
-                            prefix={
-                                <StarOutlined style={{ color: 'yellow' }} />
-                            }
-                        />
-                    </Col>
-                    <Col xs={24} sm={4}>
-                        <Statistic
-                            title="Comments"
-                            value={0}
-                            prefix={
-                                <MessageOutlined style={{ color: 'green' }} />
-                            }
-                        />
-                    </Col>
-                </Row>
-            </Col>
-            <Row gutter={[16, 16]} style={{ marginTop: '16px' }}>
-                <Col span={24}>
-                    <Card>
-                        <Title level={4}>Project Description</Title>
-                        <Paragraph>{description}</Paragraph>
-                    </Card>
-                </Col>
-            </Row>
-            <Row gutter={[16, 16]} style={{ marginTop: '16px' }}>
-                <Col span={24}>
-                    <Card>
-                        <Title level={2}>Bình luận</Title>
-                        <CommentComponent
-                            commentableId={projectId ? projectId : ''}
-                            commentableType={'PROJECT'}
-                        />
-                    </Card>
-                </Col>
-            </Row>
-        </Card>
-    )
-}
+                        </div>
+                    </div>
+                    <div className="project-info">
+                        {getProjectTypeTag(project.project_type || 'Không xác định')}
+                        <Text type="secondary" className="created-date">
+                            Ngày tạo: {project.createdAt ? moment(project.createdAt).format('DD/MM/YYYY') : 'Không xác định'}
+                        </Text>
+                    </div>
+                </Card>
 
-export default ProjectDetailPage
+                <Card className="project-stats">
+                    <Row gutter={16} justify="space-around">
+                        <Col span={6}>
+                            <Statistic
+                                title="Lượt thích"
+                                value={project.like_count || 0}
+                                prefix={
+                                    isLiked ? (
+                                        <HeartFilled
+                                            className="stat-icon like-icon"
+                                            onClick={onLike}
+                                        />
+                                    ) : (
+                                        <HeartOutlined
+                                            className="stat-icon like-icon"
+                                            onClick={onLike}
+                                        />
+                                    )
+                                }
+                            />
+                        </Col>
+                        <Col span={6}>
+                            <Statistic
+                                title="Lượt xem"
+                                value={project.view_count || 0}
+                                prefix={<EyeOutlined className="stat-icon view-icon" />}
+                            />
+                        </Col>
+                        <Col span={6}>
+                            <Statistic
+                                title="Yêu thích"
+                                value={0}
+                                prefix={<StarOutlined className="stat-icon star-icon" />}
+                            />
+                        </Col>
+                        <Col span={6}>
+                            <Statistic
+                                title="Bình luận"
+                                value={0}
+                                prefix={<MessageOutlined className="stat-icon comment-icon" />}
+                            />
+                        </Col>
+                    </Row>
+                </Card>
+
+                <Card className="project-description">
+                    <Title level={4}>Mô tả dự án</Title>
+                    <Paragraph className="description-text">
+                        {project.description || 'Không có mô tả cho dự án này.'}
+                    </Paragraph>
+                </Card>
+
+                <Card className="project-comments">
+                    <Title level={4}>Bình luận</Title>
+                    <CommentComponent
+                        commentableId={project._id}
+                        commentableType={'PROJECT'}
+                    />
+                </Card>
+
+                {relatedProjects.length > 0 && (
+                    <Card className="related-projects">
+                        <Title level={4}>Các dự án khác</Title>
+                        <Row gutter={[16, 16]} className="related-projects-grid">
+                            {relatedProjects.map(relatedProject => (
+                                <Col span={12} key={relatedProject._id}>
+                                    <div
+                                        className="related-project-item"
+                                        onClick={() => onNavigateToProject(relatedProject)}
+                                    >
+                                        <div className="related-project-image">
+                                            {relatedProject.images && relatedProject.images[0] ? (
+                                                <img
+                                                    src={relatedProject.images[0]}
+                                                    alt={relatedProject.name}
+                                                />
+                                            ) : (
+                                                <img
+                                                    src={'/MockData/flapybird.jpg'}
+                                                    alt="Default"
+                                                />
+                                            )}
+                                        </div>
+                                        <div className="related-project-details">
+                                            <Text strong className="related-title">{relatedProject.name || 'Không tên'}</Text>
+                                            <div className="related-meta">
+                                                {getProjectTypeTag(relatedProject.project_type || 'Không xác định')}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Col>
+                            ))}
+                        </Row>
+                    </Card>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default ProjectDetailComponent;

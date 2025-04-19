@@ -47,6 +47,7 @@
         max-height: 300px;
     }
 }
+
 .commentTransition {
     transition: all 0.3s ease-in-out;
 }
@@ -78,7 +79,10 @@
 }
 
 .actionButtons {
+    padding: 0px;
+    margin: 0px;
     display: flex;
+    flex-direction: row;
     align-items: center;
 }
 
@@ -194,3 +198,12 @@
 .repliesContainer::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
 }
+:global(.custom-popconfirm .ant-popconfirm-buttons) {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+
+

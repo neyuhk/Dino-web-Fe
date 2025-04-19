@@ -1,7 +1,7 @@
+// @ts-ignore
 import http from '@/services/http/http'
-import httpFile from './http/httpFile.ts'
-import { COURSE_API, FORUM_API } from '../constants/api.ts'
-import httpAuth from './http/httpAuth.ts'
+import { FORUM_API } from '../constants/api.ts'
+import { httpAuth, httpFile } from './http/httpAuth.ts'
 
 export const getForums = async (id: string, page: number, perPage: number) => {
     return (
@@ -57,14 +57,21 @@ export const getRepostForum = async (id: string, page: number, perPage: number) 
 
 
 export const likePost = async (forumId: string, userId: string) => {
-    return (await http.post(FORUM_API.LIKE , {forumId, userId})).data
+    return (await httpAuth.post(FORUM_API.LIKE , {forumId, userId})).data
 }
 
 export const repost = async (forumId: string, userId: string) => {
-    return (await http.post(FORUM_API.REPOST , {forumId, userId})).data
+    return (await httpAuth.post(FORUM_API.REPOST , {forumId, userId})).data
 }
 
 export const newForum = async (payload : any) => {
     return (await httpFile.post(FORUM_API.CREATE_FORUM, payload)).data
 }
 
+export const updateForum = async (id: string, payload : any) => {
+    return (await httpFile.put(FORUM_API.UPDATE_FORUM + id, payload)).data
+}
+
+export const getUserLikeForum = async (forumId: string) => {
+    return (await http.get(FORUM_API.GET_USER_LIKE_FORUM + forumId)).data
+}

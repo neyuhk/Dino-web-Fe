@@ -15,6 +15,7 @@ import { PATHS } from '@/router/path';
 import { getCurrentUserAction, loginAction } from '../../stores/authAction';
 import { AppDispatch } from '../../stores';
 import styles from '../../pages/commons/styles/AuthPage.module.css'
+import { PATHS_ADMIN } from '../../router/path.ts'
 
 const { Title, Paragraph } = Typography;
 
@@ -47,7 +48,11 @@ const AuthPage = () => {
         try {
             await dispatch(loginAction(values)).unwrap();
             message.success('Đăng nhập thành công!');
-            await dispatch(getCurrentUserAction()).unwrap();
+            const curUser = await dispatch(getCurrentUserAction()).unwrap();
+            if (curUser.role === 'admin') {
+                window.location.href = PATHS_ADMIN.HOME;
+                return;
+            }
             window.location.href = PATHS.HOME;
         } catch (e: any) {
             console.error(e);

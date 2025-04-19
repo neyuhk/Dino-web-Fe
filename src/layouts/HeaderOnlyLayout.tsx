@@ -1,7 +1,7 @@
 import { Layout } from 'antd'
 import React from 'react'
+// @ts-ignore
 import HeaderComponent from '@/components/commons/HeaderComponent.tsx'
-import FooterComponent from '@/components/commons/FooterComponent.tsx'
 
 const { Header, Footer, Content } = Layout
 

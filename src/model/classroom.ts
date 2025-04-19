@@ -1,4 +1,3 @@
-
 import { User } from './model.ts'
 
 export interface Exercise {
@@ -9,6 +8,7 @@ export interface Exercise {
     title: string;
     description: string;
     score?: number;
+    countQuiz: number;
     isCompleted: boolean;
     submittedAt?: string;
     end_date: Date;

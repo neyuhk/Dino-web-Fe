@@ -12,14 +12,6 @@ const ExamplePage: React.FC = () => {
 
     return (
         <div style={{ padding: '20px' , height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            {/*<h1 style={{*/}
-            {/*    fontFamily: 'var(--font-primary)',*/}
-            {/*    color: 'var(--text-color)',*/}
-            {/*    marginBottom: '20px'*/}
-            {/*}}>*/}
-            {/*    Lesson Management*/}
-            {/*</h1>*/}
-
             <ExerciseForm
                 lessonId={lessonId? lessonId : ''}
                 onSuccess={handleExerciseCreated}

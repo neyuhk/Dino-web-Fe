@@ -406,3 +406,32 @@
         transform: translateY(-7px);
     }
 }
+/* styles.module.css */
+.cardFooter {
+    padding: 12px 16px;
+}
+
+.stats {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.statItem {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+}
+
+.statItem span {
+    font-weight: 500;
+}
+
+.activeStatus {
+    color: #4caf50;
+}
+
+.inactiveStatus {
+    color: #9e9e9e;
+}

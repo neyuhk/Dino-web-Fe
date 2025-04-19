@@ -1,229 +1,523 @@
-import React, { useEffect, useState } from 'react'
-import { Select, Space, Table, Modal, Button, Form, Input, message, Tooltip } from 'antd'
-import type { TableProps } from 'antd'
-import { getProjects, changeProjectType, deleteProjectById } from '../../../services/project.ts'
-import { Project } from '../../../model/model.ts'
-import Search from 'antd/es/input/Search'
-import { Link } from 'react-router-dom'
-import { PROJECT_TYPE } from '../../../enum/projectType.ts'
-import './ListProject.css'
-import { AlignLeftOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import React, { useEffect, useState } from 'react';
+import {
+    Space,
+    Table,
+    Modal,
+    Button,
+    Form,
+    Input,
+    message,
+    Tooltip,
+    Drawer,
+    Typography,
+    Avatar,
+    Row,
+    Col,
+    Statistic,
+    Card,
+    Tag,
+    Select,
+    Badge,
+    Image
+} from 'antd';
+import type { TableProps } from 'antd';
+import { getProjects, changeProjectType, deleteProjectById, getProjectById, isLikedProject, likeProject } from '../../../services/project.ts';
+import { Project } from '../../../model/model.ts';
+import { useSelector } from 'react-redux';
+import Search from 'antd/es/input/Search';
+import { PROJECT_TYPE } from '../../../enum/projectType.ts';
+import './ListProject.css';
+import {
+    FileTextOutlined,
+    DeleteOutlined,
+    EditOutlined,
+    EyeOutlined,
+    HeartOutlined,
+    HeartFilled,
+    UserOutlined,
+    BlockOutlined,
+    MessageOutlined,
+    StarOutlined,
+    CloseOutlined,
+    FilterOutlined,
+    BarsOutlined
+} from '@ant-design/icons';
+import moment from 'moment';
+import ProjectDetailComponent from './ProjectDetail.tsx'
 
-const { Option } = Select
+const { Option } = Select;
+const { Title, Text } = Typography;
 
 const ListProjectManagement: React.FC = () => {
-    const [data, setData] = React.useState<Project[]>([])
-    const [isLoading, setLoading] = useState(true)
-    const [filteredData, setFilteredData] = useState<Project[]>([])
-    const [selectedType, setSelectedType] = useState<string | undefined>(undefined)
-    const [isModalVisible, setIsModalVisible] = useState(false)
-    const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false)
-    const [selectedProject, setSelectedProject] = useState<Project | null>(null)
-    const [projectToDelete, setProjectToDelete] = useState<string | null>(null)
-    const [form] = Form.useForm()
+    const { user } = useSelector((state: any) => state.auth);
+    const [data, setData] = useState<Project[]>([]);
+    const [isLoading, setLoading] = useState(true);
+    const [filteredData, setFilteredData] = useState<Project[]>([]);
+    const [selectedType, setSelectedType] = useState<string | undefined>(undefined);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+    const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+    const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
+    const [form] = Form.useForm();
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+    const [searchName, setSearchName] = useState<string>('');
+
+    // Drawer state
+    const [drawerVisible, setDrawerVisible] = useState(false);
+    const [detailProject, setDetailProject] = useState<Project | null>(null);
+    const [isLiked, setIsLiked] = useState(false);
+    const [filterVisible, setFilterVisible] = useState(false);
+
+    const fetchData = async (page: number, perPage: number, name: string, type?: string) => {
+        setLoading(true);
+        try {
+            const projects = await getProjects(page, perPage, name, type || '');
+            setData(projects.data);
+            setFilteredData(projects.data);
+            setPagination({ current: page, pageSize: perPage, total: projects.total });
+        } catch (error) {
+            console.error('Failed to fetch projects:', error);
+            message.error('Không thể tải danh sách dự án');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-            const projects = await getProjects()
-            console.log(projects)
-            setLoading(false)
-            setData(projects.data)
-            setFilteredData(projects.data)
-        }
-
-        fetchData()
-    }, [])
+        fetchData(pagination.current, pagination.pageSize, searchName, selectedType);
+    }, []);
 
     const handleSearch = (value: string) => {
-        const filtered = data.filter(project =>
-            (project.name.toLowerCase().includes(value.toLowerCase()) ||
-                project.description.toLowerCase().includes(value.toLowerCase())) &&
-            (selectedType ? project.project_type === selectedType : true),
-        )
-        console.log(filtered)
-        setFilteredData(filtered)
-    }
+        setSearchName(value);
+        fetchData(1, pagination.pageSize, value, selectedType);
+    };
 
     const handleTypeChange = (value: string) => {
-        setSelectedType(value)
-        const filtered = data.filter(project =>
-            (value ? project.project_type === value : true),
-        )
-        console.log(filtered)
-        setFilteredData(filtered)
-    }
+        setSelectedType(value);
+        fetchData(1, pagination.pageSize, searchName, value);
+    };
 
-    const showModal = (project: Project) => {
-        setSelectedProject(project)
-        setIsModalVisible(true)
-        form.setFieldsValue({ type: project.project_type })
-    }
+    const handleTableChange = (pagination: any) => {
+        fetchData(pagination.current, pagination.pageSize, searchName, selectedType);
+    };
+
+    const showModal = (project: Project, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setSelectedProject(project);
+        setIsModalVisible(true);
+        form.setFieldsValue({ type: project.project_type });
+    };
 
     const changeType = async () => {
         try {
-            const values = await form.validateFields()
-            await changeProjectType(selectedProject?._id ?? '', values.type)
-            setIsModalVisible(false)
-            const updatedProjects = await getProjects()
-            setData(updatedProjects.data)
-            setFilteredData(updatedProjects.data)
+            const values = await form.validateFields();
+            await changeProjectType(selectedProject?._id ?? '', values.type);
+            setIsModalVisible(false);
+            message.success('Thay đổi loại dự án thành công!');
+            fetchData(pagination.current, pagination.pageSize, searchName, selectedType);
         } catch (error) {
-            console.error('Failed to update project type:', error)
+            console.error('Failed to update project type:', error);
+            message.error('Không thể cập nhật loại dự án');
         }
-    }
+    };
 
     const handleCancel = () => {
-        setIsModalVisible(false)
-    }
+        setIsModalVisible(false);
+    };
 
-    const showDeleteModal = (id: string) => {
-        setProjectToDelete(id)
-        setIsDeleteModalVisible(true)
-    }
+    const showDeleteModal = (id: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setProjectToDelete(id);
+        setIsDeleteModalVisible(true);
+    };
 
     const handleDeleteCancel = () => {
-        setIsDeleteModalVisible(false)
-        setProjectToDelete(null)
-    }
+        setIsDeleteModalVisible(false);
+        setProjectToDelete(null);
+    };
 
     const handleDeleteProject = async () => {
-        if (!projectToDelete) return
+        if (!projectToDelete) return;
         try {
-            await deleteProjectById(projectToDelete)
-            message.success('ProjectItem deleted successfully')
-            const updatedProjects = await getProjects()
-            setData(updatedProjects.data)
-            setFilteredData(updatedProjects.data)
-            setIsDeleteModalVisible(false)
-            setProjectToDelete(null)
+            await deleteProjectById(projectToDelete);
+            message.success('Đã xóa dự án thành công');
+            fetchData(pagination.current, pagination.pageSize, searchName, selectedType);
+            setIsDeleteModalVisible(false);
+            setProjectToDelete(null);
+
+            // If the deleted project is currently being viewed in the drawer
+            if (detailProject && detailProject._id === projectToDelete) {
+                setDrawerVisible(false);
+            }
         } catch (error) {
-            message.error('Failed to delete project')
-            console.error('Failed to delete project:', error)
+            message.error('Không thể xóa dự án');
+            console.error('Failed to delete project:', error);
         }
-    }
+    };
+
+    // Drawer handling functions
+    const showDrawer = async (project: Project) => {
+        setLoading(true);
+        try {
+            const response = await getProjectById(project._id);
+            setDetailProject(response.data);
+            setDrawerVisible(true);
+        } catch (error) {
+            console.error('Failed to fetch project details:', error);
+            message.error('Không thể tải chi tiết dự án');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const closeDrawer = () => {
+        setDrawerVisible(false);
+    };
+
+    const handleLikeProject = async () => {
+        if (!detailProject || !user?._id) return;
+
+        try {
+            setIsLiked(!isLiked);
+
+            // Optimistic update
+            setDetailProject((prevData) => {
+                if (!prevData) return null;
+                return {
+                    ...prevData,
+                    like_count: isLiked ? Math.max(0, prevData.like_count - 1) : prevData.like_count + 1
+                };
+            });
+
+            await likeProject(detailProject._id, user._id);
+
+            // Update the project in the main list as well
+            setFilteredData(prevData =>
+                prevData.map(p =>
+                    p._id === detailProject._id
+                        ? {
+                            ...p,
+                            like_count: isLiked
+                                ? Math.max(0, p.like_count - 1)
+                                : p.like_count + 1
+                        }
+                        : p
+                )
+            );
+        } catch (error) {
+            console.error('Failed to like project:', error);
+            message.error('Không thể cập nhật trạng thái yêu thích');
+            // Revert the optimistic update
+            setIsLiked(!isLiked);
+        }
+    };
+
+    const getProjectTypeTag = (type: string) => {
+        let color = 'default';
+        switch(type) {
+            case PROJECT_TYPE.DEFAULT:
+                color = 'green';
+                break;
+            case PROJECT_TYPE.RECOMMENT:
+                color = 'blue';
+                break;
+            case PROJECT_TYPE.PUBLIC:
+                color = 'purple';
+                break;
+            case PROJECT_TYPE.EXAMPLE:
+                color = 'orange';
+                break;
+            default:
+                color = 'default';
+        }
+
+        return <Tag color={color}>{type}</Tag>;
+    };
+
+    // Function to navigate to another project while drawer is open
+    const navigateToProject = async (project: Project) => {
+        setLoading(true);
+        try {
+            const response = await getProjectById(project._id);
+            setDetailProject(response.data);
+
+            if (user && user._id) {
+                const liked = await isLikedProject(project._id, user._id);
+                setIsLiked(liked.data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch project details:', error);
+            message.error('Không thể tải chi tiết dự án');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const columns: TableProps<Project>['columns'] = [
         {
-            title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
-            render: (text) => text ? <a>{text}</a> : 'Unknown',
-        },
-        {
-            title: 'Description',
-            dataIndex: 'description',
-            key: 'description',
-            render: (text) => text ? text : 'Unknown',
-        },
-        {
-            title: <span className="center-align">Image</span>,
-            key: 'images',
+            title: 'Dự án',
+            key: 'project',
             render: (record) => (
-                <div className="center-align">
-                    {record.images[0] ?
-                        <img src={record.images[0]} alt={record.name} style={{ width: '100px', maxHeight: '100px' }} />
-                        : <img src={'/MockData/flapybird.jpg'} alt={record.name}
-                               style={{ width: '100px', maxHeight: '100px' }} />}
+                <div className="project-card" onClick={() => showDrawer(record)}>
+                    <div className="project-image">
+                        {record.images && record.images[0] ? (
+                            <img
+                                src={record.images[0]}
+                                alt={record.name}
+                                className="project-thumbnail"
+                            />
+                        ) : (
+                            <img
+                                src={'/MockData/flapybird.jpg'}
+                                alt={record.name}
+                                className="project-thumbnail"
+                            />
+                        )}
+                    </div>
+                    <div className="project-info">
+                        <Text strong className="project-title">{record.name || 'Không tên'}</Text>
+                        <Text type="secondary" className="project-description" ellipsis>
+                            {record.description?.substring(0, 50) || 'Không có mô tả'}
+                            {record.description && record.description.length > 50 ? '...' : ''}
+                        </Text>
+                    </div>
                 </div>
             ),
         },
         {
-            title: <span className="center-align">User</span>,
+            title: 'Loại',
+            dataIndex: 'project_type',
+            key: 'project_type',
+            width: '10%',
+            render: (text) => getProjectTypeTag(text || 'Không xác định'),
+        },
+        {
+            title: 'Người tạo',
             key: 'user_id',
+            width: '15%',
             render: (record) => (
-                <div className="center-align">
-                    {record.user_id ? <Link to={''} style={{color: 'black'}}>{record.user_id.username}</Link> : 'Unknown'}
+                <div className="user-info">
+                    <Avatar icon={<UserOutlined />} size="small" />
+                    <span>{record.user_id ? record.user_id.username : 'Không xác định'}</span>
                 </div>
             ),
         },
         {
-            title: <span className="center-align">Action</span>,
-            key: 'action',
+            title: 'Thống kê',
+            key: 'stats',
+            width: '15%',
             render: (record) => (
-                <div className="center-align">
-                    <Space size="middle">
-                        <Tooltip title="View">
-                            <Link style={{color: 'black'}} to={`/admin/project/detail/${record._id}`}><AlignLeftOutlined /></Link>
-                        </Tooltip>
-                        <Tooltip title="Change ProjectItem Type">
-                            <EditOutlined onClick={() => showModal(record)} />
-                        </Tooltip>
-                        <Tooltip title="Delete">
-                            <DeleteOutlined onClick={() => showDeleteModal(record._id)} />
-                        </Tooltip>
-                    </Space>
+                <div className="stats-container">
+                    <Tooltip title="Lượt thích">
+                        <Badge count={record.like_count || 0} showZero className="stat-badge likes">
+                            <HeartOutlined className="stat-icon" />
+                        </Badge>
+                    </Tooltip>
+                    <Tooltip title="Lượt xem">
+                        <Badge count={record.view_count || 0} showZero className="stat-badge views">
+                            <EyeOutlined className="stat-icon" />
+                        </Badge>
+                    </Tooltip>
                 </div>
             ),
         },
-    ]
+        {
+            title: 'Thao tác',
+            key: 'action',
+            width: '15%',
+            render: (record) => (
+                <div className="action-buttons">
+                    <Tooltip title="Xem chi tiết">
+                        <Button
+                            type="text"
+                            icon={<EyeOutlined />}
+                            className="action-button view"
+                            onClick={() => showDrawer(record)}
+                        />
+                    </Tooltip>
+                    <Tooltip title="Sửa loại dự án">
+                        <Button
+                            type="text"
+                            icon={<EditOutlined />}
+                            className="action-button edit"
+                            onClick={(e) => showModal(record, e)}
+                        />
+                    </Tooltip>
+                    <Tooltip title="Xóa dự án">
+                        <Button
+                            type="text"
+                            danger
+                            icon={<DeleteOutlined />}
+                            className="action-button delete"
+                            onClick={(e) => showDeleteModal(record._id, e)}
+                        />
+                    </Tooltip>
+                </div>
+            ),
+        },
+    ];
 
     return (
-        <div>
-            <Space style={{ marginBottom: 16 }}>
-                <Search
-                    placeholder="Search projects"
-                    onSearch={handleSearch}
-                    enterButton
-                />
-                <Select
-                    placeholder="Select Type"
-                    onChange={handleTypeChange}
-                    allowClear
-                    style={{ width: 200 }}
-                >
-                    {Object.values(PROJECT_TYPE).map(type => (
-                        <Option key={type} value={type}>{type}</Option>
-                    ))}
-                </Select>
-            </Space>
-            <div style={{ overflow: 'auto' }}>
-                <Table
-                    <Project>
+        <div className="project-dashboard">
+            <div className="dashboard-header">
+                <Title level={3} className="page-title">Quản lý dự án</Title>
+                <div className="filter-controls">
+                    <Button
+                        type="primary"
+                        icon={<FilterOutlined />}
+                        onClick={() => setFilterVisible(!filterVisible)}
+                        className="filter-toggle-button"
+                    >
+                        Bộ lọc
+                    </Button>
+                </div>
+            </div>
+
+            <Card className={`filter-panel ${filterVisible ? 'filter-visible' : ''}`}>
+                <Row gutter={16} align="middle">
+                    <Col xs={24} md={16}>
+                        <Search
+                            placeholder="Tìm kiếm dự án theo tên"
+                            onSearch={handleSearch}
+                            enterButton
+                            allowClear
+                            className="search-input"
+                        />
+                    </Col>
+                    <Col xs={24} md={8}>
+                        <Select
+                            placeholder="Lọc theo loại dự án"
+                            onChange={handleTypeChange}
+                            allowClear
+                            className="type-select"
+                        >
+                            {Object.values(PROJECT_TYPE).map((type) => (
+                                <Option key={type} value={type}>
+                                    {type}
+                                </Option>
+                            ))}
+                        </Select>
+                    </Col>
+                </Row>
+            </Card>
+
+            <Card className="projects-card">
+                <div className="table-header">
+                    <Text strong>
+                        <BarsOutlined /> Danh sách dự án ({pagination.total})
+                    </Text>
+                </div>
+                <Table<Project>
                     columns={columns}
                     dataSource={filteredData}
                     loading={isLoading}
-                    className="my-table"
-                    onRow={(record) => {
-                        return {
-                            onClick: () => {
-                                console.log(record)
-                            },
-                        }
+                    className="projects-table"
+                    rowKey="_id"
+                    pagination={{
+                        current: pagination.current,
+                        pageSize: pagination.pageSize,
+                        total: pagination.total,
+                        onChange: (page, pageSize) => handleTableChange({ current: page, pageSize }),
+                        showSizeChanger: true,
+                        pageSizeOptions: ['10', '20', '50'],
+                        showTotal: (total) => `Tổng cộng ${total} dự án`,
                     }}
+                    onRow={(record) => ({
+                        onClick: () => {
+                            showDrawer(record);
+                        },
+                        className: 'project-row'
+                    })}
                 />
-            </div>
+            </Card>
+
+            {/* Type Change Modal */}
             <Modal
-                title="Change ProjectItem Type"
-                visible={isModalVisible}
+                title="Thay đổi loại dự án"
+                open={isModalVisible}
                 onOk={changeType}
                 onCancel={handleCancel}
+                okText="Cập nhật"
+                cancelText="Hủy"
+                className="type-modal"
             >
                 <Form form={form} layout="vertical">
                     <Form.Item
                         name="type"
-                        label="Type"
-                        rules={[{ required: true, message: 'Please select a type' }]}
+                        label="Loại dự án"
+                        rules={[{ required: true, message: 'Vui lòng chọn loại dự án' }]}
                     >
                         <Select>
-                            {Object.values(PROJECT_TYPE).map(type => (
-                                <Option key={type} value={type}>{type}</Option>
+                            {Object.values(PROJECT_TYPE).map((type) => (
+                                <Option key={type} value={type}>
+                                    {type}
+                                </Option>
                             ))}
                         </Select>
                     </Form.Item>
                 </Form>
             </Modal>
+
+            {/* Delete Confirmation Modal */}
             <Modal
-                title="Confirm Delete"
-                visible={isDeleteModalVisible}
+                title="Xác nhận xóa"
+                open={isDeleteModalVisible}
                 onOk={handleDeleteProject}
                 onCancel={handleDeleteCancel}
-                okText="Delete"
-                cancelText="Cancel"
+                okText="Xóa"
+                cancelText="Hủy"
+                okButtonProps={{ danger: true }}
+                className="delete-modal"
             >
-                <p>Are you sure you want to delete this project?</p>
+                <div className="delete-confirmation">
+                    <div className="delete-icon">
+                        <DeleteOutlined />
+                    </div>
+                    <div className="delete-message">
+                        <p>Bạn có chắc chắn muốn xóa dự án này không?</p>
+                        <p>Hành động này không thể khôi phục lại.</p>
+                    </div>
+                </div>
             </Modal>
-        </div>
-    )
-}
 
-export default ListProjectManagement
+            {/* Project Detail Drawer */}
+            <Drawer
+                title={
+                    <div className="drawer-header">
+                        <div className="drawer-title">Chi tiết dự án</div>
+                        <Button
+                            type="text"
+                            icon={<CloseOutlined />}
+                            onClick={closeDrawer}
+                            className="drawer-close"
+                        />
+                    </div>
+                }
+                placement="right"
+                closable={false}
+                onClose={closeDrawer}
+                open={drawerVisible}
+                width={700}
+                className="project-detail-drawer"
+                destroyOnClose={false}
+                maskStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.45)' }}
+            >
+                {detailProject ? (
+                    <ProjectDetailComponent
+                        project={detailProject}
+                        isLiked={isLiked}
+                        onLike={handleLikeProject}
+                        relatedProjects={filteredData.filter(p => p._id !== detailProject._id).slice(0, 4)}
+                        onNavigateToProject={navigateToProject}
+                    />
+                ) : (
+                    <div className="loading-container">
+                        <div className="loading-message">Đang tải thông tin dự án...</div>
+                    </div>
+                )}
+            </Drawer>
+        </div>
+    );
+};
+
+export default ListProjectManagement;

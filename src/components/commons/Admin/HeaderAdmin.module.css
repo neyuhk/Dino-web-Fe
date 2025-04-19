@@ -1,0 +1,151 @@
+.headerContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    height: 64px;
+    background: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 100%; /* Đảm bảo header chiếm toàn bộ chiều rộng */
+    border-radius: 0; /* Loại bỏ border radius để không có góc */
+    margin: 0; /* Không có margin */
+}
+
+/* Khắc phục góc đen của Ant Design khi overlay */
+:global(.ant-layout-header) {
+    padding: 0 !important;
+    line-height: 1.5 !important;
+    background: var(--primary-color) !important;
+    height: auto !important;
+}
+
+.logoSection {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    height: 40px;
+    margin-right: 12px;
+}
+
+.logoText {
+    color: var(--text-lighter);
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    font-family: var(--font-primary);
+}
+
+.userSection {
+    display: flex;
+    align-items: center;
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+}
+
+.userInfo:hover {
+    background-color: var(--primary-dark);
+}
+
+.avatar {
+    background-color: var(--secondary-light);
+    color: var(--primary-color);
+}
+
+.username {
+    color: var(--text-lighter);
+    font-weight: 500;
+    margin-left: 8px;
+    font-family: var(--font-secondary);
+}
+
+.loginButton {
+    background-color: var(--secondary-light);
+    color: var(--primary-color);
+    border: none;
+    font-weight: 500;
+    height: 36px;
+    border-radius: 6px;
+    font-family: var(--font-secondary);
+}
+
+.loginButton:hover {
+    background-color: var(--secondary-dark);
+    color: var(--primary-dark) !important;
+}
+
+.menuItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 0;
+    font-family: var(--font-secondary);
+}
+
+/* Modal styles */
+.logoutModal :global(.ant-modal-content) {
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.modalContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.modalIcon {
+    font-size: 40px;
+    color: var(--error-color);
+    margin-bottom: 16px;
+}
+
+.modalTitle {
+    font-size: 20px;
+    margin-bottom: 12px;
+    color: var(--gray-darkest);
+    font-family: var(--font-primary);
+}
+
+.modalText {
+    color: var(--gray-dark);
+    margin-bottom: 24px;
+    font-family: var(--font-secondary);
+}
+
+.modalActions {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+}
+
+.cancelButton, .confirmButton {
+    flex: 1;
+    height: 38px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-family: var(--font-secondary);
+}
+
+.cancelButton {
+    border-color: var(--gray-light);
+}
+
+.confirmButton {
+    background-color: var(--error-color);
+    border-color: var(--error-color);
+}
+
+.confirmButton:hover {
+    background-color: var(--error-dark);
+    border-color: var(--error-dark);
+}

@@ -467,7 +467,7 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                                                     </span>
                                                 </div>
                                             )}
-                                            {student.phonenumber && (
+                                            {student.phoneNumber && (
                                                 <div
                                                     className={styles.infoItem}
                                                 >
@@ -483,7 +483,7 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                                                             styles.infoValue
                                                         }
                                                     >
-                                                        {student.phonenumber || 'Chưa cập nhật số điện thoại'}
+                                                        {student.phoneNumber || 'Chưa cập nhật số điện thoại'}
                                                     </span>
                                                 </div>
                                             )}
@@ -686,7 +686,7 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                                         <span>{student.username}</span>
                                     </td>
                                     <td>{student.email}</td>
-                                    <td>{student.phonenumber || 'Chưa cập nhật số điện thoại'}</td>
+                                    <td>{student.phoneNumber || 'Chưa cập nhật số điện thoại'}</td>
                                     <td>
                                         <button
                                             onClick={() => openStudentManagement(student)}
@@ -742,7 +742,7 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                                     </p>
                                     <p>
                                         Số điện thoại:{' '}
-                                        {studentManagement.student.phonenumber || 'N/A'}
+                                        {studentManagement.student.phoneNumber || 'N/A'}
                                     </p>
                                     <p>
                                         Ngày sinh:{' '}
@@ -767,7 +767,7 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                             <button
                                 onClick={() =>
                                     handleRemoveStudent(
-                                        studentManagement.student?._id
+                                        studentManagement.student?._id || ''
                                     )
                                 }
                                 className={styles.deleteButton}

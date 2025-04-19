@@ -1,13 +1,21 @@
 import React from 'react';
 import { Clock, BookOpen, CheckCircle, XCircle } from 'lucide-react';
 import styles from './ConfirmationPopup.module.css';
+import { Exercise } from '../../../../../../model/classroom.ts'
 
-const ConfirmationPopup = ({
-                               exercise,
-                               quizCount,
-                               onConfirm,
-                               onCancel
-                           }) => {
+interface ConfirmationPopupProps {
+    exercise: Exercise;
+    quizCount: number;
+    onConfirm: () => void;
+    onCancel: () => void;
+}
+
+const ConfirmationPopup: React.FC<ConfirmationPopupProps> = ({
+    exercise,
+    quizCount,
+    onConfirm,
+    onCancel,
+}) => {
     return (
         <div className={styles.overlayContainer}>
             <div className={styles.confirmationPopup}>
@@ -36,7 +44,7 @@ const ConfirmationPopup = ({
                             <p>
                                 {exercise.type === 'quiz'
                                     ? `${exercise.time || 0} giây / câu hỏi`
-                                    : `${exercise.testTime || 0} phút cho cả bài`}
+                                    : `${exercise.time || 0} phút cho cả bài`}
                             </p>
                         </div>
                     </div>

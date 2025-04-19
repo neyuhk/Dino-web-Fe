@@ -112,7 +112,6 @@ const TeacherClassroom: React.FC = () => {
             message,
         })
     }
-
     // Close toast
     const hideToast = () => {
         setToast((prev) => ({ ...prev, show: false }))
@@ -310,7 +309,7 @@ const TeacherClassroom: React.FC = () => {
             )}
 
             {/* Toast notification */}
-            {toast.show && <Toast toast={toast} onClose={hideToast} />}
+            {toast.show && <Toast toast={toast} onClose={hideToast} type={''} />}
         </div>
     )
 }

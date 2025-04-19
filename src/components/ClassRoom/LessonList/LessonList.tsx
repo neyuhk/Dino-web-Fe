@@ -42,7 +42,7 @@ const LessonList: React.FC<LessonListProps> = ({ courseId }) => {
     const handleLessonClick = (lessonId: string) => {
         const selectedLesson = lessons.find(lesson => lesson._id === lessonId);
         if (selectedLesson) {
-            navigate(`/classroom/courses/lesson/${lessonId}`, { state: { lesson: selectedLesson } });
+            navigate(`/classroom/courses/lesson/${lessonId}`);
         }
     };
 

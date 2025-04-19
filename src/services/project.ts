@@ -1,12 +1,27 @@
 import { PROJECT_API } from '../constants/api.ts'
 import http from '../services/http/http'
-import httpAuth from './http/httpAuth.ts'
-import httpFile from './http/httpFile.ts'
+import { httpAuth, httpFile } from './http/httpAuth.ts'
 
-export const getProjects = async (page: number, perPage: number, name: string) => {
+export const getProjects = async (page: number, perPage: number, name: string, type: string) => {
     return (await http.get(PROJECT_API.GET_PROJECTS, {
-        params: { page, perPage, name }
+        params: { page, perPage, name, type }
     })).data;
+};
+export const searchProject = async (page: number, perPage: number, name: string, is_mine: string, user_id: string) => {
+    return (await http.get(PROJECT_API.SEARCH_PROJECTS, {
+        params: { page, perPage, name, is_mine, user_id },
+    })).data;
+};
+export const getFavoriteProjects = async (userId: string, page: number, perPage: number) => {
+    return (
+        await http.get(PROJECT_API.GET_FAVORITE_PROJECTS, {
+            params: {
+                userId,
+                page,
+                perPage
+            }
+        })
+    ).data;
 };
 
 export const getProjectById = async (id: string) => {
@@ -30,7 +45,7 @@ export const isLikedProject = async (projectId: string, userId: string) => {
 
 export const createProject = async (project: any) => {
     console.log(project)
-    return await httpAuth.post(PROJECT_API.CREATE_PROJECT, project)
+    return await httpFile.post(PROJECT_API.CREATE_PROJECT, project)
 }
 
 export const updateProject = async (project: any, projectId: string) => {
@@ -50,5 +65,13 @@ export const getProjectByType = async (type: string) => {
 }
 
 export const changeProjectType = async (projectId: string, type: string) => {
-    return await http.post(PROJECT_API.CHANGE_PROJECT_TYPE, {projectId, type})
+    return await httpAuth.post(PROJECT_API.CHANGE_PROJECT_TYPE, {projectId, type})
+}
+
+export const setFavoriteProject = async (projectId: string, userId: string) => {
+    return await http.post(PROJECT_API.SET_FAVORITE_PROJECT, {userId, projectId})
+}
+
+export const cloneProject = async (projectId: string, userId: string) => {
+    return await http.post(PROJECT_API.CLONE_PROJECT, {userId, projectId})
 }

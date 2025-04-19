@@ -1,6 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Layout, Typography, Modal, Input, Dropdown, Menu, Space, Avatar, MenuProps, message, Button } from 'antd'
-import { DownOutlined, UserOutlined, SaveOutlined, UploadOutlined, FileOutlined, EditOutlined, PlayCircleOutlined } from '@ant-design/icons'
+import {
+    DownOutlined,
+    UserOutlined,
+    SaveOutlined,
+    UploadOutlined,
+    FileOutlined,
+    PlayCircleOutlined,
+    CloudDownloadOutlined,
+    CopyOutlined,
+} from '@ant-design/icons'
 import * as Blockly from 'blockly'
 import { blocks } from '../../Blockly/blocks/defineBlock.ts'
 import { forBlock } from '../../Blockly/generators/customBlock.ts'
@@ -10,13 +19,14 @@ import { save, load } from '../../Blockly/serialization'
 import { Link, useParams } from 'react-router-dom'
 import '../../Blockly/index.css'
 import '../../components/commons/styles/headerBlockly.css'
-import { createProject, getProjectById, updateProject } from '../../services/project.ts'
+import { cloneProject, createProject, getProjectById, updateProject } from '../../services/project.ts'
 import { Project } from '../../model/model.ts'
 import { useSelector } from 'react-redux'
 import { logout } from '../../stores/authSlice.ts'
 import store from '../../stores'
-import {pushCodeToDb, saveCodeBlock} from '../../services/codeBlock.ts'
+import { pushCodeToDb, saveCodeBlock } from '../../services/codeBlock.ts'
 import styles from './BlocklyPage.module.css'
+import JSZip from 'jszip';
 
 const { Header, Content } = Layout
 const { Title } = Typography
@@ -33,24 +43,8 @@ const BlocklyPage: React.FC = () => {
     const { isAuthenticated, user } = useSelector((state: any) => state.auth)
     const [ledState, setLedState] = useState('off')
 
-    // Attach simulateLED function to window so it's available in generated code.
-    // useEffect(() => {
-    //     (window as any).simulateLED = (state: string): void => {
-    //         const ledElement = document.getElementById('simulated-led')
-    //         if (ledElement) {
-    //             if (state === 'HIGH') {
-    //                 ledElement.style.backgroundColor = 'yellow'
-    //                 ledElement.classList.add('on')
-    //                 setLedState('on')
-    //             } else {
-    //                 ledElement.style.backgroundColor = '#333'
-    //                 ledElement.classList.remove('on')
-    //                 setLedState('off')
-    //             }
-    //         }
-    //         console.log('LED state:', state)
-    //     }
-    // }, [])
+    // Kiểm tra xem người dùng hiện tại có phải là chủ sở hữu dự án không
+    const isProjectOwner = currentProject && isAuthenticated ? currentProject.user_id._id === user._id : false
 
     useEffect(() => {
         const initializeWorkspace = async () => {
@@ -66,9 +60,9 @@ const BlocklyPage: React.FC = () => {
                         startScale: 1.0,   // Initial zoom level
                         maxScale: 3,       // Maximum zoom in level
                         minScale: 0.3,     // Maximum zoom out level
-                        scaleSpeed: 1.2    // Zoom speed factor
-                    }
-                });
+                        scaleSpeed: 1.2,    // Zoom speed factor
+                    },
+                })
                 setWorkspace(newWorkspace)
 
                 if (projectId) {
@@ -78,7 +72,7 @@ const BlocklyPage: React.FC = () => {
                         setProjectName(project.data.name)
                         Blockly.serialization.workspaces.load(JSON.parse(project.data.block), newWorkspace)
                     } catch (error) {
-                        console.error('Error loading project:', error)
+                        console.error('Lỗi khi tải dự án:', error)
                     }
                 } else {
                     load(newWorkspace)
@@ -111,7 +105,7 @@ const BlocklyPage: React.FC = () => {
         const handleBeforeUnload = (event: BeforeUnloadEvent) => {
             if (workspace && workspace.getUndoStack().length > 0) {
                 event.preventDefault()
-                event.returnValue = 'You have unsaved changes. Are you sure you want to leave?'
+                event.returnValue = 'Bạn có thay đổi chưa lưu. Bạn có chắc chắn muốn rời đi không?'
             }
         }
 
@@ -122,68 +116,51 @@ const BlocklyPage: React.FC = () => {
         }
     }, [workspace])
 
-
-    const executeCode = () => {
-    };
-
-    const pushCodeBlock = () => {
-        if (workspace) {
-            const javascriptCode = javascriptGenerator.workspaceToCode(workspace)
-            const jsonCode = JSON.stringify(Blockly.serialization.workspaces.save(workspace), null, 2)
-            const xml = Blockly.Xml.workspaceToDom(workspace)
-            const xmlCode = Blockly.Xml.domToPrettyText(xml)
-
-            const payload = {
-                javascriptCode,
-                jsonCode,
-                xmlCode,
-            }
-
-            console.log('Pushing code block:', payload)
-        }
-    }
     const saveCodeBlockToDB = async () => {
-        executeCode();
-
-        const outputDiv = document.getElementById("output");
-        if (outputDiv) outputDiv.innerText = ""; // Xóa kết quả cũ nếu có
+        const outputDiv = document.getElementById('output')
+        if (outputDiv) outputDiv.innerText = '' // Xóa kết quả cũ nếu có
 
         if (workspace) {
-            javascriptGenerator.finish = function (code: string): string {
-                const definitions = this.definitions_ || {};
-                const includes: string[] = [];
-                const others: string[] = [];
+            javascriptGenerator.finish = function(code: string): string {
+                const definitions = this.definitions_ || {}
+                const includes: string[] = []
+                const others: string[] = []
 
                 for (const [_, value] of Object.entries(definitions)) {
                     if (value.trim().startsWith('#include')) {
-                        includes.push(value);
+                        includes.push(value)
                     } else {
-                        others.push(value);
+                        others.push(value)
                     }
                 }
 
-                return includes.join('\n') + '\n\n' + others.join('\n') + '\n\n' + code;
-            };
+                return includes.join('\n') + '\n\n' + others.join('\n') + '\n\n' + code
+            }
 
-            const javascriptCode = javascriptGenerator.workspaceToCode(workspace);
-            console.log('Generated JavaScript code:', javascriptCode);
+            const javascriptCode = javascriptGenerator.workspaceToCode(workspace)
+            console.log('Mã JavaScript đã tạo:', javascriptCode)
 
             try {
-                message.loading({ content: 'Đang lưu code block...', key: 'saveCodeBlock' });
-                await pushCodeToDb(javascriptCode);
-                message.success({ content: 'Code block đã được lưu thành công!', key: 'saveCodeBlock' });
-                if (outputDiv) outputDiv.innerText = "✅ Code block saved successfully!";
+                message.loading({ content: 'Đang tải mã lên thiết bị...', key: 'saveCodeBlock' })
+                await pushCodeToDb(javascriptCode)
+                message.success({ content: 'Mã đã được tải lên thiết bị thành công!', key: 'saveCodeBlock' })
+                if (outputDiv) outputDiv.innerText = '✅ Mã đã được tải lên thiết bị thành công!'
             } catch (e) {
-                console.error('Error saving code block', e);
-                message.error({ content: `Lỗi: ${e instanceof Error ? e.message : 'Không thể lưu code block'}`, key: 'saveCodeBlock' });
-                if (outputDiv) outputDiv.innerText = `❌ Error: ${e instanceof Error ? e.message : e}`;
+                console.error('Lỗi khi lưu mã', e)
+                message.error({
+                    content: `Lỗi: ${e instanceof Error ? e.message : 'Không thể tải mã lên thiết bị'}`,
+                    key: 'saveCodeBlock',
+                })
+                if (outputDiv) outputDiv.innerText = `❌ Lỗi: ${e instanceof Error ? e.message : e}`
             }
         } else {
-            message.warning('Workspace không tồn tại!');
-            if (outputDiv) outputDiv.innerText = "⚠️ Workspace not found.";
+            message.warning('Không tìm thấy không gian làm việc!')
+            if (outputDiv) outputDiv.innerText = '⚠️ Không tìm thấy không gian làm việc.'
         }
-    };
-
+    }
+    const handleMenuClick = () => {
+        setIsFileActive(!isFileActive)
+    }
     const downloadXML = () => {
         if (workspace) {
             const xml = Blockly.Xml.workspaceToDom(workspace)
@@ -192,7 +169,7 @@ const BlocklyPage: React.FC = () => {
             const url = URL.createObjectURL(blob)
             const a = document.createElement('a')
             a.href = url
-            a.download = 'workspace.xml'
+            a.download = 'khoi-lenh.xml'
             a.click()
             URL.revokeObjectURL(url)
         }
@@ -206,7 +183,7 @@ const BlocklyPage: React.FC = () => {
             const url = URL.createObjectURL(blob)
             const a = document.createElement('a')
             a.href = url
-            a.download = 'workspace.json'
+            a.download = 'khoi-lenh.json'
             a.click()
             URL.revokeObjectURL(url)
         }
@@ -223,7 +200,7 @@ const BlocklyPage: React.FC = () => {
             const url = URL.createObjectURL(blob)
             const a = document.createElement('a')
             a.href = url
-            a.download = 'code.txt'
+            a.download = 'ma-nguon.txt'
             a.click()
             URL.revokeObjectURL(url)
         }
@@ -289,74 +266,84 @@ const BlocklyPage: React.FC = () => {
             } else if (fileType === 'text/xml') {
                 uploadXML(event)
             } else {
-                console.error('Unsupported file type')
+                console.error('Định dạng file không được hỗ trợ')
             }
+        }
+    }
+
+    const cloneProjectFunc = async () => {
+        if (!isAuthenticated) {
+            message.error('Vui lòng đăng nhập để sao chép bài học!')
+            return
+        }
+
+        if (currentProject) {
+            try {
+                await cloneProject(currentProject._id, user._id)
+                message.success('Đã sao chép bài học này về tài khoản của bạn!')
+            } catch (e) {
+                console.error('Lỗi khi sao chép bài học', e)
+                message.error('Có lỗi xảy ra khi sao chép bài học!')
+            }
+        } else {
+            message.warning('Không tìm thấy bài học để sao chép!')
         }
     }
 
     const handleSaveProject = async () => {
         if (!isAuthenticated) {
-            message.error('Vui lòng đăng nhập để lưu dự án!');
-            return;
+            message.error('Vui lòng đăng nhập để lưu bài học!')
+            return
         }
 
         if (!projectName.trim()) {
-            message.warning('Vui lòng nhập tên dự án trước khi lưu!');
-            return;
+            message.warning('Vui lòng đặt tên cho bài học trước khi lưu!')
+            return
         }
 
         if (workspace) {
             try {
                 const json = Blockly.serialization.workspaces.save(workspace)
                 const jsonString = JSON.stringify(json, null, 2)
-                console.log(currentProject)
 
-                message.loading({ content: 'Đang lưu dự án...', key: 'saveProject' });
+                message.loading({ content: 'Đang lưu bài học...', key: 'saveProject' })
 
-                if (projectId) {
+                if (currentProject && !isProjectOwner) {
+                    message.error({ content: 'Bạn không có quyền sửa bài học này!', key: 'saveProject' })
+                    return
+                }
+
+                if (projectId && isProjectOwner) {
                     const project = {
                         ...currentProject,
                         name: projectName,
                         block: jsonString,
                     }
                     await updateProject(project, projectId)
-                    message.success({ content: 'Dự án đã được cập nhật thành công!', key: 'saveProject' });
+                    message.success({ content: 'Bài học đã được cập nhật thành công!', key: 'saveProject' })
                 } else {
                     const project = {
                         name: projectName,
                         block: jsonString,
-                        createdBy: user._id
+                        createdBy: user._id,
                     }
                     await createProject(project)
-                    message.success({ content: 'Dự án đã được lưu thành công!', key: 'saveProject' });
+                    message.success({ content: 'Bài học đã được lưu thành công!', key: 'saveProject' })
                 }
             } catch (e) {
-                console.error('Error saving project', e)
-                message.error({ content: 'Có lỗi xảy ra khi lưu dự án!', key: 'saveProject' });
+                console.error('Lỗi khi lưu bài học', e)
+                message.error({ content: 'Có lỗi xảy ra khi lưu bài học!', key: 'saveProject' })
             }
         } else {
-            console.error('Workspace not found')
-            message.error('Không tìm thấy workspace!');
+            console.error('Không tìm thấy không gian làm việc')
+            message.error('Không tìm thấy không gian làm việc!')
         }
-    }
-
-    const handleRestore = () => {
-        // Handle restore logic here
-    }
-
-    const handleLogCode = () => {
-        const code = document.getElementById('generatedCode')?.textContent
-        if (code) console.log(code)
-    }
-
-    const handleMenuClick = () => {
-        setIsFileActive(!isFileActive)
     }
 
     const userMenu = (
         <Menu>
             <Menu.Item key="profile">
-                <a href="/profile">Trang cá nhân</a>
+                <a href="/profile">Hồ sơ của tôi</a>
             </Menu.Item>
             <Menu.Item key="logout">
                 <a
@@ -371,134 +358,250 @@ const BlocklyPage: React.FC = () => {
         </Menu>
     )
 
-    const taptinn: MenuProps['items'] = [
+    // Menu Tệp
+    const menuTep: MenuProps['items'] = [
         {
             key: '1',
             label: (
                 <span>
-          <SaveOutlined /> Save Project
-        </span>
+                    <SaveOutlined /> Lưu bài học
+                </span>
             ),
             onClick: handleSaveProject,
+            disabled: currentProject ? !isProjectOwner : !isAuthenticated,
         },
         {
             key: '2',
             label: (
                 <span>
-          <UploadOutlined /> Load File (XML or JSON)
-        </span>
+                    <CopyOutlined /> Sao chép bài học này
+                </span>
+            ),
+            onClick: cloneProjectFunc,
+            disabled: !isAuthenticated || !currentProject,
+        },
+        {
+            key: '3',
+            label: (
+                <span>
+                    <FileOutlined /> Bài học mới
+                </span>
+            ),
+            onClick: showModal,
+        },
+        {
+            type: 'divider',
+        },
+        {
+            key: '4',
+            label: (
+                <span>
+                    <UploadOutlined /> Mở tệp (XML hoặc JSON)
+                </span>
             ),
             onClick: handleUploadClick,
         },
         {
-            key: '3',
+            key: '5',
             label: (
                 <span>
-          <FileOutlined /> Save XML File
-        </span>
+                    <CloudDownloadOutlined /> Tải xuống dạng XML
+                </span>
             ),
             onClick: downloadXML,
         },
         {
-            key: '4',
+            key: '6',
             label: (
                 <span>
-          <FileOutlined /> Save JSON File
-        </span>
+                    <CloudDownloadOutlined /> Tải xuống dạng JSON
+                </span>
             ),
             onClick: saveAsJSON,
         },
-    ]
-
-    const chinhsuaa: MenuProps['items'] = [
         {
-            key: '1',
+            key: '7',
             label: (
                 <span>
-          <EditOutlined /> Undo
-        </span>
-            ),
-            onClick: handleRestore,
-        },
-        {
-            key: '2',
-            label: (
-                <span>
-          <EditOutlined /> Redo
-        </span>
-            ),
-        },
-    ]
-
-    const hoatdong: MenuProps['items'] = [
-        {
-            key: '1',
-            label: (
-                <span>
-          <FileOutlined /> Log Code
-        </span>
-            ),
-            onClick: handleLogCode,
-        },
-        {
-            key: '2',
-            label: (
-                <span>
-          <PlayCircleOutlined /> Execute Code
-        </span>
-            ),
-            onClick: executeCode,
-        },
-        {
-            key: '3',
-            label: (
-                <span>
-          <FileOutlined /> Save Code as TXT
-        </span>
+                    <FileOutlined /> Lưu mã nguồn dạng TXT
+                </span>
             ),
             onClick: saveCodeAsTxt,
-        },
-        {
-            key: '4',
-            label: 'New',
-            onClick: showModal,
         },
     ]
 
     // Send the workspace file to the Python backend
-    const sendFileToPythonBackend = async () => {
+//     const sendFileToClient = async () => {
+//         if (!workspace) {
+//             message.error('Không gian làm việc chưa được khởi tạo!')
+//             console.error('Workspace is not initialized.')
+//             return
+//         }
+//
+//         const code = javascriptGenerator.workspaceToCode(workspace)
+//
+//         // Tạo file code.ino bên trong thư mục "code"
+//         const zip = new JSZip()
+//         const codeFolder = zip.folder('code')
+//         codeFolder.file('code.ino', code)
+//
+//         // Tạo nội dung run.bat bên ngoài
+//         const batContent = `@echo off
+// setlocal
+//
+// REM === Locate Arduino IDE ===
+// set "ARDUINO_PATH="
+//
+// if exist "C:\\Program Files\\Arduino\\Arduino.exe" (
+//     set "ARDUINO_PATH=C:\\Program Files\\Arduino\\Arduino.exe"
+//     goto found
+// )
+//
+// if exist "C:\\Program Files\\Arduino\\Arduino_debug.exe" (
+//     set "ARDUINO_PATH=C:\\Program Files\\Arduino\\Arduino_debug.exe"
+//     goto found
+// )
+//
+// if exist "C:\\Program Files (x86)\\Arduino\\Arduino.exe" (
+//     set "ARDUINO_PATH=C:\\Program Files (x86)\\Arduino\\Arduino.exe"
+//     goto found
+// )
+//
+// if exist "C:\\Program Files (x86)\\Arduino\\Arduino_debug.exe" (
+//     set "ARDUINO_PATH=C:\\Program Files (x86)\\Arduino\\Arduino_debug.exe"
+//     goto found
+// )
+//
+// echo Arduino IDE not found! Please install Arduino IDE.
+// pause
+// exit /b
+//
+// :found
+// echo Found Arduino IDE at: "%ARDUINO_PATH%"
+//
+// REM === Detect COM port ===
+// set "COMPORT="
+// for /f "tokens=3" %%A in ('reg query HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM ^| find "REG_SZ"') do (
+//     set "COMPORT=%%A"
+// )
+//
+// if not defined COMPORT (
+//     echo No COM port detected, defaulting to COM3.
+//     set "COMPORT=COM3"
+// )
+//
+// echo Using port: %COMPORT%
+//
+// REM === Upload sketch ===
+// "%ARDUINO_PATH%" --upload --port %COMPORT% "%~dp0code\\code.ino"
+//
+// pause
+// `
+//
+//         // Thêm run.bat vào zip
+//         zip.file('run.bat', batContent)
+//
+//         // Tạo file zip và gửi về client
+//         zip.generateAsync({ type: 'blob' }).then((zipBlob) => {
+//             const zipUrl = URL.createObjectURL(zipBlob)
+//             const link = document.createElement('a')
+//             link.href = zipUrl
+//             link.download = 'arduino_project.zip'
+//             document.body.appendChild(link)
+//             link.click()
+//             document.body.removeChild(link)
+//             URL.revokeObjectURL(zipUrl)
+//         })
+//     }
+    const sendFileToClient = async () => {
         if (!workspace) {
-            message.error('Workspace chưa được khởi tạo!');
-            console.error("Workspace is not initialized.");
-            return;
+            message.error('Không gian làm việc chưa được khởi tạo!')
+            console.error('Workspace is not initialized.')
+            return
         }
 
-        // Generate JSON representation of the workspace
-        const jsonWorkspace = Blockly.serialization.workspaces.save(workspace);
-        const jsonText = JSON.stringify(jsonWorkspace, null, 2);
+        const code = javascriptGenerator.workspaceToCode(workspace)
 
-        // Prepare FormData for the JSON format
-        const jsonFormData = new FormData();
-        jsonFormData.append("file", new Blob([jsonText], { type: "application/json" }), "workspace.json");
+        // Chuyển code thành các dòng echo >> code\code.ino
+        const codeLines = code.split('\n')
+        const echoLines = codeLines.map((line, index) => {
+            // Escape các ký tự đặc biệt trong batch như ^
+            const safeLine = line.replace(/([&<>|^])/g, '^$1')
+            return `${index === 0 ? 'echo' : 'echo.'} ${safeLine} >> code\\code.ino`
+        })
 
-        try {
-            message.loading({ content: 'Đang gửi file...', key: 'sendFile' });
+        // Nội dung file run.bat
+        const batContent = `@echo off
+setlocal
 
-            // Send the JSON file to the backend
-            const response = await fetch("http://127.0.0.1:5001/upload-json", {
-                method: "POST",
-                body: jsonFormData,
-            });
+REM === Tạo thư mục code ===
+if not exist "code" mkdir code
 
-            // Process the response
-            const result = await response.json();
-            console.log("JSON Response:", result);
-            message.success({ content: 'File đã được gửi thành công!', key: 'sendFile' });
-        } catch (error) {
-            console.error("Error sending JSON file to Python backend:", error);
-            message.error({ content: 'Lỗi khi gửi file!', key: 'sendFile' });
-        }
+REM === Ghi nội dung vào code\\code.ino ===
+del code\\code.ino >nul 2>&1
+${echoLines.join('\n')}
+
+REM === Locate Arduino IDE ===
+set "ARDUINO_PATH="
+
+if exist "C:\\Program Files\\Arduino\\Arduino.exe" (
+    set "ARDUINO_PATH=C:\\Program Files\\Arduino\\Arduino.exe"
+    goto found
+)
+
+if exist "C:\\Program Files\\Arduino\\Arduino_debug.exe" (
+    set "ARDUINO_PATH=C:\\Program Files\\Arduino\\Arduino_debug.exe"
+    goto found
+)
+
+if exist "C:\\Program Files (x86)\\Arduino\\Arduino.exe" (
+    set "ARDUINO_PATH=C:\\Program Files (x86)\\Arduino\\Arduino.exe"
+    goto found
+)
+
+if exist "C:\\Program Files (x86)\\Arduino\\Arduino_debug.exe" (
+    set "ARDUINO_PATH=C:\\Program Files (x86)\\Arduino\\Arduino_debug.exe"
+    goto found
+)
+
+echo Arduino IDE not found! Please install Arduino IDE.
+pause
+exit /b
+
+:found
+echo Found Arduino IDE at: "%ARDUINO_PATH%"
+
+REM === Detect COM port ===
+set "COMPORT="
+for /f "tokens=3" %%A in ('reg query HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM ^| find "REG_SZ"') do (
+    set "COMPORT=%%A"
+)
+
+if not defined COMPORT (
+    echo No COM port detected, defaulting to COM3.
+    set "COMPORT=COM3"
+)
+
+echo Using port: %COMPORT%
+
+REM === Upload sketch ===
+"%ARDUINO_PATH%" --upload --port %COMPORT% "%~dp0code\\code.ino"
+
+pause
+`
+
+        // Tạo và tải file run.bat
+        const batBlob = new Blob([batContent], { type: 'application/octet-stream' })
+        const batUrl = URL.createObjectURL(batBlob)
+        const batLink = document.createElement('a')
+        batLink.href = batUrl
+        batLink.download = 'run.bat'
+        document.body.appendChild(batLink)
+        batLink.click()
+        document.body.removeChild(batLink)
+        URL.revokeObjectURL(batUrl)
     }
+
 
     return (
         <Layout
@@ -512,13 +615,19 @@ const BlocklyPage: React.FC = () => {
                 <div className="header-content">
                     <div className="logo-title">
                         <Link to={'/'}>
-                            <Title level={3}>Blockly</Title>
+                            <img
+                                className="logo"
+                                src={
+                                    'https://raw.githubusercontent.com/NguyenBaHoangKim/store-image/main/quiz/dinologo-nobgr.pngcbfecc1c-0b6c-4fab-abb8-00fbd9dc97f0-1744633033359'
+                                }
+                                alt="Logo"
+                            />
                         </Link>
                     </div>
 
                     <div className="menu-section">
                         <Dropdown
-                            menu={{ items: taptinn }}
+                            menu={{ items: menuTep }}
                             trigger={['click']}
                             onOpenChange={handleMenuClick}
                         >
@@ -527,39 +636,7 @@ const BlocklyPage: React.FC = () => {
                                 onClick={(e) => e.preventDefault()}
                             >
                                 <Space>
-                                    File
-                                    <DownOutlined />
-                                </Space>
-                            </a>
-                        </Dropdown>
-
-                        <Dropdown
-                            menu={{ items: chinhsuaa }}
-                            trigger={['click']}
-                            onOpenChange={handleMenuClick}
-                        >
-                            <a
-                                className="dropdown-menu white-text"
-                                onClick={(e) => e.preventDefault()}
-                            >
-                                <Space>
-                                    Edit
-                                    <DownOutlined />
-                                </Space>
-                            </a>
-                        </Dropdown>
-
-                        <Dropdown
-                            menu={{ items: hoatdong }}
-                            trigger={['click']}
-                            onOpenChange={handleMenuClick}
-                        >
-                            <a
-                                className="dropdown-menu white-text"
-                                onClick={(e) => e.preventDefault()}
-                            >
-                                <Space>
-                                    Action
+                                    Tệp
                                     <DownOutlined />
                                 </Space>
                             </a>
@@ -567,21 +644,34 @@ const BlocklyPage: React.FC = () => {
 
                         <Input
                             className="project-name-input"
-                            placeholder="Project Name"
+                            placeholder="Tên bài học"
                             value={projectName}
                             onChange={(e) => setProjectName(e.target.value)}
                             style={{ width: '200px' }}
                         />
 
-                        {/* Nút Save Project mới */}
+                        {/* Nút Lưu bài học */}
                         <Button
                             type="primary"
                             icon={<SaveOutlined />}
                             onClick={handleSaveProject}
                             className={styles.saveProjectButton}
+                            disabled={currentProject ? !isProjectOwner : !isAuthenticated}
                         >
-                            Lưu dự án
+                            Lưu bài học
                         </Button>
+
+                        {/* Hiển thị nút Sao chép nếu người dùng đang xem bài học của người khác */}
+                        {currentProject && isAuthenticated && !isProjectOwner && (
+                            <Button
+                                type="primary"
+                                icon={<CopyOutlined />}
+                                onClick={cloneProjectFunc}
+                                className={styles.saveProjectButton}
+                            >
+                                Sao chép bài học này
+                            </Button>
+                        )}
                     </div>
 
                     <input
@@ -613,27 +703,28 @@ const BlocklyPage: React.FC = () => {
             <Content style={{ flex: 1, overflow: 'hidden' }}>
                 <div id="pageContainer">
                     <div id="outputPane">
-                        <h3>Dịch khối thành mã nguồn</h3>
+                        <h3>Chuyển đổi khối thành mã nguồn</h3>
                         <pre id="generatedCode">
                             <code></code>
                         </pre>
 
-                        <button className={styles.saveDBbutton} id="saveCodeBlockToDB" onClick={saveCodeBlockToDB}>
-                            <PlayCircleOutlined /> Chạy trên phần cứng
+                        <button
+                            className={styles.saveDBbutton}
+                            id="saveCodeBlockToDB"
+                            onClick={saveCodeBlockToDB}
+                        >
+                            <PlayCircleOutlined /> Chạy trên thiết bị
                         </button>
-                        {/*<button className={styles.executeCode} id="executeButton" onClick={executeCode}>*/}
-                        {/*    <PlayCircleOutlined /> Chạy và xem kết quả*/}
-                        {/*</button>*/}
 
                         <button
                             className={styles.saveDBbutton}
                             id="sendFileButton"
-                            onClick={sendFileToPythonBackend}
+                            onClick={sendFileToClient}
                         >
-                            <SaveOutlined /> Lưu tệp của bạn vào hệ thống
+                            <SaveOutlined />Tải xuống tệp để chạy
                         </button>
 
-                        <h3>Output</h3>
+                        <h3>Kết quả</h3>
                         <div id="output"></div>
                     </div>
 
@@ -648,12 +739,11 @@ const BlocklyPage: React.FC = () => {
                     okText="Đồng ý"
                     cancelText="Hủy bỏ"
                 >
-                    <p>Bạn có chắc chắn muốn xóa không gian làm việc?</p>
+                    <p>Bạn có chắc chắn muốn tạo bài học mới và xóa tất cả các khối lệnh hiện tại không?</p>
                 </Modal>
             </Content>
         </Layout>
     )
-
 }
 
 export default BlocklyPage

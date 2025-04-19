@@ -32,8 +32,7 @@ const Section3: React.FC = () => {
                 <CountdownTimer
                     initialDays={section3Data.countdown.days}
                     initialHours={section3Data.countdown.hours}
-                    initialMinutes={section3Data.countdown.minutes}
-                />
+                    initialMinutes={section3Data.countdown.minutes} initialSeconds={0}                />
             </div>
         </section>
     );

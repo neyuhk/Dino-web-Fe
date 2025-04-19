@@ -100,7 +100,7 @@ const LessonDetail: React.FC = () => {
         }
         fetchExercises()
         fetchLessonDetail()
-    }, [lessonId, lesson, courseId])
+    }, [lessonId, lesson, courseId, navigate])
 
     if (!user) {
         return (
@@ -540,11 +540,6 @@ const LessonDetail: React.FC = () => {
                                             </table>
                                         )}
                                     </div>
-                                    <div className={styles.buttonGroup}>
-                                        <button onClick={closeScoreModal} className={styles.cancelButton}>
-                                            Đóng
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
                         )}
@@ -559,7 +554,7 @@ const LessonDetail: React.FC = () => {
                 onCancel={cancelDelete}
             />
             {/* Toast notification */}
-            {toast.show && <Toast toast={toast} onClose={hideToast} />}
+            {toast.show && <Toast toast={toast} onClose={hideToast} type={''} />}
         </div>
 
     )

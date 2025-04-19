@@ -335,9 +335,9 @@ const ProjectList: React.FC = () => {
                 <div className={styles.grid}>
                     {mobileProjects.length > 0 ? (
                         mobileProjects.map((project, index) => {
-                            const projectImage = project.images && project.images.length > 0
+                            const projectImage = project.images && project.images[0] !== '' && project.images[0]
                                 ? project.images[0]
-                                : 'https://i.pinimg.com/736x/39/2a/26/392a261b73dbcd361a0dac2e93a05284.jpg';
+                                : 'https://i.pinimg.com/474x/95/6f/0f/956f0fef63faac5be7b95715f6207fea.jpg';
 
                             // If this is the last item, attach the ref for infinite scrolling
                             if (index === mobileProjects.length - 1) {
@@ -444,9 +444,9 @@ const ProjectList: React.FC = () => {
                     {projects.length > 0 ? (
                         projects.map((project) => {
                             const projectImage =
-                                project.images && project.images.length > 0
+                                project.images && project.images[0] !== '' && project.images[0]
                                     ? project.images[0]
-                                    : 'https://i.pinimg.com/736x/39/2a/26/392a261b73dbcd361a0dac2e93a05284.jpg'
+                                    : 'https://i.pinimg.com/474x/95/6f/0f/956f0fef63faac5be7b95715f6207fea.jpg'
 
                             return (
                                 <div
@@ -599,7 +599,7 @@ const ProjectList: React.FC = () => {
                     </div>
                 </div>
             )}
-            {toast.show && <Toast toast={toast} onClose={hideToast} />}
+            {toast.show && <Toast toast={toast} onClose={hideToast} type={''} />}
         </div>
     )
 };

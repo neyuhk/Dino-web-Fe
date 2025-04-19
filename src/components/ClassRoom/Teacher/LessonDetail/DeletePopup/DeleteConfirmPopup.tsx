@@ -1,6 +1,7 @@
 import styles from '../LessonDetail.module.css';
 import LessonDetail from '../LessonDetail.tsx'
 
+// @ts-ignore
 const DeleteConfirmPopup = ({ show, title, description, onConfirm, onCancel }) => {
     if (!show) return null;
 

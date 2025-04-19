@@ -1,101 +1,113 @@
-import { Menu, MenuProps } from 'antd'
-import { BookOutlined, LaptopOutlined, UserOutlined } from '@ant-design/icons'
-import { useNavigate } from 'react-router-dom'
+import { Menu } from 'antd'
+import {
+    AppstoreOutlined,
+    UserOutlined,
+    BookOutlined,
+    MessageOutlined,
+    HomeOutlined
+} from '@ant-design/icons'
+import { useNavigate, useLocation } from 'react-router-dom'
+import styles from './SiderAdmin.module.css'
+import { useState, useEffect, useRef } from 'react'
 
 const SiderAdmin = () => {
     const navigate = useNavigate()
+    const location = useLocation()
+    const [selectedKey, setSelectedKey] = useState('1')
+    const [collapsed, setCollapsed] = useState(true)
+    const siderRef = useRef<HTMLDivElement>(null)
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+    const [isOpen, setIsOpen] = useState<boolean>(false)
 
-    const items: MenuProps['items'] = [
+    useEffect(() => {
+        // Đặt selected key dựa trên đường dẫn hiện tại
+        if (location.pathname.includes('/admin/projects')) {
+            setSelectedKey('1');
+        } else if (location.pathname.includes('/admin/users')) {
+            setSelectedKey('2');
+        } else if (location.pathname.includes('/admin/courses')) {
+            setSelectedKey('3');
+        } else if (location.pathname.includes('/admin/forum')) {
+            setSelectedKey('4');
+        } else if (location.pathname.includes('/admin')) {
+            setSelectedKey('0');
+        }
+    }, [location.pathname]);
+
+    const handleMouseEnter = () => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+        }
+        setCollapsed(false);
+        setIsOpen(true)
+    };
+
+    const handleMouseLeave = () => {
+        // Thêm độ trễ nhỏ trước khi đóng để tránh đóng quá nhanh
+        timeoutRef.current = setTimeout(() => {
+            setCollapsed(true);
+            setIsOpen(false)
+        }, 300);
+    };
+
+    useEffect(() => {
+        // Cleanup function khi component unmount
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
+
+    const items = [
         {
-            key: 'sub1',
-            icon: <LaptopOutlined />,
-            label: 'ProjectItem Management',
-            children: [
-                {
-                    key: '1',
-                    label: 'Projects List',
-                    onClick: () => navigate('/admin/projects'),
-                },
-                {
-                    key: '2',
-                    label: 'Child 2',
-                },
-            ],
+            key: '0',
+            icon: <HomeOutlined className={styles.menuIcon} />,
+            label: isOpen ? 'Trang chủ' : "" ,
+            onClick: () => navigate('/admin'),
         },
         {
-            key: 'sub2',
-            icon: <UserOutlined />,
-            label: 'User Management',
-            children: [
-                {
-                    key: '3',
-                    label: 'Users List',
-                    onClick: () => navigate('/admin/users'),
-                },
-                {
-                    key: '4',
-                    label: 'Child 2',
-                },
-            ],
+            key: '1',
+            icon: <AppstoreOutlined className={styles.menuIcon} />,
+            label: isOpen ?'Danh sách dự án' : "",
+            onClick: () => navigate('/admin/projects'),
         },
         {
-            key: 'sub3',
-            icon: <BookOutlined />,
-            label: 'Course Management',
-            children: [
-                {
-                    key: '5',
-                    label: 'Courses List',
-                    onClick: () => navigate('/admin/courses'),
-                },
-                {
-                    key: '6',
-                    label: 'Child 2',
-                },
-            ],
+            key: '2',
+            icon: <UserOutlined className={styles.menuIcon} />,
+            label: isOpen ? 'Quản lý người dùng' : "",
+            onClick: () => navigate('/admin/users'),
         },
         {
-            key: 'sub4',
-            icon: <BookOutlined />,
-            label: 'Forum Management',
-            children: [
-                {
-                    key: '7',
-                    label: 'Forum List',
-                    onClick: () => navigate('/admin/forum'),
-                },
-                {
-                    key: '8',
-                    label: 'Child 2',
-                },
-            ],
+            key: '3',
+            icon: <BookOutlined className={styles.menuIcon} />,
+            label: isOpen ? 'Khóa học' : "",
+            onClick: () => navigate('/admin/courses'),
         },
         {
-            key: 'sub5',
-            icon: <BookOutlined />,
-            label: 'Classroom Management',
-            children: [
-                {
-                    key: '9',
-                    label: 'Classroom',
-                    onClick: () => navigate('/admin/classroom'),
-                },
-                {
-                    key: '10',
-                    label: 'Child 2',
-                },
-            ],
+            key: '4',
+            icon: <MessageOutlined className={styles.menuIcon} />,
+            label: isOpen ? 'Diễn đàn' : "",
+            onClick: () => navigate('/admin/forum'),
         },
-    ]
+    ];
 
     return (
-        <Menu
-            mode="inline"
-            defaultSelectedKeys={['1']}
-            defaultOpenKeys={['sub1']}
-            style={{ height: '100%', borderRight: 0 }}
-            items={items}
-        />
+        <div
+            className={`${styles.siderContainer} ${collapsed ? styles.collapsed : styles.expanded}`}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            ref={siderRef}
+        >
+            <Menu
+                mode="inline"
+                selectedKeys={[selectedKey]}
+                className={styles.menu}
+                items={items}
+                inlineCollapsed={collapsed}
+            />
+        </div>
     )
 }
 

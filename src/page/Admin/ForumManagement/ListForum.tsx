@@ -17,7 +17,7 @@ const ListForumManagement: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const forums = await getForums()
+                const forums = await getForums("",1,1) //dang loi de tam thoi
                 setLoading(false)
                 setData(forums.data)
                 setFilteredData(forums.data)
@@ -92,7 +92,7 @@ const ListForumManagement: React.FC = () => {
         try {
             await deleteForum(id)
             message.success('Forum deleted successfully')
-            const forums = await getForums()
+            const forums = await getForums("",1,1) //dang loi de tam thoi
             setData(forums.data)
             setFilteredData(forums.data)
         } catch (error) {

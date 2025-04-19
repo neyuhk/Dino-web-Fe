@@ -158,7 +158,7 @@ const AddCoursePopup: React.FC<AddCoursePopupProps> = ({
         return Object.keys(errors).length === 0
     }
 
-    const handleImageChange = (info) => {
+    const handleImageChange = (info: any) => {
         if (info.file) {
             setSelectedImage(info.file)
         }
