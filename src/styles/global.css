@@ -109,3 +109,7 @@ button {
     -webkit-text-fill-color: transparent;
     color: var(--primary-color);
 }
+.ant-layout-content.css-dev-only-do-not-override-apn68 {
+    text-align: left !important;
+    line-height: initial !important;
+}
