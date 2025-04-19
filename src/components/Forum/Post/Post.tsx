@@ -1,7 +1,7 @@
 // Post.tsx - Cập nhật component
 import React, { useEffect, useState, useRef } from 'react'
 import { Heart, MessageCircle, Repeat2, ChevronUp, ChevronDown, MoreHorizontal, Edit, Trash2 } from 'lucide-react'
-import styles from './post.module.css';
+import styles from './Post.module.css';
 import { Forum, User } from '../../../model/model.ts'
 import CommentComponent from '../../Comment/Comment.tsx'
 import { convertDateTimeToDate } from '../../../helpers/convertDateTime.ts'
