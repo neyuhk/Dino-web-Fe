@@ -11,6 +11,7 @@ import lcdBlock from './image/lcd block.png';
 import lcdCode from './image/lcd.png';
 import buttonBlock from './image/button block.png';
 import buttonCode from './image/button.png';
+import section3Image from '../../../assets/homepage/section3.png';
 
 // Define the type for our example items
 interface CodeExample {
@@ -149,7 +150,7 @@ const Section3: React.FC = () => {
                         <div className={styles.imageWrapper}>
                             <img
                                 ref={imageRef}
-                                src="src/assets/homepage/section3.png"
+                                src={section3Image}
                                 alt="Programming"
                                 className={`${styles.image} ${isVisible ? styles.animatedImage : ''}`}
                             />

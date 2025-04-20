@@ -16,6 +16,8 @@ import { getCurrentUserAction, loginAction } from '../../stores/authAction';
 import { AppDispatch } from '../../stores';
 import styles from '../../pages/commons/styles/AuthPage.module.css'
 import { PATHS_ADMIN } from '../../router/path.ts'
+import loginBgr from '../../assets/login.png'
+import loginBgr2 from '../../assets/login2.png'
 
 const { Title, Paragraph } = Typography;
 
@@ -82,7 +84,7 @@ const AuthPage = () => {
             <div
                 className={`${styles.welcome} ${!isLoginView ? styles.shiftRight : ''}`}
                 style={{
-                    backgroundImage: 'url("src/assets/login.png")',
+                    backgroundImage: `url(${loginBgr})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                 }}
@@ -111,7 +113,7 @@ const AuthPage = () => {
             <div
                 className={`${styles.formContainer} ${!isLoginView ? styles.shiftLeft : ''}`}
                 style={{
-                    backgroundImage: 'url("src/assets/login2.png")',
+                    backgroundImage: `url(${loginBgr2})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                 }}

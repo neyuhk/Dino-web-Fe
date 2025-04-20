@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './Section1.module.css';
 import { Search } from 'lucide-react'
+import robotic from './image/Robotics-cuate.png'
 
 interface Section2Props {
     onSearch: (query: string) => void;
@@ -50,7 +51,7 @@ const Section1: React.FC<Section2Props> = ({onSearch}) => {
                 <div className={styles.imageColumn}>
                     <div className={styles.imageWrapper}>
                         <img
-                            src="src/components/ProjectsPage/Section1/image/Robotics-cuate.png"
+                            src={robotic}
                             alt="Arduino Learning"
                             className={styles.illustrationImage}
                         />

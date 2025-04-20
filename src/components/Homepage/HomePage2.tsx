@@ -334,7 +334,7 @@ const HomePage2 = () => {
                         </div>
                         <div className={styles.testimonialAuthor}>
                             <img
-                                src="https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-6/472756579_1546237986767644_7766063904131055002_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=a5f93a&_nc_ohc=cfbMyTBlaosQ7kNvwHo6c-S&_nc_oc=Adk-7hJxLW8j5gMVUruWVXn1SUG5rUG3OeIPesbpRSe0AeEM26G9X1A-SCWtHVkLFSE&_nc_pt=1&_nc_zt=23&_nc_ht=scontent.fhan14-5.fna&_nc_gid=vUfIigrI1pGfeo8QhtaT9Q&oh=00_AfEeQLH3uSLJjVxSSPx2lUluFuvn-7DUb1HB3FCckesdhQ&oe=68028440"
+                                src='https://i.pinimg.com/564x/34/6c/0f/346c0f0e9511d6262ae48de7cc41b782.jpg'
                                 alt="Avatar"
                                 className={styles.authorAvatar}
                             />
@@ -357,7 +357,7 @@ const HomePage2 = () => {
                         </div>
                         <div className={styles.testimonialAuthor}>
                             <img
-                                src="https://scontent.fhan14-3.fna.fbcdn.net/v/t39.30808-6/483593034_3984450625126786_8647156293972212944_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=833d8c&_nc_ohc=NQ8-lUnQMBUQ7kNvwE-tIuh&_nc_oc=Adm3muI3iNGZufgvxpGni65_5klNdKwMZ-VbBSGSrnNicIc0QkRaoLn5luRuHmO4GRE&_nc_pt=1&_nc_zt=23&_nc_ht=scontent.fhan14-3.fna&_nc_gid=jCv_98HVlTcBKjTNxp5x-Q&oh=00_AfFxORcLLkFg_B1vLNCNHJYz6KJ-2ivGvsb_NcHEEF-NxQ&oe=68026E11"
+                                src='https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/%C3%81o_d%C3%A0i_hoa_ph%C6%B0%E1%BB%A3ng_-_Ph%C3%A1t_Tr%C6%B0%C6%A1ng_-_51231007393_%28extend_cropped%29.jpg/220px-%C3%81o_d%C3%A0i_hoa_ph%C6%B0%E1%BB%A3ng_-_Ph%C3%A1t_Tr%C6%B0%C6%A1ng_-_51231007393_%28extend_cropped%29.jpg'
                                 alt="Avatar"
                                 className={styles.authorAvatar}
                             />
