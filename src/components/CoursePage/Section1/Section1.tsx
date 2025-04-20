@@ -1,6 +1,6 @@
 import React from 'react'
 import './Section1.css'
-import Search from '../../Search/Search.tsx'
+import ss1 from './image/ss1.png'
 
 const Section: React.FC = () => {
     const handleSearch = (query: string) => {
@@ -31,7 +31,7 @@ const Section: React.FC = () => {
                 </div>
                 <div className="image-container">
                     <img
-                        src="src/components/CoursePage/Section1/image/ss1.png"
+                        src={ss1}
                         alt="Arduino Course"
                         className="hero-image"
                     />

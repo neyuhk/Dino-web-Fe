@@ -6,6 +6,8 @@ import Section3 from '../../components/CoursePage/Section3/Section3.tsx'
 import Section4 from '../../components/CoursePage/Section4/Section4.tsx'
 import { useSelector } from 'react-redux'
 import RequireAuth from '../../components/commons/RequireAuth/RequireAuth.tsx'
+//rc/components/CoursePage/CourseSection1/image/course-bgr.png
+import courseBgr from '../../components/CoursePage/CourseSection1/image/course-bgr.png'
 
 const CoursePage: React.FC = () => {
     const { user } = useSelector((state: any) => state.auth);
@@ -17,11 +19,6 @@ const CoursePage: React.FC = () => {
     }
     return (
         <main>
-            <img
-                src="src/components/CoursePage/CourseSection1/image/course-bgr.png"
-                alt="Background"
-                className={styles.backgroundImage}
-            />
             <div className={styles.container}>
                 <Section1/>
                 <Section2/>

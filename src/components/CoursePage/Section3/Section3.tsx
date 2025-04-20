@@ -2,13 +2,14 @@ import React from 'react';
 import CountdownTimer from './CountdownTimer';
 import { section3Data } from './data';
 import styles from './Section3.module.css';
+import ss3 from './image/Work time-cuate.png';
 
 const Section3: React.FC = () => {
     return (
         <section className={styles.section3}>
             <div className={styles.imageContainer}>
                 <img
-                    src="src/components/CoursePage/Section3/image/Work time-cuate.png"
+                    src={ss3}
                     alt="Learning Environment"
                     className={styles.image}
                 />

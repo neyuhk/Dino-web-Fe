@@ -1,6 +1,16 @@
 import React from 'react';
 import styles from './Section5.module.css';
 
+// Import image sources
+import ic4 from './image/ic4.png';
+import ss4 from './image/ss4.png';
+import ic3 from './image/ic3.png';
+import ss3 from './image/ss3.png';
+import ic2 from './image/ic2.png';
+import ss2 from './image/ss2.png';
+import ic1 from './image/ic1.png';
+import ss1 from './image/ss1.png';
+
 interface RectangleProps {
     title: string;
     description: string;
@@ -47,32 +57,32 @@ const Section5: React.FC = () => {
         {
             title: "Xếp hạng",
             description: "Tham gia diễn đàn để thảo luận, giải đáp thắc mắc của bạn",
-            iconSrc: "src/components/Homepage/Section5/image/ic4.png",
-            imageSrc: "src/components/Homepage/Section5/image/ss4.png",
+            iconSrc: ic4,
+            imageSrc: ss4,
             backgroundColor: "#BFF0DB",
             textAlign: "right",
         },
         {
             title: "Khoá học",
             description: "Tham khảo các dự án mẫu từ bạn bè của Dino ",
-            iconSrc: "src/components/Homepage/Section5/image/ic3.png",
-            imageSrc: "src/components/Homepage/Section5/image/ss3.png",
+            iconSrc: ic3,
+            imageSrc: ss3,
             backgroundColor: "#FAE0C1",
             textAlign: "left",
         },
         {
             title: "Diễn đàn",
             description: "Tham gia diễn đàn để thảo luận, giải đáp thắc mắc của bạn",
-            iconSrc: "src/components/Homepage/Section5/image/ic2.png",
-            imageSrc: "src/components/Homepage/Section5/image/ss2.png",
+            iconSrc: ic2,
+            imageSrc: ss2,
             backgroundColor: "#F3C5C5",
             textAlign: "right",
         },
         {
             title: "Dự án mẫu",
             description: "Tham khảo các dự án mẫu từ bạn bè của Dino ",
-            iconSrc: "src/components/Homepage/Section5/image/ic1.png",
-            imageSrc: "src/components/Homepage/Section5/image/ss1.png",
+            iconSrc: ic1,
+            imageSrc: ss1,
             backgroundColor: "#D6D2FF",
             textAlign: "left",
         }

@@ -1,8 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './Section3.module.css';
-import ButtonGradient from '../../ButtonGradient/ButtonGradient.tsx'
-import { useNavigate } from 'react-router-dom'
+import ButtonGradient from '../../ButtonGradient/ButtonGradient.tsx';
+import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+// Import image sources
+import servoBlock from './image/servo block.png';
+import servoCode from './image/servo.png';
+import lcdBlock from './image/lcd block.png';
+import lcdCode from './image/lcd.png';
+import buttonBlock from './image/button block.png';
+import buttonCode from './image/button.png';
 
 // Define the type for our example items
 interface CodeExample {
@@ -24,26 +32,25 @@ const Section3: React.FC = () => {
     const [isHovering, setIsHovering] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
 
-    // Example images - replace with your actual image paths
     const codeExamples: CodeExample[] = [
         {
             id: 1,
             title: "Servo Example",
-            blockImageSrc: "src/components/Homepage/Section3/image/servo block.png",
-            codeImageSrc: "src/components/Homepage/Section3/image/servo.png"
+            blockImageSrc: servoBlock,
+            codeImageSrc: servoCode,
         },
         {
             id: 2,
             title: "Liquid-Crystal Display Example",
-            blockImageSrc: "src/components/Homepage/Section3/image/lcd block.png",
-            codeImageSrc: "src/components/Homepage/Section3/image/lcd.png"
+            blockImageSrc: lcdBlock,
+            codeImageSrc: lcdCode,
         },
         {
             id: 3,
             title: "Led Control With Button Example",
-            blockImageSrc: "src/components/Homepage/Section3/image/button block.png",
-            codeImageSrc: "src/components/Homepage/Section3/image/button.png"
-        }
+            blockImageSrc: buttonBlock,
+            codeImageSrc: buttonCode,
+        },
     ];
 
     useEffect(() => {
@@ -67,16 +74,15 @@ const Section3: React.FC = () => {
         };
     }, []);
 
-    // Auto-slide effect
     useEffect(() => {
         let slideInterval: ReturnType<typeof setInterval>;
 
         if (showDemo && !isHovering) {
             slideInterval = setInterval(() => {
-                setCurrentSlide(prev =>
+                setCurrentSlide((prev) =>
                     prev === codeExamples.length - 1 ? 0 : prev + 1
                 );
-            }, 3000); // Change slide every 3 seconds
+            }, 3000);
         }
 
         return () => {
@@ -95,13 +101,13 @@ const Section3: React.FC = () => {
     };
 
     const goToPrevSlide = () => {
-        setCurrentSlide(prev =>
+        setCurrentSlide((prev) =>
             prev === 0 ? codeExamples.length - 1 : prev - 1
         );
     };
 
     const goToNextSlide = () => {
-        setCurrentSlide(prev =>
+        setCurrentSlide((prev) =>
             prev === codeExamples.length - 1 ? 0 : prev + 1
         );
     };

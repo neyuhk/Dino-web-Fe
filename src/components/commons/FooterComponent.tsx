@@ -1,5 +1,6 @@
 import React from 'react';
 import './styles/FooterStyles.css';
+import dinologo from '../../assets/dinologo-black.jpg';
 
 const FooterComponent = () => {
     const currentYear = new Date().getFullYear();
@@ -9,7 +10,7 @@ const FooterComponent = () => {
             <div className="footer-main">
                 <div className="footer-section about-section">
                     <div className="logo-container">
-                        <img src="src/assets/dinologo-black.jpg" alt="Dino Education Logo" className="footer-logo" />
+                        <img src={dinologo} alt="Dino Education Logo" className="footer-logo" />
                         <h2 className="footer-title">Dino Education</h2>
                     </div>
                     <p className="footer-quote">"Học lập trình thông qua trải nghiệm trực quan - Nơi code trở nên thú vị và dễ dàng"</p>

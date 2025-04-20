@@ -175,11 +175,11 @@ const ClassroomList: React.FC = () => {
                                     </div>
                                 </div>
 
-                                <div className={styles.cardFooter}>
-                                    <div className={styles.stats}>
+                                {/*<div className={styles.cardFooter}>*/}
+                                {/*    <div className={styles.stats}>*/}
 
-                                    </div>
-                                </div>
+                                {/*    </div>*/}
+                                {/*</div>*/}
                             </div>
                         </div>
                     ))}

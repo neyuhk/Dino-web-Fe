@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import styles from './OurProduct.module.css';
+import React, { useState, useEffect } from 'react'
+import styles from './OurProduct.module.css'
 import { useNavigate } from 'react-router-dom'
+import blockVideo from '../AboutUs/image/block.mov'
+import schoolImage from './image/school.png'
+import dinoBgr from './image/dino-bgr.png'
 
 const OurProduct = () => {
-    const navigate = useNavigate();
+    const navigate = useNavigate()
     const [isVisible, setIsVisible] = useState({
         hero: false,
         features: false,
@@ -12,10 +15,10 @@ const OurProduct = () => {
         courses: false,
         schools: false,
         advantages: false,
-        demo:false,
+        demo: false,
         roadmap: false,
         cia: true,
-    });
+    })
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -24,28 +27,31 @@ const OurProduct = () => {
                     if (entry.isIntersecting) {
                         setIsVisible(prev => ({
                             ...prev,
-                            [entry.target.id]: true
-                        }));
+                            [entry.target.id]: true,
+                        }))
                     }
-                });
+                })
             },
-            { threshold: 0.3 }
-        );
+            { threshold: 0.3 },
+        )
 
-        const sections = document.querySelectorAll('[id]');
+        const sections = document.querySelectorAll('[id]')
         sections.forEach((section) => {
-            observer.observe(section);
-        });
+            observer.observe(section)
+        })
 
         return () => {
             sections.forEach((section) => {
-                observer.unobserve(section);
-            });
-        };
-    }, []);
+                observer.unobserve(section)
+            })
+        }
+    }, [])
 
     return (
-        <div className={styles.container}>
+        <div className={styles.container}
+             style={{
+                 backgroundImage: `url(${dinoBgr})`,
+             }}>
             {/* Hero Section */}
             <section
                 id="hero"
@@ -84,7 +90,7 @@ const OurProduct = () => {
                             className={styles.heroSectionVideo}
                         >
                             <source
-                                src="/src/components/AboutUs/image/block.mov"
+                                src={blockVideo}
                                 type="video/mp4"
                             />
                             Trình duyệt của bạn không hỗ trợ video.
@@ -208,7 +214,7 @@ const OurProduct = () => {
                             className={styles.demoSectionVideo}
                         >
                             <source
-                                src="/src/components/AboutUs/image/block.mov"
+                                src={blockVideo}
                                 type="video/mp4"
                             />
                             Trình duyệt của bạn không hỗ trợ video.
@@ -285,7 +291,7 @@ const OurProduct = () => {
                     </div>
                     <div className={styles.schoolsImageContainer}>
                         <img
-                            src="src/components/OurProduct/image/school.png"
+                            src={schoolImage}
                             alt="Lớp học STEM"
                         />
                     </div>
@@ -417,20 +423,20 @@ const OurProduct = () => {
                     ngay hôm nay!
                 </p>
                 <div className={styles.ctaButtons}>
-                    <button  onClick={() => {
-                        navigate('/projects');
-                        window.scrollTo({ top: 0, behavior: 'smooth' }); // hoặc 'auto'
+                    <button onClick={() => {
+                        navigate('/projects')
+                        window.scrollTo({ top: 0, behavior: 'smooth' }) // hoặc 'auto'
                     }}
-                             className={styles.primaryButton}>
+                            className={styles.primaryButton}>
                         Xem dự án mẫu
                     </button>
-                    <button  onClick={() => navigate('/blockly')} className={styles.secondaryButton}>
+                    <button onClick={() => navigate('/blockly')} className={styles.secondaryButton}>
                         Thực hành ngay
                     </button>
                 </div>
             </section>
         </div>
     )
-};
+}
 
-export default OurProduct;
+export default OurProduct

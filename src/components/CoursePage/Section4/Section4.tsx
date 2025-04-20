@@ -1,6 +1,12 @@
 import React from 'react';
 import styles from './Section4.module.css';
-import blockColors from './data.tsx'
+import blockColors from './data.tsx';
+
+// Import image sources
+import launchingAmico from './image/Launching-amico.png';
+import missionImpossibleBro from './image/Mission Impossible-bro.png';
+import searchEnginesRafiki from './image/Search engines-rafiki.png';
+import roboticsPana from './image/Robotics-pana.png';
 
 interface ContentData {
     title: string;
@@ -13,25 +19,24 @@ const Section4: React.FC = () => {
         {
             title: "Khóa Học Arduino Cơ Bản",
             description: "Khóa học này giới thiệu về Arduino, giúp học viên làm quen với các khái niệm cơ bản và lập trình các dự án đơn giản. Bạn sẽ học cách sử dụng board Arduino, kết nối cảm biến, và tạo ra các ứng dụng thú vị.",
-            imagePath: "src/components/CoursePage/Section4/image/Launching-amico.png"
+            imagePath: launchingAmico
         },
         {
             title: "Khóa Học Arduino Nâng Cao",
             description: "Khóa học này hướng dẫn các kỹ thuật nâng cao với Arduino, bao gồm việc sử dụng các module phức tạp hơn như Bluetooth, Wi-Fi, và các hệ thống cảm biến đa dạng. Bạn sẽ phát triển các dự án thực tế để ứng dụng Arduino vào các giải pháp kỹ thuật.",
-            imagePath: "src/components/CoursePage/Section4/image/Mission Impossible-bro.png"
+            imagePath: missionImpossibleBro
         },
         {
             title: "Khóa Học Arduino IoT (Internet of Things)",
             description: "Khóa học này tập trung vào việc kết nối Arduino với Internet để tạo ra các ứng dụng IoT. Bạn sẽ học cách giao tiếp với các thiết bị từ xa, thu thập dữ liệu và điều khiển thiết bị qua mạng.",
-            imagePath: "src/components/CoursePage/Section4/image/Search engines-rafiki.png"
+            imagePath: searchEnginesRafiki
         },
         {
             title: "Khóa Học Arduino Robotics",
             description: "Khóa học này sẽ dạy bạn cách xây dựng các robot tự động sử dụng Arduino. Bạn sẽ học về các cảm biến, động cơ, và các kỹ thuật điều khiển robot thông minh để thực hiện các nhiệm vụ tự động hóa.",
-            imagePath: "src/components/CoursePage/Section4/image/Robotics-pana.png"
+            imagePath: roboticsPana
         }
     ];
-
 
     const renderBlock = (blockId: number) => {
         const color = blockColors.find(color => color.id === blockId);
