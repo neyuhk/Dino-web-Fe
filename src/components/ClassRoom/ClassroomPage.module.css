@@ -262,6 +262,7 @@
     border-radius: 8px;
     font-size: 0.85rem;
     color: #495057;
+    line-height: initial;
 }
 
 .infoIcon {

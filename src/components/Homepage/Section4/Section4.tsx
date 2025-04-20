@@ -1,5 +1,9 @@
 import React from 'react';
 import styles from './Section4.module.css';
+import uetLogo from '../../../assets/homepage/section4/uet.png';
+import HAULogo from '../../../assets/homepage/section4/kt.jpg';
+import HNUELogo from '../../../assets/homepage/section4/hnue.jpg';
+import CSLLogo from '../../../assets/homepage/section4/csl.png';
 
 interface School {
     logo: string;
@@ -8,10 +12,10 @@ interface School {
 
 const Section4: React.FC = () => {
     const schools: School[] = [
-        { logo: 'src/assets/homepage/section4/csl.png', name: 'THPT CSL' },
-        { logo: 'src/assets/homepage/section4/hnue.jpg', name: 'HNUE' },
-        { logo: 'src/assets/homepage/section4/kt.jpg', name: 'HAU' },
-        { logo: 'src/assets/homepage/section4/uet.png', name: 'UET' },
+        { logo: CSLLogo, name: 'THPT CSL' },
+        { logo: HNUELogo, name: 'HNUE' },
+        { logo: HAULogo, name: 'HAU' },
+        { logo: uetLogo, name: 'UET' },
     ];
 
     return (

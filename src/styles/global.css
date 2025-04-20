@@ -105,7 +105,6 @@ button {
 .title-gradian{
     background: var(--gradient-colors);
     -webkit-background-clip: text;
-    /*background-clip: text;*/
     -webkit-text-fill-color: transparent;
     color: var(--primary-color);
 }
@@ -114,7 +113,7 @@ button {
     justify-content: flex-end;
 }
 
-.ant-layout-content.css-dev-only-do-not-override-apn68 {
-    text-align: left !important;
+.ant-layout-content{
     line-height: initial !important;
+    text-align: initial !important;
 }
