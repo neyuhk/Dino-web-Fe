@@ -40,10 +40,11 @@ import {
     StarOutlined,
     CloseOutlined,
     FilterOutlined,
-    BarsOutlined
-} from '@ant-design/icons';
+    BarsOutlined, ClearOutlined, ReloadOutlined,
+} from '@ant-design/icons'
 import moment from 'moment';
 import ProjectDetailComponent from './ProjectDetail.tsx'
+import RequireAuth from '../../../components/commons/RequireAuth/RequireAuth.tsx'
 
 const { Option } = Select;
 const { Title, Text } = Typography;
@@ -67,6 +68,7 @@ const ListProjectManagement: React.FC = () => {
     const [detailProject, setDetailProject] = useState<Project | null>(null);
     const [isLiked, setIsLiked] = useState(false);
     const [filterVisible, setFilterVisible] = useState(false);
+    const [sortBy, setSortBy] = useState<string>('newest');
 
     const fetchData = async (page: number, perPage: number, name: string, type?: string) => {
         setLoading(true);
@@ -90,6 +92,43 @@ const ListProjectManagement: React.FC = () => {
     const handleSearch = (value: string) => {
         setSearchName(value);
         fetchData(1, pagination.pageSize, value, selectedType);
+    };
+
+    const clearFilters = () => {
+        setSearchName('');
+        setSelectedType(undefined);
+        setSortBy('newest');
+        fetchData(1, pagination.pageSize, '', undefined);
+    };
+    const handleSortChange = (value: string) => {
+        setSortBy(value);
+
+        // Sắp xếp dữ liệu
+        let sortedData = [...filteredData];
+        switch(value) {
+            case 'name_asc':
+                sortedData.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+                break;
+            case 'name_desc':
+                sortedData.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+                break;
+            case 'views_desc':
+                sortedData.sort((a, b) => (b.view_count || 0) - (a.view_count || 0));
+                break;
+            case 'likes_desc':
+                sortedData.sort((a, b) => (b.like_count || 0) - (a.like_count || 0));
+                break;
+            case 'newest':
+                sortedData.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+                break;
+            case 'oldest':
+                sortedData.sort((a, b) => new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime());
+                break;
+            default:
+                break;
+        }
+
+        setFilteredData(sortedData);
     };
 
     const handleTypeChange = (value: string) => {
@@ -234,6 +273,12 @@ const ListProjectManagement: React.FC = () => {
         return <Tag color={color}>{type}</Tag>;
     };
 
+    if(!user){
+        return (
+            <RequireAuth></RequireAuth>
+        );
+    }
+
     // Function to navigate to another project while drawer is open
     const navigateToProject = async (project: Project) => {
         setLoading(true);
@@ -276,7 +321,7 @@ const ListProjectManagement: React.FC = () => {
                     </div>
                     <div className="project-info">
                         <Text strong className="project-title">{record.name || 'Không tên'}</Text>
-                        <Text type="secondary" className="project-description" ellipsis>
+                        <Text className="project-description" ellipsis>
                             {record.description?.substring(0, 50) || 'Không có mô tả'}
                             {record.description && record.description.length > 50 ? '...' : ''}
                         </Text>
@@ -327,14 +372,6 @@ const ListProjectManagement: React.FC = () => {
             width: '15%',
             render: (record) => (
                 <div className="action-buttons">
-                    <Tooltip title="Xem chi tiết">
-                        <Button
-                            type="text"
-                            icon={<EyeOutlined />}
-                            className="action-button view"
-                            onClick={() => showDrawer(record)}
-                        />
-                    </Tooltip>
                     <Tooltip title="Sửa loại dự án">
                         <Button
                             type="text"
@@ -363,30 +400,58 @@ const ListProjectManagement: React.FC = () => {
                 <Title level={3} className="page-title">Quản lý dự án</Title>
                 <div className="filter-controls">
                     <Button
-                        type="primary"
+                        type="default"
                         icon={<FilterOutlined />}
                         onClick={() => setFilterVisible(!filterVisible)}
                         className="filter-toggle-button"
                     >
-                        Bộ lọc
+                        {filterVisible ? 'Ẩn bộ lọc' : 'Hiện bộ lọc'}
                     </Button>
                 </div>
             </div>
 
             <Card className={`filter-panel ${filterVisible ? 'filter-visible' : ''}`}>
-                <Row gutter={16} align="middle">
-                    <Col xs={24} md={16}>
+                <div className="filter-header">
+                    <div className="filter-title">
+                        <FilterOutlined /> Bộ lọc dự án
+                    </div>
+                    <div className="filter-actions">
+                        <Button
+                            icon={<ClearOutlined />}
+                            onClick={clearFilters}
+                            className="clear-filter-button"
+                        >
+                            Xóa bộ lọc
+                        </Button>
+                        <Button
+                            type="primary"
+                            icon={<ReloadOutlined />}
+                            onClick={() => fetchData(1, pagination.pageSize, searchName, selectedType)}
+                            className="clear-filter-button"
+                        >
+                            Áp dụng
+                        </Button>
+                    </div>
+                </div>
+
+                <div className="filter-group">
+                    <div className="filter-item">
+                        <label className="filter-label">Tìm kiếm</label>
                         <Search
-                            placeholder="Tìm kiếm dự án theo tên"
+                            placeholder="Tìm kiếm theo tên dự án"
+                            value={searchName}
+                            onChange={(e) => setSearchName(e.target.value)}
                             onSearch={handleSearch}
                             enterButton
                             allowClear
                             className="search-input"
                         />
-                    </Col>
-                    <Col xs={24} md={8}>
+                    </div>
+                    <div className="filter-item">
+                        <label className="filter-label">Loại dự án</label>
                         <Select
-                            placeholder="Lọc theo loại dự án"
+                            placeholder="Chọn loại dự án"
+                            value={selectedType}
                             onChange={handleTypeChange}
                             allowClear
                             className="type-select"
@@ -397,10 +462,25 @@ const ListProjectManagement: React.FC = () => {
                                 </Option>
                             ))}
                         </Select>
-                    </Col>
-                </Row>
+                    </div>
+                    <div className="filter-item">
+                        <label className="filter-label">Sắp xếp theo</label>
+                        <Select
+                            placeholder="Sắp xếp theo"
+                            value={sortBy}
+                            onChange={handleSortChange}
+                            className="sort-select"
+                        >
+                            <Option value="newest">Mới nhất</Option>
+                            <Option value="oldest">Cũ nhất</Option>
+                            <Option value="name_asc">Tên (A-Z)</Option>
+                            <Option value="name_desc">Tên (Z-A)</Option>
+                            <Option value="views_desc">Lượt xem (Cao-Thấp)</Option>
+                            <Option value="likes_desc">Lượt thích (Cao-Thấp)</Option>
+                        </Select>
+                    </div>
+                </div>
             </Card>
-
             <Card className="projects-card">
                 <div className="table-header">
                     <Text strong>
@@ -493,6 +573,7 @@ const ListProjectManagement: React.FC = () => {
                         />
                     </div>
                 }
+                mask={false}
                 placement="right"
                 closable={false}
                 onClose={closeDrawer}

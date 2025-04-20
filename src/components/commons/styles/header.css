@@ -136,7 +136,7 @@
 }
 
 /* Điều chỉnh kích thước cho dropdown user profile */
-.user-profile {
+.header-user-profile {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -147,11 +147,11 @@
     height: 36px;
 }
 
-.user-profile:hover {
+.header-user-profile:hover {
     background-color: rgba(255, 255, 255, 0.15);
 }
 
-.user-name {
+.header-user-name {
     font-size: 0.9rem;
     color: white;
     font-weight: 500;

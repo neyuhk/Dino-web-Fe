@@ -2,7 +2,9 @@ import { Breadcrumb, Layout, theme, Button } from 'antd';
 import HeaderAdmin from '../components/commons/Admin/HeaderAdmin.tsx';
 import SiderAdmin from '../components/commons/Admin/SiderAdmin.tsx';
 import { useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux'
+import RequireAuth from '../components/commons/RequireAuth/RequireAuth.tsx'
 
 const { Header, Content, Sider } = Layout;
 // @ts-ignore
@@ -11,6 +13,7 @@ const AdminLayout = ({ children }) => {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
 
+    const {user} = useSelector((state: any) => state.auth);
     const [collapsed, setCollapsed] = useState(false);
 
     const toggleCollapsed = () => {
@@ -25,6 +28,12 @@ const AdminLayout = ({ children }) => {
             return { title: url.split('/').pop(), path: url };
         }),
     ];
+
+    if(!user || user.role !== "admin"){
+        return (
+            <RequireAuth></RequireAuth>
+        );
+    }
 
     return (
         <Layout style={{ width: '100%', overflow: 'hidden' }}>

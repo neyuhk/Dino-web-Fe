@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import {
-    Card,
     Typography,
     Row,
     Col,
-    Image,
+    Avatar,
     Space,
     Modal,
     Button,
@@ -13,203 +12,421 @@ import {
     message,
     Select,
     Upload,
-} from 'antd'
-import { useParams } from 'react-router-dom'
-import moment from 'moment'
-import { getUserById } from '../../../services/user.ts'
-import { User } from '../../../model/model.ts'
-import { UploadOutlined } from '@ant-design/icons'
+    Descriptions,
+    Tag,
+    Tabs,
+    Card,
+    Divider,
+    Skeleton,
+    Tooltip,
+    Timeline
+} from 'antd';
+import moment from 'moment';
+import { getUserById } from '../../../services/user.ts';
+import { User } from '../../../model/model.ts';
+import {
+    UploadOutlined,
+    UserOutlined,
+    MailOutlined,
+    CalendarOutlined,
+    EditOutlined,
+    KeyOutlined,
+    InfoCircleOutlined,
+    HistoryOutlined,
+    LockOutlined,
+    ExclamationCircleOutlined
+} from '@ant-design/icons';
 
-const { Title, Paragraph, Text } = Typography
-const { Search } = Input
+const { Title, Text } = Typography;
+const { TabPane } = Tabs;
+import './UserDetail.css';
 
-const UserDetailPage: React.FC = () => {
-    const { userId } = useParams<{ userId: string }>()
-    const [userData, setUserData] = useState<User | null>(null)
-    const [isLoading, setLoading] = useState(true)
-    const [isEditUserModalVisible, setIsEditUserModalVisible] = useState(false)
-    const [form] = Form.useForm()
-    const [selectedImage, setSelectedImage] = useState(null)
+interface UserDetailProps {
+    userId: string;
+    inDrawer?: boolean;
+}
+
+const UserDetailComponent: React.FC<UserDetailProps> = ({ userId, inDrawer = false }) => {
+    const [userData, setUserData] = useState<User | null>(null);
+    const [isLoading, setLoading] = useState(true);
+    const [isEditUserModalVisible, setIsEditUserModalVisible] = useState(false);
+    const [form] = Form.useForm();
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [isResetPasswordModalVisible, setIsResetPasswordModalVisible] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const userResponse = await getUserById(userId ? userId : '')
-                setUserData(userResponse.data)
-                setLoading(false)
-            } catch (error) {
-                console.error('Failed to fetch user data:', error)
-                setLoading(false)
-            }
-        }
+                const userResponse = await getUserById(userId);
+                setUserData(userResponse.data);
+                setLoading(false);
 
-        fetchUserData()
-    }, [userId])
+                // Initialize form with user data
+                form.setFieldsValue({
+                    name: userResponse.data.name,
+                    email: userResponse.data.email,
+                    role: userResponse.data.role,
+                });
+            } catch (error) {
+                console.error('Failed to fetch user data:', error);
+                setLoading(false);
+                message.error('Không thể tải thông tin người dùng');
+            }
+        };
+
+        fetchUserData();
+    }, [userId, form]);
 
     const showEditUserModal = () => {
-        setIsEditUserModalVisible(true)
-    }
+        setIsEditUserModalVisible(true);
+    };
 
     const handleEditUser = async (values: any) => {
-        const formData = new FormData()
-        formData.append('name', values.name)
-        formData.append('email', values.email)
-        formData.append('role', values.role)
+        const formData = new FormData();
+        formData.append('name', values.name);
+        formData.append('email', values.email);
+        formData.append('role', values.role);
         if (selectedImage) {
             // @ts-ignore
-            formData.append('avatar', selectedImage.originFileObj)
+            formData.append('avatar', selectedImage.originFileObj);
         }
 
         try {
             // Call the edit user API here
-            message.success('User updated successfully')
-            setIsEditUserModalVisible(false)
-            form.resetFields()
+            message.success('Cập nhật thông tin người dùng thành công');
+            setIsEditUserModalVisible(false);
+            form.resetFields();
+
+            // Reload user data
+            const userResponse = await getUserById(userId);
+            setUserData(userResponse.data);
         } catch (error) {
-            message.error('Failed to update user')
-            console.error('Failed to update user:', error)
+            message.error('Không thể cập nhật thông tin người dùng');
+            console.error('Failed to update user:', error);
         }
-    }
+    };
+
+    const handleResetPassword = () => {
+        message.success('Đã gửi email đặt lại mật khẩu đến người dùng');
+        setIsResetPasswordModalVisible(false);
+    };
 
     const handleCancel = () => {
-        setIsEditUserModalVisible(false)
-        form.resetFields()
-    }
+        setIsEditUserModalVisible(false);
+        form.resetFields();
+    };
 
     // @ts-ignore
     const handleImageChange = ({ fileList }) => {
-        setSelectedImage(fileList[0])
+        setSelectedImage(fileList[0]);
+    };
+
+    const getRoleTagColor = (role: string) => {
+        switch (role) {
+            case 'admin':
+                return 'red';
+            case 'teacher':
+                return 'blue';
+            case 'user':
+                return 'green';
+            default:
+                return 'default';
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <div className="user-detail-loading">
+                <Skeleton avatar paragraph={{ rows: 4 }} active />
+            </div>
+        );
     }
 
     if (!userData) {
         return (
-            <Card>
-                <div className="text-center">No user data available</div>
-            </Card>
-        )
+            <div className="user-detail-error">
+                <InfoCircleOutlined style={{ fontSize: 48, color: '#ff4d4f' }} />
+                <Text style={{ marginTop: 16 }}>Không thể tải thông tin người dùng</Text>
+                <Button type="primary" onClick={() => window.location.reload()}>
+                    Thử lại
+                </Button>
+            </div>
+        );
     }
 
     const {
-        name = 'Unknown',
-        email = 'Unknown',
+        name = 'Chưa cập nhật',
+        username = 'Chưa cập nhật',
+        email = 'Chưa cập nhật',
         avatar = '',
-        role = 'Unknown',
-        createdAt = 'Unknown',
-    } = userData
+        role = 'user',
+        createdAt = '',
+        updatedAt = '',
+    } = userData;
 
-    // @ts-ignore
     return (
-        <Card className="max-w-4xl mx-auto">
-            <Row gutter={[16, 16]}>
-                <Col span={24}>
-                    <Title level={2}>{name}</Title>
-                </Col>
-            </Row>
-            <Row gutter={[16, 16]}>
-                <Col xs={24} sm={16}>
-                    {avatar ? (
-                        <Image
-                            width="100%"
-                            height={400}
-                            src={Array.isArray(avatar) ? avatar[0] : avatar}
-                            alt={name}
-                            preview={false}
-                            style={{ objectFit: 'cover', borderRadius: '8px' }}
-                        />
-                    ) : (
-                        <Image
-                            width="100%"
-                            height={400}
-                            src={'/MockData/default-avatar.jpg'}
-                            alt={'default'}
-                            preview={false}
-                            style={{ objectFit: 'cover', borderRadius: '8px' }}
-                        />
-                    )}
-                </Col>
-                <Col xs={24} sm={8}>
-                    <Space direction="vertical" size="large" style={{ width: '100%' }}>
-                        <Card>
-                            <Text strong>Email: </Text>
-                            <Text>{email}</Text>
-                            <br />
-                            <Text strong>Role: </Text>
-                            <Text>{role}</Text>
-                            <br />
-                            <Text strong>Created At: </Text>
-                            <Text>{moment(createdAt).format('DD/MM/YYYY')}</Text>
-                        </Card>
-                    </Space>
-                </Col>
-            </Row>
-            <Row gutter={[16, 16]} style={{ marginTop: '16px' }}>
-                <Col span={24}>
-                    <Card>
-                        <Title level={3}>Actions</Title>
-                        <Space style={{ marginBottom: 16, width: '100%', justifyContent: 'space-between' }}>
-                            <Button type="primary" onClick={showEditUserModal}>
-                                Edit User
-                            </Button>
-                        </Space>
+        <div className={`user-detail-container ${inDrawer ? 'in-drawer' : ''}`}>
+            <div className="user-detail-header">
+                <div className="user-avatar-container">
+                    <Avatar
+                        src={avatar[0] || "https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg"}
+                        icon={!avatar && <UserOutlined />}
+                        size={inDrawer ? 80 : 120}
+                        className="user-avatar"
+                    />
+                    <Tag color={getRoleTagColor(role)} className="user-role-tag">
+                        {role?.toUpperCase()}
+                    </Tag>
+                </div>
+                <div className="user-basic-info">
+                    <Title level={inDrawer ? 4 : 3} className="user-name">
+                        {username}
+                    </Title>
+                    <div className="user-meta">
+                        <div className="user-meta-item">
+                            <MailOutlined /> {email}
+                        </div>
+                        <div className="user-meta-item">
+                            <CalendarOutlined /> Tham gia: {moment(createdAt).format('DD/MM/YYYY')}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="user-detail-actions">
+                <Button type="primary" icon={<EditOutlined />} onClick={showEditUserModal}>
+                    Chỉnh sửa
+                </Button>
+                <Button
+                    icon={<KeyOutlined />}
+                    onClick={() => setIsResetPasswordModalVisible(true)}
+                >
+                    Đặt lại mật khẩu
+                </Button>
+            </div>
+
+            <Divider />
+
+            <Tabs defaultActiveKey="info" className="user-detail-tabs">
+                <TabPane tab={<span><InfoCircleOutlined /> Thông tin</span>} key="info">
+                    <Card bordered={false} className="user-info-card">
+                        <Descriptions
+                            title="Thông tin chi tiết"
+                            layout={inDrawer ? "vertical" : "horizontal"}
+                            column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
+                        >
+                            <Descriptions.Item label="Tên đăng nhập">
+                                {username || 'Chưa cập nhật'}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Tên hiển thị">
+                                {name || 'Chưa cập nhật'}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Email">
+                                {email}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Vai trò">
+                                <Tag color={getRoleTagColor(role)}>
+                                    {role?.toUpperCase()}
+                                </Tag>
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Ngày tham gia">
+                                {moment(createdAt).format('DD/MM/YYYY HH:mm')}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Cập nhật gần nhất">
+                                {updatedAt ? moment(updatedAt).format('DD/MM/YYYY HH:mm') : 'Chưa cập nhật'}
+                            </Descriptions.Item>
+                        </Descriptions>
                     </Card>
-                </Col>
-            </Row>
+
+                    {!inDrawer && (
+                        <Card
+                            title="Thông tin bổ sung"
+                            className="user-extra-card"
+                            style={{ marginTop: 16 }}
+                        >
+                            <Row gutter={[16, 16]}>
+                                <Col span={12}>
+                                    <Descriptions column={1} layout="vertical">
+                                        <Descriptions.Item label="Số điện thoại">
+                                            {userData.phoneNumber || 'Chưa cập nhật'}
+                                        </Descriptions.Item>
+                                    </Descriptions>
+                                </Col>
+                                <Col span={12}>
+                                    <Descriptions column={1} layout="vertical">
+                                        <Descriptions.Item label="Ngày sinh">
+                                            {userData.birthday ? moment(userData.birthday).format('DD/MM/YYYY') : 'Chưa cập nhật'}
+                                        </Descriptions.Item>
+                                    </Descriptions>
+                                </Col>
+                            </Row>
+                        </Card>
+                    )}
+                </TabPane>
+                <TabPane tab={<span><HistoryOutlined /> Lịch sử hoạt động</span>} key="activities">
+                    <p>Chưa cập nhật</p>
+                </TabPane>
+            </Tabs>
+
             <Modal
-                title="Edit User"
+                title="Chỉnh sửa thông tin người dùng"
                 visible={isEditUserModalVisible}
-                onOk={() => form.submit()}
                 onCancel={handleCancel}
-                okText="Save"
-                cancelText="Cancel"
+                footer={null}
+                width={600}
             >
                 <Form
                     form={form}
                     layout="vertical"
                     onFinish={handleEditUser}
+                    initialValues={{
+                        name: name,
+                        email: email,
+                        role: role,
+                    }}
                 >
-                    <Form.Item
-                        name="name"
-                        label="Name"
-                        rules={[{ required: true, message: 'Please input the name!' }]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        name="email"
-                        label="Email"
-                        rules={[{ required: true, message: 'Please input the email!' }]}
-                    >
-                        <Input />
-                    </Form.Item>
+                    <div className="edit-user-avatar">
+                        <Avatar
+                            src={avatar[0] || "https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg"}
+                            icon={!avatar && <UserOutlined />}
+                            size={64}
+                        />
+                        <Form.Item
+                            name="avatar"
+                            label="Ảnh đại diện"
+                            valuePropName="fileList"
+                            getValueFromEvent={(e) => e && e.fileList}
+                        >
+                            <Upload
+                                listType="picture"
+                                beforeUpload={() => false}
+                                onChange={handleImageChange}
+                                maxCount={1}
+                                showUploadList={false}
+                            >
+                                <Button icon={<UploadOutlined />}>
+                                    Tải lên ảnh mới
+                                </Button>
+                            </Upload>
+                        </Form.Item>
+                    </div>
+
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Form.Item
+                                name="name"
+                                label="Tên hiển thị"
+                                rules={[{ required: true, message: 'Vui lòng nhập tên hiển thị!' }]}
+                            >
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item
+                                name="email"
+                                label="Email"
+                                rules={[
+                                    { required: true, message: 'Vui lòng nhập email!' },
+                                    { type: 'email', message: 'Email không đúng định dạng!' }
+                                ]}
+                            >
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+
                     <Form.Item
                         name="role"
-                        label="Role"
-                        rules={[{ required: true, message: 'Please select the role!' }]}
+                        label="Vai trò"
+                        rules={[{ required: true, message: 'Vui lòng chọn vai trò!' }]}
                     >
                         <Select>
                             <Select.Option value="admin">Admin</Select.Option>
-                            <Select.Option value="user">User</Select.Option>
+                            <Select.Option value="teacher">Giáo viên</Select.Option>
+                            <Select.Option value="user">Người dùng</Select.Option>
                         </Select>
                     </Form.Item>
-                    <Form.Item
-                        name="avatar"
-                        label="Avatar"
-                        valuePropName="fileList"
-                        getValueFromEvent={(e) => e && e.fileList}
-                    >
-                        <Upload
-                            listType="picture"
-                            beforeUpload={() => false}
-                            onChange={handleImageChange}
-                            maxCount={1}
-                        >
-                            <Button icon={<UploadOutlined />}>Upload</Button>
-                        </Upload>
+
+                    {!inDrawer && (
+                        <>
+                            <Row gutter={16}>
+                                <Col span={12}>
+                                    <Form.Item
+                                        name="phone"
+                                        label="Số điện thoại"
+                                    >
+                                        <Input />
+                                    </Form.Item>
+                                </Col>
+                                <Col span={12}>
+                                    <Form.Item
+                                        name="birthdate"
+                                        label="Ngày sinh"
+                                    >
+                                        <Input />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+
+                            <Form.Item
+                                name="address"
+                                label="Địa chỉ"
+                            >
+                                <Input />
+                            </Form.Item>
+                        </>
+                    )}
+
+                    <Form.Item>
+                        <div className="form-actions">
+                            <Button type="primary" htmlType="submit">
+                                Lưu thay đổi
+                            </Button>
+                            <Button onClick={handleCancel}>
+                                Hủy bỏ
+                            </Button>
+                        </div>
                     </Form.Item>
                 </Form>
             </Modal>
-        </Card>
-    )
-}
 
-export default UserDetailPage
+            <Modal
+                title={
+                    <div className="reset-password-modal-title">
+                        <LockOutlined className="reset-icon" />
+                        Đặt lại mật khẩu
+                    </div>
+                }
+                visible={isResetPasswordModalVisible}
+                onCancel={() => setIsResetPasswordModalVisible(false)}
+                footer={[
+                    <Button key="cancel" onClick={() => setIsResetPasswordModalVisible(false)}>
+                        Hủy bỏ
+                    </Button>,
+                    <Button key="submit" type="primary" onClick={handleResetPassword}>
+                        Gửi email đặt lại mật khẩu
+                    </Button>,
+                ]}
+            >
+                <div className="reset-password-content">
+                    <div className="reset-warning">
+                        <ExclamationCircleOutlined className="warning-icon" />
+                        <Text>
+                            Bạn sắp gửi email đặt lại mật khẩu cho người dùng này.
+                            Người dùng sẽ nhận được một email với hướng dẫn đặt lại mật khẩu của họ.
+                        </Text>
+                    </div>
+
+                    <div className="reset-user-info">
+                        <Text strong>Gửi email đặt lại mật khẩu tới:</Text>
+                        <div className="user-email-info">
+                            <Text>{email}</Text>
+                        </div>
+                    </div>
+                </div>
+            </Modal>
+        </div>
+    );
+};
+
+export default UserDetailComponent;

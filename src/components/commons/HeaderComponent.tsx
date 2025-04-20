@@ -170,13 +170,13 @@ const HeaderComponent: React.FC = () => {
                                 placement="bottomRight"
                                 arrow
                             >
-                                <div className="user-profile">
+                                <div className="header-user-profile">
                                     <Avatar
                                         size="small"
                                         icon={<UserOutlined />}
                                         src={user.avatar}
                                     />
-                                    <span className="user-name">{user.username}</span>
+                                    <span className="header-user-name">{user.username}</span>
                                 </div>
                             </Dropdown>
                         ) : (

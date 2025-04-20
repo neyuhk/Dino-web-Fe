@@ -26,10 +26,9 @@ const ListCourseManagement: React.FC = () => {
         try {
             const courses = await getCourses(page, perPage, title);
             setData(courses.data);
-            console.log(courses.data);
             setPagination({ current: page, pageSize: perPage, total: courses.totalCourses });
         } catch (error) {
-            console.error('Failed to fetch courses:', error);
+            console.error('Không thể tải danh sách khóa học:', error);
         } finally {
             setLoading(false);
         }
@@ -72,13 +71,13 @@ const ListCourseManagement: React.FC = () => {
         if (!courseToDelete) return;
         try {
             await deleteCourse(courseToDelete);
-            message.success('Course deleted successfully');
+            message.success('Xóa khóa học thành công');
             fetchData(pagination.current, pagination.pageSize, searchTitle);
             setIsDeleteModalVisible(false);
             setCourseToDelete(null);
         } catch (error) {
-            message.error('Failed to delete course');
-            console.error('Failed to delete course:', error);
+            message.error('Không thể xóa khóa học');
+            console.error('Lỗi khi xóa khóa học:', error);
         }
     };
 
@@ -105,7 +104,7 @@ const ListCourseManagement: React.FC = () => {
             setIsModalVisible(false);
             form.resetFields();
         } catch (error) {
-            console.error('Failed to add course:', error);
+            console.error('Không thể thêm hoặc cập nhật khóa học:', error);
         }
     };
 
@@ -128,19 +127,19 @@ const ListCourseManagement: React.FC = () => {
 
     const columns: TableProps<Course>['columns'] = [
         {
-            title: 'Title',
+            title: 'Tên khóa học',
             dataIndex: 'title',
             key: 'title',
-            render: (text) => (text ? <a>{text}</a> : 'Unknown'),
+            render: (text) => (text ? <a>{text}</a> : 'Không xác định'),
         },
         {
-            title: 'Description',
+            title: 'Mô tả',
             dataIndex: 'description',
             key: 'description',
-            render: (text) => (text ? text : 'Unknown'),
+            render: (text) => (text ? text : 'Không xác định'),
         },
         {
-            title: 'Image',
+            title: 'Hình ảnh',
             key: 'images',
             render: (record) =>
                 record.images ? (
@@ -158,31 +157,31 @@ const ListCourseManagement: React.FC = () => {
                 ),
         },
         {
-            title: 'Start Date',
+            title: 'Ngày bắt đầu',
             dataIndex: 'start_date',
             key: 'start_date',
             render: (text) => moment(text).format('DD/MM/YYYY'),
         },
         {
-            title: 'End Date',
+            title: 'Ngày kết thúc',
             dataIndex: 'end_date',
             key: 'end_date',
             render: (text) => moment(text).format('DD/MM/YYYY'),
         },
         {
-            title: 'Action',
+            title: 'Thao tác',
             key: 'action',
             render: (record) => (
                 <Space size="middle">
-                    <Tooltip title="View">
+                    <Tooltip title="Xem chi tiết">
                         <Link style={{ color: 'black' }} to={`/admin/course/detail/${record._id}`}>
                             <AlignLeftOutlined />
                         </Link>
                     </Tooltip>
-                    <Tooltip title="Edit">
+                    <Tooltip title="Chỉnh sửa">
                         <EditOutlined onClick={() => handleEditCourse(record)} />
                     </Tooltip>
-                    <Tooltip title="Delete">
+                    <Tooltip title="Xóa">
                         <DeleteOutlined onClick={() => showDeleteModal(record._id)} />
                     </Tooltip>
                 </Space>
@@ -193,9 +192,9 @@ const ListCourseManagement: React.FC = () => {
     return (
         <div>
             <Space style={{ marginBottom: 16, width: '100%', justifyContent: 'space-between' }}>
-                <Search placeholder="Search courses" onSearch={handleSearch} enterButton />
+                <Search placeholder="Tìm kiếm khóa học" onSearch={handleSearch} enterButton />
                 <Button type="primary" onClick={showModal}>
-                    Add Course
+                    Thêm khóa học
                 </Button>
             </Space>
             <div style={{ overflow: 'auto' }}>
@@ -212,51 +211,51 @@ const ListCourseManagement: React.FC = () => {
                 />
             </div>
             <Modal
-                title={editingCourse ? 'Edit Course' : 'Add New Course'}
+                title={editingCourse ? 'Chỉnh sửa khóa học' : 'Thêm khóa học mới'}
                 open={isModalVisible}
                 onCancel={handleCancel}
                 onOk={() => form.submit()}
-                okText={editingCourse ? 'Update' : 'Add Course'}
+                okText={editingCourse ? 'Cập nhật' : 'Thêm'}
             >
                 <Form form={form} layout="vertical" onFinish={handleAddOrUpdateCourse}>
                     <Form.Item
                         name="title"
-                        label="Title"
-                        rules={[{ required: true, message: 'Please input the title!' }]}
+                        label="Tên khóa học"
+                        rules={[{ required: true, message: 'Vui lòng nhập tên khóa học!' }]}
                     >
                         <Input />
                     </Form.Item>
                     <Form.Item
                         name="description"
-                        label="Description"
-                        rules={[{ required: true, message: 'Please input the description!' }]}
+                        label="Mô tả"
+                        rules={[{ required: true, message: 'Vui lòng nhập mô tả!' }]}
                     >
                         <Input.TextArea />
                     </Form.Item>
                     <Form.Item
                         name="startDate"
-                        label="Start Date"
-                        rules={[{ required: true, message: 'Please select the start date!' }]}
+                        label="Ngày bắt đầu"
+                        rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu!' }]}
                     >
                         <DatePicker />
                     </Form.Item>
                     <Form.Item
                         name="endDate"
-                        label="End Date"
-                        rules={[{ required: true, message: 'Please select the end date!' }]}
+                        label="Ngày kết thúc"
+                        rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc!' }]}
                     >
                         <DatePicker />
                     </Form.Item>
                     <Form.Item
                         name="certification"
-                        label="Certification"
-                        rules={[{ required: true, message: 'Please input the certification!' }]}
+                        label="Chứng nhận"
+                        rules={[{ required: true, message: 'Vui lòng nhập thông tin chứng nhận!' }]}
                     >
                         <Input />
                     </Form.Item>
                     <Form.Item
                         name="file"
-                        label="Images"
+                        label="Hình ảnh minh họa"
                         valuePropName="fileList"
                         getValueFromEvent={(e) => e && e.fileList}
                     >
@@ -266,20 +265,20 @@ const ListCourseManagement: React.FC = () => {
                             onChange={handleImageChange}
                             maxCount={1}
                         >
-                            <Button icon={<UploadOutlined />}>Upload</Button>
+                            <Button icon={<UploadOutlined />}>Tải lên</Button>
                         </Upload>
                     </Form.Item>
                 </Form>
             </Modal>
             <Modal
-                title="Confirm Delete"
+                title="Xác nhận xóa"
                 open={isDeleteModalVisible}
                 onOk={handleDeleteCourse}
                 onCancel={handleDeleteCancel}
-                okText="Delete"
-                cancelText="Cancel"
+                okText="Xóa"
+                cancelText="Hủy"
             >
-                <p>Are you sure you want to delete this course?</p>
+                <p>Bạn có chắc chắn muốn xóa khóa học này không?</p>
             </Modal>
         </div>
     );
