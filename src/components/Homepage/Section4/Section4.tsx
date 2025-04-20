@@ -15,7 +15,7 @@ const Section4: React.FC = () => {
         { logo: CSLLogo, name: 'THPT CSL' },
         { logo: HNUELogo, name: 'HNUE' },
         { logo: HAULogo, name: 'HAU' },
-        { logo: uetLogo, name: 'UET' },
+        { logo: 'public/dino.jpg', name: 'UET' },
     ];
 
     return (
