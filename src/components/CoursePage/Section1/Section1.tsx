@@ -24,9 +24,9 @@ const Section: React.FC = () => {
                         phức tạp. Tham gia ngay hôm nay để bắt đầu hành trình
                         sáng tạo của bạn!
                     </p>
-                    <div className="searchContainer">
-                        <Search onSearch={handleSearch} />
-                    </div>
+                    {/*<div className="searchContainer">*/}
+                    {/*    <Search onSearch={handleSearch} />*/}
+                    {/*</div>*/}
 
                 </div>
                 <div className="image-container">
