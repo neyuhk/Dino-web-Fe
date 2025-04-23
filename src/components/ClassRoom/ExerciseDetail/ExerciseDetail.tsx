@@ -110,9 +110,7 @@ const ExerciseDetail: React.FC<Props> = ({ userId, userName, exerciseId, onClose
     };
 
     // Sort results by question index
-    const sortedResults = [...results].sort((a, b) =>
-        a.question_id.index - b.question_id.index
-    );
+    const sortedResults = results
 
     return (
         <div className={styles.overlay} onClick={handleOverlayClick}>
@@ -178,7 +176,7 @@ const ExerciseDetail: React.FC<Props> = ({ userId, userName, exerciseId, onClose
                                         >
                                             <div className={styles.questionHeader}>
                                                 <div className={styles.questionNumber}>
-                                                    Câu {result.question_id.index}
+                                                    Câu {resultIndex + 1}
                                                     <span className={styles.questionStatus}>
                             {result.is_correct ? (
                                 <CheckCircle size={18} className={styles.correctIcon} />

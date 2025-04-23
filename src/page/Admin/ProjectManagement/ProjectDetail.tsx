@@ -49,7 +49,7 @@ const ProjectDetailComponent: React.FC<ProjectDetailComponentProps> = ({
             case 'DEFAULT':
                 color = 'green';
                 break;
-            case 'RECOMMENT':
+            case 'RECOMMEND':
                 color = 'blue';
                 break;
             case 'PUBLIC':

@@ -257,7 +257,7 @@ const ListProjectManagement: React.FC = () => {
             case PROJECT_TYPE.DEFAULT:
                 color = 'green';
                 break;
-            case PROJECT_TYPE.RECOMMENT:
+            case PROJECT_TYPE.RECOMMEND:
                 color = 'blue';
                 break;
             case PROJECT_TYPE.PUBLIC:

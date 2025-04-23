@@ -11,6 +11,7 @@ export interface Project {
     createdAt: string;
     updatedAt: string;
     blocks: string;
+    comment_count: number;
 }
 
 export interface User {
