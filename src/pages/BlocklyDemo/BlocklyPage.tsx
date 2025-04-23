@@ -272,31 +272,31 @@ const BlocklyPage: React.FC = () => {
 
     const cloneProjectFunc = async () => {
         if (!isAuthenticated) {
-            message.error('Vui lòng đăng nhập để sao chép bài học!')
+            message.error('Vui lòng đăng nhập để sao chép dự án!')
             return
         }
 
         if (currentProject) {
             try {
                 await cloneProject(currentProject._id, user._id)
-                message.success('Đã sao chép bài học này về tài khoản của bạn!')
+                message.success('Đã sao chép dự án này về tài khoản của bạn!')
             } catch (e) {
-                console.error('Lỗi khi sao chép bài học', e)
-                message.error('Có lỗi xảy ra khi sao chép bài học!')
+                console.error('Lỗi khi sao chép dự án', e)
+                message.error('Có lỗi xảy ra khi sao chép dự án!')
             }
         } else {
-            message.warning('Không tìm thấy bài học để sao chép!')
+            message.warning('Không tìm thấy dự án để sao chép!')
         }
     }
 
     const handleSaveProject = async () => {
         if (!isAuthenticated) {
-            message.error('Vui lòng đăng nhập để lưu bài học!')
+            message.error('Vui lòng đăng nhập để lưu dự án!')
             return
         }
 
         if (!projectName.trim()) {
-            message.warning('Vui lòng đặt tên cho bài học trước khi lưu!')
+            message.warning('Vui lòng đặt tên cho dự án trước khi lưu!')
             return
         }
 
@@ -305,10 +305,10 @@ const BlocklyPage: React.FC = () => {
                 const json = Blockly.serialization.workspaces.save(workspace)
                 const jsonString = JSON.stringify(json, null, 2)
 
-                message.loading({ content: 'Đang lưu bài học...', key: 'saveProject' })
+                message.loading({ content: 'Đang lưu dự án...', key: 'saveProject' })
 
                 if (currentProject && !isProjectOwner) {
-                    message.error({ content: 'Bạn không có quyền sửa bài học này!', key: 'saveProject' })
+                    message.error({ content: 'Bạn không có quyền sửa dự án này!', key: 'saveProject' })
                     return
                 }
 
@@ -319,7 +319,7 @@ const BlocklyPage: React.FC = () => {
                         block: jsonString,
                     }
                     await updateProject(project, projectId)
-                    message.success({ content: 'Bài học đã được cập nhật thành công!', key: 'saveProject' })
+                    message.success({ content: 'dự án đã được cập nhật thành công!', key: 'saveProject' })
                 } else {
                     const project = {
                         name: projectName,
@@ -327,11 +327,11 @@ const BlocklyPage: React.FC = () => {
                         createdBy: user._id,
                     }
                     await createProject(project)
-                    message.success({ content: 'Bài học đã được lưu thành công!', key: 'saveProject' })
+                    message.success({ content: 'dự án đã được lưu thành công!', key: 'saveProject' })
                 }
             } catch (e) {
-                console.error('Lỗi khi lưu bài học', e)
-                message.error({ content: 'Có lỗi xảy ra khi lưu bài học!', key: 'saveProject' })
+                console.error('Lỗi khi lưu dự án', e)
+                message.error({ content: 'Có lỗi xảy ra khi lưu dự án!', key: 'saveProject' })
             }
         } else {
             console.error('Không tìm thấy không gian làm việc')
@@ -363,7 +363,7 @@ const BlocklyPage: React.FC = () => {
             key: '1',
             label: (
                 <span>
-                    <SaveOutlined /> Lưu bài học
+                    <SaveOutlined /> Lưu dự án
                 </span>
             ),
             onClick: handleSaveProject,
@@ -373,7 +373,7 @@ const BlocklyPage: React.FC = () => {
             key: '2',
             label: (
                 <span>
-                    <CopyOutlined /> Sao chép bài học này
+                    <CopyOutlined /> Sao chép dự án này
                 </span>
             ),
             onClick: cloneProjectFunc,
@@ -383,7 +383,7 @@ const BlocklyPage: React.FC = () => {
             key: '3',
             label: (
                 <span>
-                    <FileOutlined /> Bài học mới
+                    <FileOutlined /> dự án mới
                 </span>
             ),
             onClick: showModal,
@@ -431,22 +431,28 @@ const BlocklyPage: React.FC = () => {
     const sendFileToClient = async () => {
         if (!workspace) {
             message.error('Không gian làm việc chưa được khởi tạo!')
-            console.error('Workspace is not initialized.')
             return
         }
 
+        // Generate JSON representation of the workspace
         const code = javascriptGenerator.workspaceToCode(workspace)
 
-        // Chuyển code thành các dòng echo >> code\code.ino
-        const codeLines = code.split('\n')
-        const echoLines = codeLines.map((line, index) => {
-            // Escape các ký tự đặc biệt trong batch như ^
-            const safeLine = line.replace(/([&<>|^])/g, '^$1')
-            return `${index === 0 ? 'echo' : 'echo.'} ${safeLine} >> code\\code.ino`
-        })
+        const isWindows = navigator.platform.includes('Win')
+        const fileName = isWindows ? 'run.bat' : 'run.sh'
 
-        // Nội dung file run.bat
-        const batContent = `@echo off
+        console.log('isWindows', isWindows)
+
+        let scriptContent = ''
+
+        if (isWindows) {
+            // Escape & generate bat content
+            const codeLines = code.split('\n')
+            const echoLines = codeLines.map((line, index) => {
+                const safeLine = line.replace(/([&<>|^])/g, '^$1')
+                return `${index === 0 ? 'echo' : 'echo.'} ${safeLine} >> code\\code.ino`
+            })
+
+            scriptContent = `@echo off
 setlocal
 
 REM === Tạo thư mục code ===
@@ -500,21 +506,55 @@ if not defined COMPORT (
 echo Using port: %COMPORT%
 
 REM === Upload sketch ===
+echo uploading command: "%ARDUINO_PATH%" --upload --port %COMPORT% "%~dp0code\\code.ino"
+
 "%ARDUINO_PATH%" --upload --port %COMPORT% "%~dp0code\\code.ino"
 
-pause
-`
+pause`
+        } else {
+            // Escape & generate bash content
+            const codeLines = code.split('\n')
+            const echoLines = codeLines.map(line => {
+                const safeLine = line.replace(/(["`\\$])/g, '\\$1')
+                return `echo "${safeLine}" >> code/code.ino`
+            })
 
-        // Tạo và tải file run.bat
-        const batBlob = new Blob([batContent], { type: 'application/octet-stream' })
-        const batUrl = URL.createObjectURL(batBlob)
-        const batLink = document.createElement('a')
-        batLink.href = batUrl
-        batLink.download = 'run.bat'
-        document.body.appendChild(batLink)
-        batLink.click()
-        document.body.removeChild(batLink)
-        URL.revokeObjectURL(batUrl)
+            scriptContent = `#!/bin/bash
+
+mkdir -p code
+rm -f code/code.ino
+${echoLines.join('\n')}
+
+# Tìm Arduino IDE path (có thể chỉnh sửa nếu khác)
+ARDUINO_PATH="/Applications/Arduino.app/Contents/MacOS/Arduino"
+
+if [ ! -f "$ARDUINO_PATH" ]; then
+    echo "Arduino IDE không được tìm thấy!"
+    exit 1
+fi
+
+# Cổng mặc định là /dev/cu.usbmodem*
+PORT=$(ls /dev/cu.usbmodem* 2>/dev/null | head -n 1)
+if [ -z "$PORT" ]; then
+    echo "Không tìm thấy cổng thiết bị! Mặc định là /dev/cu.usbmodem14101"
+    PORT="/dev/cu.usbmodem14101"
+fi
+
+"$ARDUINO_PATH" --upload --port "$PORT" "$(pwd)/code/code.ino"
+`
+        }
+
+        const blob = new Blob([scriptContent], { type: 'text/plain' })
+        const url = URL.createObjectURL(blob)
+
+        const link = document.createElement('a')
+        link.href = url
+        link.download = fileName
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+
+        URL.revokeObjectURL(url)
     }
 
 
@@ -559,13 +599,13 @@ pause
 
                         <Input
                             className="project-name-input"
-                            placeholder="Tên bài học"
+                            placeholder="Tên dự án"
                             value={projectName}
                             onChange={(e) => setProjectName(e.target.value)}
                             style={{ width: '200px' }}
                         />
 
-                        {/* Nút Lưu bài học */}
+                        {/* Nút Lưu dự án */}
                         <Button
                             type="primary"
                             icon={<SaveOutlined />}
@@ -573,10 +613,10 @@ pause
                             className={styles.saveProjectButton}
                             disabled={currentProject ? !isProjectOwner : !isAuthenticated}
                         >
-                            Lưu bài học
+                            Lưu dự án
                         </Button>
 
-                        {/* Hiển thị nút Sao chép nếu người dùng đang xem bài học của người khác */}
+                        {/* Hiển thị nút Sao chép nếu người dùng đang xem dự án của người khác */}
                         {currentProject && isAuthenticated && !isProjectOwner && (
                             <Button
                                 type="primary"
@@ -584,7 +624,7 @@ pause
                                 onClick={cloneProjectFunc}
                                 className={styles.saveProjectButton}
                             >
-                                Sao chép bài học này
+                                Sao chép dự án này
                             </Button>
                         )}
                     </div>
@@ -654,7 +694,7 @@ pause
                     okText="Đồng ý"
                     cancelText="Hủy bỏ"
                 >
-                    <p>Bạn có chắc chắn muốn tạo bài học mới và xóa tất cả các khối lệnh hiện tại không?</p>
+                    <p>Bạn có chắc chắn muốn tạo dự án mới và xóa tất cả các khối lệnh hiện tại không?</p>
                 </Modal>
             </Content>
         </Layout>
