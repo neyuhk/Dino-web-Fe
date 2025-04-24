@@ -67,8 +67,14 @@ export const repost = async (forumId: string, userId: string) => {
 }
 
 export const newForum = async (payload: any) => {
-    return (await httpFile.post(FORUM_API.CREATE_FORUM, payload)).data
-}
+    try {
+        const response = await httpFile.post(FORUM_API.CREATE_FORUM, payload);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
 
 export const updateForum = async (id: string, payload: any) => {
     return (await httpFile.put(FORUM_API.UPDATE_FORUM + id, payload)).data

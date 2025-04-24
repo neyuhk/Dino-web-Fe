@@ -1,6 +1,16 @@
 // Post.tsx - Cập nhật component
 import React, { useEffect, useState, useRef } from 'react'
-import { Heart, MessageCircle, Repeat2, ChevronUp, ChevronDown, MoreHorizontal, Edit, Trash2 } from 'lucide-react'
+import {
+    Heart,
+    MessageCircle,
+    Repeat2,
+    ChevronUp,
+    ChevronDown,
+    MoreHorizontal,
+    Edit,
+    Trash2,
+    Loader2,
+} from 'lucide-react'
 import styles from './Post.module.css';
 import { Forum, User } from '../../../model/model.ts'
 import CommentComponent from '../../Comment/Comment.tsx'
@@ -42,6 +52,7 @@ const Post: React.FC<ExtendedPostProps> = ({
     selectedMenu,
                                            }) => {
     const { user } = useSelector((state: any) => state.auth)
+    const [isLoading, setIsLoading] = useState(false);
     const commentSectionRef = useRef<HTMLDivElement>(null);
     const postElementRef = useRef<HTMLDivElement>(null);
     const [form] = Form.useForm();
@@ -52,6 +63,7 @@ const Post: React.FC<ExtendedPostProps> = ({
     const [likeCount, setLikeCount] = useState(like_count)
     const [repostCount, setRepostCount] = useState(repost_count)
     const [localCommentCount, setLocalCommentCount] = useState(comment_count);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     const [likedUsers, setLikedUsers] = useState<User[]>([]);
     const [isLikedUsersBoxVisible, setIsLikedUsersBoxVisible] = useState(false);
@@ -99,9 +111,11 @@ const Post: React.FC<ExtendedPostProps> = ({
 
     const handleLikeCountClick = async (forumId: string) => {
         try {
+            setIsLoading(true)
             const response = await getUserLikeForum(forumId);
             setLikedUsers(response.data);
             setIsLikedUsersBoxVisible(true);
+            setIsLoading(false)
         } catch (error) {
             console.error('Error fetching liked users:', error);
         }
@@ -126,29 +140,32 @@ const Post: React.FC<ExtendedPostProps> = ({
             }
         }, 100);
     };
-
     const onLike = async (id: string) => {
         const newLikeStatus = !isLiked;
         setIsLiked(newLikeStatus);
         setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
+        setIsLoading(true)
         await likePost(id, user._id);
 
         // Thông báo cho component cha về sự thay đổi
         if (onLikeStatusChange) {
             onLikeStatusChange(id, newLikeStatus);
         }
+        setIsLoading(false)
     }
 
     const onRepost = async (id: string) => {
         const newRepostStatus = !isReposted;
         setIsReposted(newRepostStatus);
         setRepostCount(isReposted ? repostCount - 1 : repostCount + 1);
+        setIsLoading(true)
         await repost(id, user._id);
 
         // Thông báo cho component cha về sự thay đổi
         if (onRepostStatusChange) {
             onRepostStatusChange(id, newRepostStatus);
         }
+        setIsLoading(false)
     }
 
     // Callback to update comment count when a comment is added or deleted
@@ -157,7 +174,9 @@ const Post: React.FC<ExtendedPostProps> = ({
     };
 
     const handleDeletePost = async () => {
+        console.log("bam vao xoa r")
         try {
+            setIsLoading(true)
             await deleteForum(_id);
             message.success('Xóa bài đăng thành công');
 
@@ -165,7 +184,9 @@ const Post: React.FC<ExtendedPostProps> = ({
             if (onDeletePost) {
                 onDeletePost(_id);
             }
+            setIsLoading(false)
         } catch (error) {
+            setIsLoading(false)
             console.error('Lỗi khi xóa bài đăng:', error);
             message.error('Không thể xóa bài đăng. Vui lòng thử lại sau.');
         }
@@ -176,7 +197,13 @@ const Post: React.FC<ExtendedPostProps> = ({
         setShowOptionsMenu(!showOptionsMenu);
     };
 
+    const showDeleteConfirmation = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setShowOptionsMenu(false);
+        setShowDeleteConfirm(true);
+    };
     const handleEditClick = () => {
+        console.log("edit day")
         setShowOptionsMenu(false);
         setIsEditModalVisible(true);
         form.setFieldsValue({
@@ -186,6 +213,7 @@ const Post: React.FC<ExtendedPostProps> = ({
     };
     const handleEditSubmit = async (values: { title: string, description: string }) => {
         try {
+            setIsLoading(true)
             const response = await updateForum(_id.toString(), values);
 
             const updatedPost = response.data;
@@ -199,7 +227,9 @@ const Post: React.FC<ExtendedPostProps> = ({
 
             message.success('Cập nhật bài đăng thành công');
             setIsEditModalVisible(false);
+            setIsLoading(false)
         } catch (error) {
+            setIsLoading(false)
             console.error('Lỗi khi cập nhật bài đăng:', error);
             message.error('Không thể cập nhật bài đăng. Vui lòng thử lại sau.');
         }
@@ -209,41 +239,49 @@ const Post: React.FC<ExtendedPostProps> = ({
         <div className={styles.container} ref={postElementRef}>
             <div className={styles.header}>
                 <img
-                    src={authorInfo.avatar[0] || "https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg"}
+                    src={
+                        authorInfo.avatar[0] ||
+                        'https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg'
+                    }
                     alt={`${authorInfo.username}'s avatar`}
                     className={styles.avatar}
                 />
                 <div className={styles.authorInfo}>
                     <h3 className={styles.authorName}>{authorInfo.username}</h3>
-                    <p className={styles.time}>{convertDateTimeToDate(createdAt)}</p>
+                    <p className={styles.time}>
+                        {convertDateTimeToDate(createdAt)}
+                    </p>
                 </div>
 
                 {/* Nút menu tùy chọn - chỉ hiển thị nếu là người đăng */}
                 {isCurrentUserPost && (
                     <div className={styles.optionsContainer}>
-                        <button className={styles.optionsButton} onClick={toggleOptionsMenu}>
-                            <MoreHorizontal size={20} className={styles.optionsIcon} />
+                        <button
+                            className={styles.optionsButton}
+                            onClick={toggleOptionsMenu}
+                        >
+                            <MoreHorizontal
+                                size={20}
+                                className={styles.optionsIcon}
+                            />
                         </button>
 
                         {showOptionsMenu && (
                             <div className={styles.optionsMenu}>
-                                <button className={styles.optionItem} onClick={handleEditClick}>
+                                <button
+                                    className={styles.optionItem}
+                                    onClick={handleEditClick}
+                                >
                                     <Edit size={16} />
                                     <span>Chỉnh sửa</span>
                                 </button>
-                                <Popconfirm
-                                    title="Xóa bài đăng"
-                                    description="Bạn có chắc chắn muốn xóa bài đăng này không?"
-                                    onConfirm={handleDeletePost}
-                                    okText="Có"
-                                    cancelText="Không"
-                                    overlayClassName="custom-popconfirm"
+                                <button
+                                    className={styles.optionItem}
+                                    onClick={showDeleteConfirmation}
                                 >
-                                    <button className={styles.optionItem}>
-                                        <Trash2 size={16} />
-                                        <span>Xóa</span>
-                                    </button>
-                                </Popconfirm>
+                                    <Trash2 size={16} />
+                                    <span>Xóa</span>
+                                </button>
                             </div>
                         )}
                     </div>
@@ -270,7 +308,9 @@ const Post: React.FC<ExtendedPostProps> = ({
                     >
                         <Heart
                             size={20}
-                            className={isLiked ? styles.likeActive : styles.actionIcon}
+                            className={
+                                isLiked ? styles.likeActive : styles.actionIcon
+                            }
                         />
                     </button>
                     <span
@@ -289,10 +329,16 @@ const Post: React.FC<ExtendedPostProps> = ({
                     >
                         <MessageCircle
                             size={20}
-                            className={showComments ? styles.commentActive : styles.actionIcon}
+                            className={
+                                showComments
+                                    ? styles.commentActive
+                                    : styles.actionIcon
+                            }
                         />
                     </button>
-                    <span className={styles.actionCount}>{localCommentCount}</span>
+                    <span className={styles.actionCount}>
+                        {localCommentCount}
+                    </span>
                 </div>
 
                 <div className={styles.actionWrapper}>
@@ -302,7 +348,11 @@ const Post: React.FC<ExtendedPostProps> = ({
                     >
                         <Repeat2
                             size={20}
-                            className={isReposted ? styles.repostActive : styles.actionIcon}
+                            className={
+                                isReposted
+                                    ? styles.repostActive
+                                    : styles.actionIcon
+                            }
                         />
                     </button>
                     <span className={styles.actionCount}>{repostCount}</span>
@@ -353,7 +403,12 @@ const Post: React.FC<ExtendedPostProps> = ({
                     <Form.Item
                         name="title"
                         label="Tiêu đề"
-                        rules={[{ required: true, message: 'Vui lòng nhập tiêu đề' }]}
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Vui lòng nhập tiêu đề',
+                            },
+                        ]}
                     >
                         <Input />
                     </Form.Item>
@@ -361,7 +416,12 @@ const Post: React.FC<ExtendedPostProps> = ({
                     <Form.Item
                         name="description"
                         label="Nội dung"
-                        rules={[{ required: true, message: 'Vui lòng nhập nội dung' }]}
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Vui lòng nhập nội dung',
+                            },
+                        ]}
                     >
                         <Input.TextArea rows={4} />
                     </Form.Item>
@@ -374,10 +434,7 @@ const Post: React.FC<ExtendedPostProps> = ({
                         >
                             Hủy
                         </button>
-                        <button
-                            type="submit"
-                            className={styles.submitButton}
-                        >
+                        <button type="submit" className={styles.submitButton}>
                             Cập nhật
                         </button>
                     </div>
@@ -386,24 +443,42 @@ const Post: React.FC<ExtendedPostProps> = ({
 
             {/* Liked Users Box */}
             {isLikedUsersBoxVisible && (
-                <div className={styles.likedUsersOverlay} onClick={closeLikedUsersBox}>
-                    <div className={styles.likedUsersBox} onClick={(e) => e.stopPropagation()}>
+                <div
+                    className={styles.likedUsersOverlay}
+                    onClick={closeLikedUsersBox}
+                >
+                    <div
+                        className={styles.likedUsersBox}
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <div className={styles.likedUsersHeader}>
                             <h3>Người đã thích bài viết</h3>
-                            <button onClick={closeLikedUsersBox} className={styles.closeButton}>
+                            <button
+                                onClick={closeLikedUsersBox}
+                                className={styles.closeButton}
+                            >
                                 &times;
                             </button>
                         </div>
                         <div className={styles.likedUsersList}>
                             {likedUsers.length > 0 ? (
                                 likedUsers.map((user) => (
-                                    <div key={user._id} className={styles.likedUser}>
+                                    <div
+                                        key={user._id}
+                                        className={styles.likedUser}
+                                    >
                                         <img
-                                            src={user.avatar[0] ? user.avatar[0] : 'https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg'}
+                                            src={
+                                                user.avatar[0]
+                                                    ? user.avatar[0]
+                                                    : 'https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg'
+                                            }
                                             alt={`${user.username}'s avatar`}
                                             className={styles.likedUserAvatar}
                                         />
-                                        <span className={styles.likedUsername}>{user.username}</span>
+                                        <span className={styles.likedUsername}>
+                                            {user.username}
+                                        </span>
                                     </div>
                                 ))
                             ) : (
@@ -415,8 +490,25 @@ const Post: React.FC<ExtendedPostProps> = ({
                     </div>
                 </div>
             )}
+            <Modal
+                title="Xác nhận xóa"
+                open={showDeleteConfirm}
+                onOk={handleDeletePost}
+                onCancel={() => setShowDeleteConfirm(false)}
+                okText={isLoading ? (
+                    <>
+                        <Loader2 size={20} className="spinner" />
+                        Đang xoá
+                    </>
+                ) : (
+                    'Xoá'
+                )}
+                cancelText="Hủy"
+            >
+                <p>Bạn có chắc chắn muốn xóa bài đăng này không?</p>
+            </Modal>
         </div>
-    );
+    )
 };
 
 export default Post;

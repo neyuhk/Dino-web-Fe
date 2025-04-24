@@ -68,6 +68,7 @@ const ForumPage: React.FC = () => {
     };
 
     const fetchData = async (page: number, reset: boolean = false) => {
+        setLoading(true);
         try {
             let endpoint;
             let loadingState = page === 1 ? setLoading : setLoadingMore;
@@ -210,8 +211,11 @@ const ForumPage: React.FC = () => {
         }));
     };
 
+    const handleOpenCreateModal = () => {
+        setIsCreateModalOpen(true);
+    };
+
     const handleDeletePost = (postId: string) => {
-        // Loại bỏ bài đăng đã xóa khỏi danh sách
         setForumList(prev => prev.filter(post => post._id !== postId));
     };
 
@@ -368,6 +372,7 @@ const ForumPage: React.FC = () => {
                             selectedMenu={selectedMenu}
                             isError={true}
                             errorMessage="Không thể tải dữ liệu. Vui lòng thử lại."
+                            onNewPost = {handleOpenCreateModal}
                         />
                     ) : forumList.length > 0 ? (
                         <>
@@ -409,6 +414,7 @@ const ForumPage: React.FC = () => {
                         <EmptyState
                             selectedMenu={selectedMenu}
                             isError={false}
+                            onNewPost = {handleOpenCreateModal}
                         />
                     )}
                 </div>

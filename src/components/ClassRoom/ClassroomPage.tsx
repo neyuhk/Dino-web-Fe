@@ -16,7 +16,6 @@ const ClassroomList: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('')
     const { user } = useSelector((state: any) => state.auth)
     const navigate = useNavigate()
-    const [isActive, setIsActive] = useState<boolean>(false)
 
     useEffect(() => {
         const fetchCourses = async () => {
