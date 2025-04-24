@@ -96,3 +96,14 @@ export interface Forum {
     images: string[];
     createdAt: string;
 }
+
+
+export interface Question {
+    question: string;
+    type_answer: 'multiple_choice' | 'one_choice';
+    answers: string[];
+    correct_answer: string[];
+    image?: File | null;
+    imagePreview?: string;
+    index: number;
+}
