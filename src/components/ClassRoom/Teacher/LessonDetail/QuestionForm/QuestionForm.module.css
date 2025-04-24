@@ -442,3 +442,19 @@
     gap: 20px;
     margin-top: 32px;
 }
+
+.downloadButton {
+    margin-left: 12px;
+    background-color: var(--info-color);
+    color: var(--text-lighter);
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.downloadButton:hover {
+    background-color: var(--info-dark);
+    transform: translateY(-2px);
+}

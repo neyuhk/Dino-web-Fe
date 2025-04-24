@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Space, Table, Input, Button, message, Tooltip } from 'antd'
+import { Space, Table, Input, Button, message, Tooltip, Pagination } from 'antd'
 import type { TableProps } from 'antd'
-import { deleteForum, getForums } from '../../../services/forum.ts'
+import { deleteForum, getForumAdmin } from '../../../services/forum.ts'
 import { Forum } from '../../../model/model.ts'
 import { Link } from 'react-router-dom'
 import moment from 'moment'
-import { AlignLeftOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import { AlignLeftOutlined, DeleteOutlined } from '@ant-design/icons'
 
 const { Search } = Input
 
@@ -13,29 +13,42 @@ const ListForumManagement: React.FC = () => {
     const [data, setData] = useState<Forum[]>([])
     const [isLoading, setLoading] = useState(true)
     const [filteredData, setFilteredData] = useState<Forum[]>([])
+    const [page, setPage] = useState(1)
+    const [perPage, setPerPage] = useState(10)
+    const [total, setTotal] = useState(0)
+    const [searchName, setSearchName] = useState('')
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const forums = await getForums("",1,1) //dang loi de tam thoi
-                setLoading(false)
-                setData(forums.data)
-                setFilteredData(forums.data)
-            } catch (error) {
-                message.error('Failed to fetch forums')
-                setLoading(false)
-            }
-        }
+        fetchData(page, perPage, searchName)
+    }, [page, perPage, searchName])
 
-        fetchData()
-    }, [])
+    const fetchData = async (page: number, perPage: number, name: string) => {
+        setLoading(true)
+        try {
+            const forums = await getForumAdmin(page, perPage, name)
+            setData(forums.data)
+            setFilteredData(forums.data)
+            setTotal(forums.total) // Assuming the API returns the total count
+        } catch (error) {
+            message.error('Failed to fetch forums')
+        } finally {
+            setLoading(false)
+        }
+    }
 
     const handleSearch = (value: string) => {
-        const filtered = data.filter(forum =>
-            forum.title.toLowerCase().includes(value.toLowerCase()) ||
-            forum.description.toLowerCase().includes(value.toLowerCase()),
-        )
-        setFilteredData(filtered)
+        setSearchName(value)
+    }
+
+    const handleDeleteForum = async (id: string) => {
+        try {
+            await deleteForum(id)
+            message.success('Forum deleted successfully')
+            fetchData(page, perPage, searchName)
+        } catch (error) {
+            message.error('Failed to delete forum')
+            console.error('Failed to delete forum:', error)
+        }
     }
 
     const columns: TableProps<Forum>['columns'] = [
@@ -77,9 +90,6 @@ const ListForumManagement: React.FC = () => {
                     <Tooltip title="View">
                         <Link style={{ color: 'black' }} to={`/admin/forum/detail/${record._id}`}><AlignLeftOutlined /></Link>
                     </Tooltip>
-                    {/*<Tooltip title="Edit">*/}
-                    {/*    <EditOutlined onClick={() => handleEditForum(record)} />*/}
-                    {/*</Tooltip>*/}
                     <Tooltip title="Delete">
                         <DeleteOutlined onClick={() => handleDeleteForum(record._id)} />
                     </Tooltip>
@@ -88,24 +98,11 @@ const ListForumManagement: React.FC = () => {
         },
     ]
 
-    const handleDeleteForum = async (id: string) => {
-        try {
-            await deleteForum(id)
-            message.success('Forum deleted successfully')
-            const forums = await getForums("",1,1) //dang loi de tam thoi
-            setData(forums.data)
-            setFilteredData(forums.data)
-        } catch (error) {
-            message.error('Failed to delete forum')
-            console.error('Failed to delete forum:', error)
-        }
-    }
-
     return (
         <div>
             <Space style={{ marginBottom: 16, width: '100%', justifyContent: 'space-between' }}>
                 <Search
-                    placeholder="Search forums"
+                    placeholder="Search forums by name"
                     onSearch={handleSearch}
                     enterButton
                 />
@@ -120,8 +117,19 @@ const ListForumManagement: React.FC = () => {
                     dataSource={filteredData}
                     loading={isLoading}
                     rowKey="_id"
+                    pagination={false}
                 />
             </div>
+            <Pagination
+                current={page}
+                pageSize={perPage}
+                total={total}
+                onChange={(page, pageSize) => {
+                    setPage(page)
+                    setPerPage(pageSize)
+                }}
+                style={{ marginTop: 16, textAlign: 'right' }}
+            />
         </div>
     )
 }

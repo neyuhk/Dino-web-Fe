@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import styles from './QuestionForm.module.css';
 import { addQuiz } from '../../../../../services/lesson.ts';
 import { importQuizExcel } from '../../../../../services/exercise.ts'
-import fileMau from '../../../../../assets/mau_import_exercise.xlsx'
 
 type AnswerType = 'multiple_choice' | 'one_choice';
 
@@ -311,16 +310,16 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                     <label htmlFor="excelUpload" className={styles.imageUploadButton}>
                         Chọn file Excel
                     </label>
-                    {/*<a*/}
-                    {/*    href={fileMau}*/}
-                    {/*    download="sample.xlsx"*/}
-                    {/*    className={styles.downloadButton}*/}
-                    {/*>*/}
-                    {/*    Tải file mẫu*/}
-                    {/*</a>*/}
+                    <a
+                        href="/mau_import_exercise.xlsx" //phai de file trong public
+                        download="mau_import_exercise.xlsx"
+                        className={styles.downloadButton}
+                    >
+                        Tải file mẫu
+                    </a>
                     {excelFileName && (
                         <div className={styles.imagePreviewContainer}>
-                            <span style={{color: 'black'}} >File: {excelFileName}</span>
+                            <span style={{ color: 'black' }}>File: {excelFileName}</span>
                             <button
                                 type="button"
                                 className={styles.removeImageButton}
