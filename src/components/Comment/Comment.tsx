@@ -81,6 +81,8 @@ const CommentComponent: React.FC<CommentProps> = ({ commentableId, commentableTy
     };
 
     useEffect(() => {
+        if (!commentableId) return;
+        console.log("Component 3 mounted or updated");
         fetchComments();
     }, [commentableId]);
 

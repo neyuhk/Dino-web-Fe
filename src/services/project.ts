@@ -40,7 +40,7 @@ export const likeProject = async (projectId: string, userId: string) => {
 }
 
 export const isLikedProject = async (projectId: string, userId: string) => {
-    return (await http.post(PROJECT_API.LIKE_PROJECT_CHECK, {projectId, userId })).data
+    return (await httpAuth.post(PROJECT_API.LIKE_PROJECT_CHECK, {projectId, userId })).data
 }
 
 export const createProject = async (project: any) => {

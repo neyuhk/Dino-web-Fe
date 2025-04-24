@@ -18,7 +18,7 @@ import {
     CloseOutlined,
     UploadOutlined
 } from '@ant-design/icons'
-import { Heart, Eye, MessageSquare, ArrowLeft } from 'lucide-react'
+import { Heart, Eye, MessageSquare, ArrowLeft, Loader2 } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import moment from 'moment/moment'
 import { useSelector } from 'react-redux'
@@ -50,6 +50,7 @@ const ProjectDetail: React.FC = () => {
 
     useEffect(() => {
         const fetchProjectData = async () => {
+            setIsLoading(true)
             try {
                 const response = await getProjectById(
                     projectId ? projectId : ''
@@ -65,7 +66,9 @@ const ProjectDetail: React.FC = () => {
                     userId
                 )
                 setIsLiked(liked.data)
+                setIsLoading(false)
             } catch (error) {
+                setIsLoading(false)
                 console.error('Failed to fetch project data:', error)
             }
         }
@@ -79,10 +82,17 @@ const ProjectDetail: React.FC = () => {
 
     const isOwner = projectData?.user_id?._id === userId
 
+    if (isLoading) {
+        return <div className={styles.noDataContainer}>
+            <Loader2 size={20} className="dark-spinner" />
+            <Title level={3}>Đang tải dữ liệu...</Title>
+
+        </div>;
+    }
     if (!projectData) {
         return (
             <div className={styles.noDataContainer}>
-                <Title level={3}>No project data available</Title>
+                <Title level={3}>Chưa có dữ liệu</Title>
             </div>
         )
     }

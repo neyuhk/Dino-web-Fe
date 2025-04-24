@@ -79,6 +79,40 @@ const AuthPage = () => {
         }
     };
 
+    // Email validation rules
+    const validateEmail = (rule: any, value: string) => {
+        if (!value) {
+            return Promise.reject('Vui lòng nhập email của bạn!');
+        }
+
+        // Regular expression for general email format and educational domains
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\.(edu|edu\.[a-zA-Z]{2}|ac\.[a-zA-Z]{2})|[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/;
+
+        if (!emailRegex.test(value)) {
+            return Promise.reject('Email không hợp lệ! Vui lòng kiểm tra lại.');
+        }
+        return Promise.resolve();
+    };
+
+    // Password validation rules
+    // const validatePassword = (rule: any, value: string) => {
+    //     if (!value) {
+    //         return Promise.reject('Vui lòng nhập mật khẩu của bạn!');
+    //     }
+    //
+    //     if (value.length < 8) {
+    //         return Promise.reject('Mật khẩu phải có ít nhất 8 ký tự!');
+    //     }
+    //
+    //     // Check for at least one special character
+    //     const specialCharRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    //     if (!specialCharRegex.test(value)) {
+    //         return Promise.reject('Mật khẩu phải chứa ít nhất một ký tự đặc biệt!');
+    //     }
+    //
+    //     return Promise.resolve();
+    // };
+
     return (
         <div className={styles.authPage}>
             <div
@@ -140,7 +174,8 @@ const AuthPage = () => {
                             <Form.Item
                                 name="email"
                                 label="Email"
-                                rules={[{ required: true, message: 'Vui lòng nhập email của bạn!' }]}
+                                rules={[{ validator: validateEmail }]}
+                                validateTrigger={['onChange', 'onBlur']}
                             >
                                 <Input className={styles.formItem}
                                        allowClear
@@ -151,7 +186,8 @@ const AuthPage = () => {
                             <Form.Item
                                 name="password"
                                 label="Mật khẩu"
-                                rules={[{ required: true, message: 'Vui lòng nhập mật khẩu của bạn!' }]}
+                                // rules={[{ validator: validatePassword }]}
+                                validateTrigger={['onChange', 'onBlur']}
                             >
                                 <Input.Password
                                     className={styles.formItem}
@@ -194,19 +230,20 @@ const AuthPage = () => {
                             <div className={styles.formOr}>hoặc với tài khoản của bạn</div>
                             <Form.Item
                                 name="username"
-                                label="Tên đăng nhập"
+                                label="Tên người dùng"
                                 rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập!' }]}
                             >
                                 <Input className={styles.formItem}
                                        allowClear
                                        prefix={<UserOutlined />}
-                                       placeholder="Nhập tên đăng nhập"
+                                       placeholder="Nhập tên người dùng"
                                 />
                             </Form.Item>
                             <Form.Item
                                 name="email"
                                 label="Email"
-                                rules={[{ required: true, message: 'Vui lòng nhập email của bạn!' }]}
+                                rules={[{ validator: validateEmail }]}
+                                validateTrigger={['onChange', 'onBlur']}
                             >
                                 <Input
                                     className={styles.formItem}
@@ -218,7 +255,9 @@ const AuthPage = () => {
                             <Form.Item
                                 name="password"
                                 label="Mật khẩu"
-                                rules={[{ required: true, message: 'Vui lòng nhập mật khẩu của bạn!' }]}
+                                // rules={[{ validator: validatePassword }]}
+                                validateTrigger={['onChange', 'onBlur']}
+                                help="Mật khẩu phải có ít nhất 8 ký tự và chứa ít nhất 1 ký tự đặc biệt"
                             >
                                 <Input.Password
                                     className={styles.formItem}

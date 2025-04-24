@@ -1,9 +1,10 @@
 // CreatePostModal.tsx
 import React, { useState, useRef } from 'react';
-import { X, ImagePlus, Loader2 } from 'lucide-react';
+import { X, ImagePlus, Loader2, AlertCircle } from 'lucide-react'
 import styles from './CreatePostModal.module.css';
-import { FORUM_API } from '../../../constants/api';
 import { newForum } from '../../../services/forum.ts'
+import { message } from 'antd'
+import Toast, { ToastMessage } from '../../commons/Toast/Toast.tsx'
 
 interface CreatePostModalProps {
     isOpen: boolean;
@@ -31,6 +32,13 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
     const [imagePreview, setImagePreview] = useState<string>('');
     const [isLoading, setIsLoading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const MAX_IMAGE_SIZE = 4.9 * 1024 * 1024;
+    const [toast, setToast] = useState<ToastMessage>({
+        show: false,
+        type: 'info',
+        title: '',
+        message: '',
+    })
 
     if (!isOpen) return null;
 
@@ -53,12 +61,41 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
             fileInputRef.current.value = '';
         }
     };
+    const hideToast = () => {
+        setToast(prev => ({ ...prev, show: false }))
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
+        setToast({
+            show: false,
+            type: 'success',
+            title: 'Thành công',
+            message: '',
+        });
 
         try {
+            // Kiểm tra dữ liệu đầu vào
+            if (!title.trim()) {
+                throw new Error("Vui lòng nhập tiêu đề cho bài viết");
+            }
+
+            if (!description.trim()) {
+                throw new Error("Vui lòng nhập nội dung cho bài viết");
+            }
+
+            // Kiểm tra kích thước ảnh trước khi gửi
+            if (image && image.size > MAX_IMAGE_SIZE) {
+                setToast({
+                    show: true,
+                    type: 'error',
+                    title: 'Ảnh quá lớn',
+                    message: 'Kích thước ảnh quá lớn. Vui lòng chọn ảnh nhỏ hơn.',
+                });
+                return; // Dừng lại không gửi ảnh lên server
+            }
+
             const formData = new FormData();
             formData.append('title', title);
             formData.append('description', description);
@@ -67,7 +104,10 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 formData.append('image', image);
             }
 
-            const response = await newForum(formData);
+            await newForum(formData);
+
+            // Hiển thị thông báo thành công
+            message.success('Đăng bài viết thành công!');
 
             setTitle('');
             setDescription('');
@@ -76,7 +116,13 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
             onSuccess?.();
             onClose();
         } catch (error) {
-            console.error('Error creating post:', error);
+            // Hiển thị thông báo lỗi chung
+            setToast({
+                show: true,
+                type: 'error',
+                title: 'Đã có lỗi xảy ra',
+                message: 'Vui lòng thử lại sau.',
+            });
         } finally {
             setIsLoading(false);
         }
@@ -179,6 +225,9 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     </div>
                 </form>
             </div>
+            {/* Toast notification */}
+            {toast.show && <Toast toast={toast} onClose={hideToast} type={''} />}
+
         </div>
     );
 };

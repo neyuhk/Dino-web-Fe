@@ -7,6 +7,7 @@ interface EmptyStateProps {
     selectedMenu: string;
     isError?: boolean;
     errorMessage?: string;
+    onNewPost: () => void;
 }
 
 interface StateContent {
@@ -14,7 +15,7 @@ interface StateContent {
     subMessage: string;
     image: string;
 }
-const EmptyState: React.FC<EmptyStateProps> = ({ selectedMenu, isError = false, errorMessage }) => {
+const EmptyState: React.FC<EmptyStateProps> = ({ selectedMenu, isError = false, errorMessage, onNewPost }) => {
     const getEmptyStateContent = (): StateContent => {
         console.log('selectedMenu', selectedMenu);
         if (isError) {
@@ -92,7 +93,9 @@ const EmptyState: React.FC<EmptyStateProps> = ({ selectedMenu, isError = false, 
                 </p>
 
                 {selectedMenu === 'me' && !isError && (
-                    <button className={styles.createButton}>
+                    <button className={styles.createButton}
+                            onClick={() => onNewPost()}
+                    >
                         <PlusCircle size={18} />
                         Tạo bài viết đầu tiên
                     </button>
