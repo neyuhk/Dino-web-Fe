@@ -11,7 +11,7 @@ const ExamplePage: React.FC = () => {
     };
 
     return (
-        <div style={{ padding: '20px' , height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ padding: '20px' , display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
             <ExerciseForm
                 lessonId={lessonId? lessonId : ''}
                 onSuccess={handleExerciseCreated}

@@ -9,6 +9,7 @@ import { getQuizForTeacher, deleteQuiz } from '../../../../../services/lesson.ts
 import Toast, { ToastMessage } from '../../../../commons/Toast/Toast.tsx'
 import ExerciseForm from '../ExerciseForm/ExerciseForm.tsx'
 import { convertDateTimeToDate, convertDateTimeToDate2 } from '../../../../../helpers/convertDateTime.ts'
+import { GraduationCap } from 'lucide-react'
 
 const ExerciseDetail: React.FC = () => {
     const location = useLocation()
@@ -283,10 +284,14 @@ const ExerciseDetail: React.FC = () => {
                         </div>
 
                         {isLoading ? (
-                            <div className={styles.loading}>
-                                Đang tải câu hỏi...
+                            <div className={"loadingContainer"} style={{ justifyContent: "flex-start", backgroundColor: "transparent"}}>
+                                <div className={"loadingSpinner"}>
+                                    <GraduationCap size={32} className={"loadingIcon"} />
+                                </div>
+                                <p>Đang tải lớp học của bạn...</p>
                             </div>
                         ) : questions.length > 0 ? (
+
                             <div className={styles.questionsList}>
                                 {questions.map((question, index) => (
                                     <div
@@ -336,6 +341,13 @@ const ExerciseDetail: React.FC = () => {
                                                     styles.expandedContent
                                                 }
                                             >
+                                                {question.image && (
+                                                    <img
+                                                        src={question.image}
+                                                        alt="Hình minh họa câu hỏi"
+                                                        style={{ maxWidth: '20%', marginBottom: '1rem' }}
+                                                    />
+                                                )}
                                                 <div
                                                     className={
                                                         styles.answersList

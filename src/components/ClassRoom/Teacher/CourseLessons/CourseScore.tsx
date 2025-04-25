@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import styles from './CourseScore.module.css';
 import { getScoreForCourse, editScore, deleteScore } from '../../../../services/score.ts';
-import { Search, X, RotateCcw, Edit, Filter, MoreVertical, Eye, Trash2 } from 'lucide-react';
+import { Search, X, RotateCcw, Edit, Filter, MoreVertical, Eye, Trash2, GraduationCap } from 'lucide-react'
 import Toast from '../../../commons/Toast/Toast.tsx'
 import ExerciseDetail from '../../ExerciseDetail/ExerciseDetail.tsx'
 
@@ -511,10 +511,13 @@ const CourseScore: React.FC<Props> = ({ courseId }) => {
 
     const hasFilters = searchTerm.trim() !== '' || statusFilter !== 'all' || sortField !== 'lessonTitle' || sortDirection !== 'asc';
 
-    if (loading) return (
-        <div className={styles.loadingContainer}>
-            <div className={styles.spinner}></div>
-            <p>Đang tải dữ liệu điểm số...</p>
+    if (loading)
+    return (
+        <div className={"loadingContainer"} style={{ justifyContent: "flex-start" }}>
+            <div className={"loadingSpinner"}>
+                <GraduationCap size={32} className={"loadingIcon"} />
+            </div>
+            <p>Đang tải lớp học của bạn...</p>
         </div>
     );
 

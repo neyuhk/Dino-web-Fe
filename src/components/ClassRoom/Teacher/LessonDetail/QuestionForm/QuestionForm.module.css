@@ -3,7 +3,7 @@
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     padding: 32px;
-    max-width: 900px;
+    width: 900px;
     margin: 2rem auto;
     font-family: var(--font-secondary);
 }
@@ -301,7 +301,8 @@
     display: flex;
     gap: 16px;
     margin-top: 24px;
-    justify-content: flex-end;
+    justify-content: center;
+    align-items: center;
 }
 
 .saveButton,
@@ -328,6 +329,7 @@
 }
 
 .editButton {
+    height: 40px;
     background-color: var(--info-color);
     color: var(--text-lighter);
     border: none;
@@ -339,6 +341,7 @@
 }
 
 .deleteButton {
+    height: 40px;
     background-color: var(--error-color);
     color: var(--text-lighter);
     border: none;

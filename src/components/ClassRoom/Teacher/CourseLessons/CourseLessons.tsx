@@ -20,6 +20,7 @@ import { FaDeleteLeft } from 'react-icons/fa6'
 import EmptyStateNotification from '../common/EmptyStateNotification/EmptyStateNotification.tsx'
 import DeleteLessonPopup from './DeleteLessonPopup/DeleteLessonPopup.tsx'
 import EditLessonPopup from './EditLessonPopup/EditLessonPopup.tsx'
+import { GraduationCap } from 'lucide-react'
 
 interface ToastMessage {
     show: boolean;
@@ -274,9 +275,11 @@ const CourseLessons: React.FC<CourseLessonsProps> = ({ courseId }) => {
 
     if (loading) {
         return (
-            <div className={styles.loaderContainer}>
-                <div className={styles.loader}></div>
-                <p>Đang tải dữ liệu...</p>
+            <div className={"loadingContainer"} style={{ justifyContent: "flex-start" }}>
+                <div className={"loadingSpinner"}>
+                    <GraduationCap size={32} className={"loadingIcon"} />
+                </div>
+                <p>Đang tải lớp học của bạn...</p>
             </div>
         );
     }

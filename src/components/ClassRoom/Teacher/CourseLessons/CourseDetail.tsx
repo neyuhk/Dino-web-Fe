@@ -18,6 +18,7 @@ import { UploadOutlined } from '@ant-design/icons'
 import { convertDateTimeToDate, convertDateTimeToDate2 } from '../../../../helpers/convertDateTime.ts'
 import CourseScore from './CourseScore.tsx'
 import { Course } from '../../../../model/classroom.ts'
+import DinoLoading from '../../../commons/DinoLoading/DinoLoading.tsx'
 
 interface ToastMessage {
     show: boolean
@@ -31,7 +32,6 @@ const CourseDetail: React.FC = () => {
     const { courseId } = useParams<{ courseId: string }>()
     const navigate = useNavigate()
     const location = useLocation()
-    // const course = location.state?.course || null
     const [course, setCourse] = useState<Course>()
     const [activeTab, setActiveTab] = useState<'lessons' | 'students' | 'scores'>(
         'lessons'
@@ -259,7 +259,11 @@ const CourseDetail: React.FC = () => {
     }
 
     if (loading) {
-        return <div className={styles.loadingContainer}>Đang tải...</div>
+        return (
+            <DinoLoading
+                message="Đang tải..."
+            />
+        )
     }
 
     return (
@@ -317,16 +321,6 @@ const CourseDetail: React.FC = () => {
                                           )}
                                 </span>
                             </div>
-                            {course.certification && (
-                                <div className={styles.statsItem}>
-                                    <span className={styles.statsLabel}>
-                                        Chứng chỉ:
-                                    </span>
-                                    <span className={styles.statsValue}>
-                                        {course.certification}
-                                    </span>
-                                </div>
-                            )}
                         </div>
                         {course.progress !== undefined && (
                             <div className={styles.progressContainer}>

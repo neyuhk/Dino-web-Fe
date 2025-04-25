@@ -334,7 +334,7 @@ const HomePage2 = () => {
                         </div>
                         <div className={styles.testimonialAuthor}>
                             <img
-                                src='https://i.pinimg.com/564x/34/6c/0f/346c0f0e9511d6262ae48de7cc41b782.jpg'
+                                src='https://i.pinimg.com/736x/c0/de/38/c0de3804bec0c9c45de85ef0206ba297.jpg'
                                 alt="Avatar"
                                 className={styles.authorAvatar}
                             />

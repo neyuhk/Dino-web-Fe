@@ -85,4 +85,51 @@ button:focus-visible {
         transform: rotate(360deg);
     }
 }
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 1.5rem;
+    color: #6c757d;
+}
 
+.loadingSpinner {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    box-shadow: var(--card-shadow);
+    animation: pulse 2s infinite;
+}
+
+.loadingIcon {
+    /*color: #8E54E9;*/
+    animation: bounce 2s infinite;
+}
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(142, 84, 233, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 20px rgba(142, 84, 233, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(142, 84, 233, 0);
+    }
+}
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-15px);
+    }
+    60% {
+        transform: translateY(-7px);
+    }
+}

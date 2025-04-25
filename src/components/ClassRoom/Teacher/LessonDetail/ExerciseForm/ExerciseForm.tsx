@@ -238,199 +238,198 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({
 
     if (showQuestionForm && exerciseId) {
         return (
-            <QuestionForm
-                lessonId={lessonId}
-                exerciseId={exerciseId}
-                exerciseType={formData.type}
-                onComplete={handleQuestionFormComplete}
-                onCancel={() => {
-                    setShowQuestionForm(false);
-                    if (!isEditing) {
-                        setExerciseId(null);
-                    }
-                }}
-            />
-        );
-    }
-
-    return (
-        <div className={styles.formContainer}>
-            {!isEditing && (
-                <div
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '1rem',
+                <QuestionForm
+                    lessonId={lessonId}
+                    exerciseId={exerciseId}
+                    exerciseType={formData.type}
+                    onComplete={handleQuestionFormComplete}
+                    onCancel={() => {
+                        setShowQuestionForm(false);
+                        if (!isEditing) {
+                            setExerciseId(null);
+                        }
                     }}
-                >
-                    <button
-                        type="button"
-                        className="backButton"
-                        onClick={handleBack}
-                    >
-                        ← Quay lại
-                    </button>
-                    <h2 className={styles.titleGradient}>Tạo bài tập mới</h2>
-                    <button
-                        type="button"
-                        className={styles.cloneButton}
-                        onClick={handleClone}
-                    >
-                        <FaLayerGroup />
-                        <span>Sao chép từ bài tập trước</span>
-                    </button>
-                </div>
-            )}
-
-            <form onSubmit={handleSubmit} className={styles.form}>
-                <div className={styles.formGroup}>
-                    <label htmlFor="type">Loại bài tập</label>
-                    <select
-                        id="type"
-                        name="type"
-                        value={formData.type}
-                        onChange={handleChange}
-                        className={styles.select}
-                    >
-                        <option value="quiz">Trắc nghiệm</option>
-                        <option value="test">Kiểm tra</option>
-                        <option value="file">Nộp tệp</option>
-                    </select>
-                    <small className={styles.helpText}>
-                        {formData.type === 'quiz' &&
-                            'Câu hỏi trắc nghiệm với chấm điểm tự động'}
-                        {formData.type === 'test' &&
-                            'Đánh giá toàn diện với nhiều loại câu hỏi khác nhau'}
-                        {formData.type === 'file' &&
-                            'Học viên tải lên tài liệu, bài thuyết trình, hoặc dự án'}
-                    </small>
-                </div>
-
-                <div className={styles.formGroup}>
-                    <label htmlFor="title">Tiêu đề</label>
-                    <input
-                        type="text"
-                        id="title"
-                        name="title"
-                        value={formData.title}
-                        onChange={handleChange}
-                        required
-                        className={styles.input}
-                        placeholder="VD: Bài kiểm tra Chương 5, Dự án Cuối kỳ"
-                    />
-                </div>
-
-                <div className={styles.formGroup}>
-                    <label htmlFor="description">Mô tả</label>
-                    <textarea
-                        id="description"
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                        rows={4}
-                        className={styles.textarea}
-                        placeholder="Cung cấp hướng dẫn và chi tiết về bài tập"
-                    />
-                </div>
-
-                <div className={styles.timeSection}>
-                    {formData.type !== 'file' && (
-                        <div className={styles.formGroup}>
-                            <label htmlFor="time">Thời gian làm bài</label>
-                            <div className={styles.timeInputGroup}>
-                                <input
-                                    type="number"
-                                    id="time"
-                                    name="time"
-                                    value={formData.time}
-                                    onChange={handleChange}
-                                    min="1"
-                                    required
-                                    className={styles.timeInput}
-                                />
-                                <select
-                                    name="timeUnit"
-                                    value={formData.timeUnit}
-                                    onChange={handleChange}
-                                    className={styles.timeUnitSelect}
-                                >
-                                    <option value="seconds">Giây</option>
-                                    <option value="minutes">Phút</option>
-                                    <option value="hours">Giờ</option>
-                                </select>
-                            </div>
-                            <small className={styles.helpText}>
-                                {getTimeUnitHelp()}
-                            </small>
+                />
+                );
+    }
+    return (
+                <div className={styles.formContainer}>
+                    {!isEditing && (
+                        <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                marginBottom: '1rem',
+                            }}
+                        >
+                            <button
+                                type="button"
+                                className="backButton"
+                                onClick={handleBack}
+                            >
+                                ← Quay lại
+                            </button>
+                            <h2 className={styles.titleGradient}>Tạo bài tập mới</h2>
+                            <button
+                                type="button"
+                                className={styles.cloneButton}
+                                onClick={handleClone}
+                            >
+                                <FaLayerGroup />
+                                <span>Sao chép từ bài tập trước</span>
+                            </button>
                         </div>
                     )}
 
-                    <div className={styles.formGroup}>
-                        <label htmlFor="end_date">Ngày kết thúc</label>
-                        <div className={styles.endDateContainer}>
+                    <form onSubmit={handleSubmit} className={styles.form}>
+                        <div className={styles.formGroup}>
+                            <label htmlFor="type">Loại bài tập</label>
+                            <select
+                                id="type"
+                                name="type"
+                                value={formData.type}
+                                onChange={handleChange}
+                                className={styles.select}
+                            >
+                                <option value="quiz">Trắc nghiệm</option>
+                                <option value="test">Kiểm tra</option>
+                                <option value="file">Nộp tệp</option>
+                            </select>
+                            <small className={styles.helpText}>
+                                {formData.type === 'quiz' &&
+                                    'Câu hỏi trắc nghiệm với chấm điểm tự động'}
+                                {formData.type === 'test' &&
+                                    'Đánh giá toàn diện với nhiều loại câu hỏi khác nhau'}
+                                {formData.type === 'file' &&
+                                    'Học viên tải lên tài liệu, bài thuyết trình, hoặc dự án'}
+                            </small>
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <label htmlFor="title">Tiêu đề</label>
                             <input
-                                type="date"
-                                id="end_date"
-                                name="end_date"
-                                value={
-                                    formData.end_date !== 'unlimited'
-                                        ? formData.end_date
-                                        : ''
-                                }
-                                onChange={handleDateChange}
-                                className={styles.dateInput}
-                                min={new Date().toISOString().split('T')[0]}
+                                type="text"
+                                id="title"
+                                name="title"
+                                value={formData.title}
+                                onChange={handleChange}
+                                required
+                                className={styles.input}
+                                placeholder="VD: Bài kiểm tra Chương 5, Dự án Cuối kỳ"
                             />
-                            <div className={styles.unlimitedContainer}>
-                                <input
-                                    type="checkbox"
-                                    id="unlimited"
-                                    checked={formData.end_date === 'unlimited'}
-                                    onChange={() =>
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            end_date:
-                                                prev.end_date === 'unlimited'
-                                                    ? ''
-                                                    : 'unlimited',
-                                        }))
-                                    }
-                                    className={styles.checkbox}
-                                />
-                                <label
-                                    htmlFor="unlimited"
-                                    className={styles.checkboxLabel}
-                                >
-                                    Không giới hạn
-                                </label>
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <label htmlFor="description">Mô tả</label>
+                            <textarea
+                                id="description"
+                                name="description"
+                                value={formData.description}
+                                onChange={handleChange}
+                                rows={4}
+                                className={styles.textarea}
+                                placeholder="Cung cấp hướng dẫn và chi tiết về bài tập"
+                            />
+                        </div>
+
+                        <div className={styles.timeSection}>
+                            {formData.type !== 'file' && (
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="time">Thời gian làm bài</label>
+                                    <div className={styles.timeInputGroup}>
+                                        <input
+                                            type="number"
+                                            id="time"
+                                            name="time"
+                                            value={formData.time}
+                                            onChange={handleChange}
+                                            min="1"
+                                            required
+                                            className={styles.timeInput}
+                                        />
+                                        <select
+                                            name="timeUnit"
+                                            value={formData.timeUnit}
+                                            onChange={handleChange}
+                                            className={styles.timeUnitSelect}
+                                        >
+                                            <option value="seconds">Giây</option>
+                                            <option value="minutes">Phút</option>
+                                            <option value="hours">Giờ</option>
+                                        </select>
+                                    </div>
+                                    <small className={styles.helpText}>
+                                        {getTimeUnitHelp()}
+                                    </small>
+                                </div>
+                            )}
+
+                            <div className={styles.formGroup}>
+                                <label htmlFor="end_date">Ngày kết thúc</label>
+                                <div className={styles.endDateContainer}>
+                                    <input
+                                        type="date"
+                                        id="end_date"
+                                        name="end_date"
+                                        value={
+                                            formData.end_date !== 'unlimited'
+                                                ? formData.end_date
+                                                : ''
+                                        }
+                                        onChange={handleDateChange}
+                                        className={styles.dateInput}
+                                        min={new Date().toISOString().split('T')[0]}
+                                    />
+                                    <div className={styles.unlimitedContainer}>
+                                        <input
+                                            type="checkbox"
+                                            id="unlimited"
+                                            checked={formData.end_date === 'unlimited'}
+                                            onChange={() =>
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    end_date:
+                                                        prev.end_date === 'unlimited'
+                                                            ? ''
+                                                            : 'unlimited',
+                                                }))
+                                            }
+                                            className={styles.checkbox}
+                                        />
+                                        <label
+                                            htmlFor="unlimited"
+                                            className={styles.checkboxLabel}
+                                        >
+                                            Không giới hạn
+                                        </label>
+                                    </div>
+                                </div>
+                                <small className={styles.helpText}>
+                                    {formData.end_date === 'unlimited'
+                                        ? 'Không có thời hạn - học viên có thể nộp bất kỳ lúc nào'
+                                        : 'Sau ngày này, bài nộp sẽ không được chấp nhận'}
+                                </small>
                             </div>
                         </div>
-                        <small className={styles.helpText}>
-                            {formData.end_date === 'unlimited'
-                                ? 'Không có thời hạn - học viên có thể nộp bất kỳ lúc nào'
-                                : 'Sau ngày này, bài nộp sẽ không được chấp nhận'}
-                        </small>
-                    </div>
+
+                        <div className={styles.buttonGroup}>
+                            <button
+                                type="submit"
+                                className={styles.submitButton}
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting
+                                    ? (isEditing ? 'Đang cập nhật...' : 'Đang tạo...')
+                                    : (isEditing ? 'Cập nhật bài tập' : 'Tạo bài tập')
+                                }
+                            </button>
+                        </div>
+                    </form>
+
+                    {toast.show && <Toast toast={toast} onClose={hideToast} type={''} />}
                 </div>
+                );
+                };
 
-                <div className={styles.buttonGroup}>
-                    <button
-                        type="submit"
-                        className={styles.submitButton}
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting
-                            ? (isEditing ? 'Đang cập nhật...' : 'Đang tạo...')
-                            : (isEditing ? 'Cập nhật bài tập' : 'Tạo bài tập')
-                        }
-                    </button>
-                </div>
-            </form>
-
-            {toast.show && <Toast toast={toast} onClose={hideToast} type={''} />}
-        </div>
-    );
-};
-
-export default ExerciseForm;
+                export default ExerciseForm;

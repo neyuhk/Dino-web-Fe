@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import styles from './QuestionForm.module.css';
 import { addQuiz } from '../../../../../services/lesson.ts';
 import { importQuizExcel } from '../../../../../services/exercise.ts'
-import fileMau from '../../../../../assets/mau_import_exercise.xlsx'
 
 type AnswerType = 'multiple_choice' | 'one_choice';
 
@@ -132,6 +131,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                 });
             };
             reader.readAsDataURL(file);
+            e.target.value = '';
         }
     };
 
@@ -154,19 +154,20 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
 
             try {
                 const importedQuestions = await importQuizExcel(formData);
-                setQuestions(importedQuestions.data);
+                setQuestions(prev => [...prev, ...importedQuestions.data]);
                 setError(null);
             } catch (err) {
                 setError('Lỗi khi import file Excel');
                 console.error(err);
             }
+            e.target.value = '';
         }
     };
 
     const removeExcelFile = () => {
         setExcelFile(null);
         setExcelFileName('');
-        setQuestions([]);
+        // setQuestions([]);
     };
 
     const validateQuestion = (): boolean => {

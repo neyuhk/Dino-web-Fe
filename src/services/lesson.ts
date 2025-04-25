@@ -21,7 +21,7 @@ export const getLessonByCourseIdStudent = async (courseId: string, userId: strin
     ).data
 }
 export const addLesson = async (courseId: string, lessonData: FormData) => {
-    return (await httpAuth.post(`${LESSON_API.CREATE_LESSON}${courseId}`,lessonData)).data
+    return (await httpFile.post(`${LESSON_API.CREATE_LESSON}${courseId}`,lessonData)).data
 }
 
 export const editLesson = async (lessonId: string, data: any) => {

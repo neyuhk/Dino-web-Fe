@@ -6,6 +6,7 @@ import { getLessonByCourseId, getLessonByCourseIdStudent } from '../../../servic
 import { useSelector } from 'react-redux';
 import RequireAuth from '../../commons/RequireAuth/RequireAuth.tsx';
 import { useNavigate } from 'react-router-dom';
+import DinoLoading from '../../commons/DinoLoading/DinoLoading.tsx'
 
 interface LessonListProps {
     courseId: string;
@@ -96,12 +97,15 @@ const LessonList: React.FC<LessonListProps> = ({ courseId }) => {
 
     if (isLoading) {
         return (
-            <div className={styles.loadingContainer}>
-                <div className={styles.loadingSpinner}>
-                    <GraduationCap size={32} className={styles.loadingIcon} />
-                </div>
-                <p>Chờ xíuuuu...</p>
-            </div>
+            // <div className={styles.loadingContainer}>
+            //     <div className={styles.loadingSpinner}>
+            //         <GraduationCap size={32} className={styles.loadingIcon} />
+            //     </div>
+            //     <p>Chờ xíuuuu...</p>
+            // </div>
+            <DinoLoading
+                message="Chờ xíuuuu..."
+            />
         );
     }
 

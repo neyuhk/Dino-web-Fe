@@ -4,6 +4,7 @@ import { User } from '../../../../model/model.ts';
 import { addStudent, getStudentByCourseId } from '../../../../services/course.ts';
 import { findUser, getUserById } from '../../../../services/user.ts'
 import EmptyStateNotification from '../common/EmptyStateNotification/EmptyStateNotification.tsx';
+import { GraduationCap } from 'lucide-react'
 interface CourseStudentsProps {
     courseId: string;
 }
@@ -317,7 +318,14 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
     };
 
     if (loading && students.length === 0) {
-        return <div className={styles.loading}>Đang tải...</div>;
+        return (
+            <div className={"loadingContainer"} style={{ justifyContent: "flex-start" }}>
+                <div className={"loadingSpinner"}>
+                    <GraduationCap size={32} className={"loadingIcon"} />
+                </div>
+                <p>Đang tải lớp học của bạn...</p>
+            </div>
+        );
     }
 
     return (

@@ -60,12 +60,12 @@ const AddLessonPopup: React.FC<AddLessonPopupProps> = ({ courseId, onClose, onSu
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validation check
-        if (!formData.title || !formData.description) {
+        // Validation check - now including body as required
+        if (!formData.title || !formData.description || !formData.body) {
             setNotification({
                 show: true,
                 type: 'error',
-                message: 'Vui lòng điền đầy đủ thông tin tiêu đề và mô tả'
+                message: 'Vui lòng điền đầy đủ thông tin tiêu đề, mô tả và nội dung bài học'
             });
 
             setTimeout(() => {
@@ -84,10 +84,12 @@ const AddLessonPopup: React.FC<AddLessonPopupProps> = ({ courseId, onClose, onSu
             formDataToSend.append('title', formData.title);
             formDataToSend.append('description', formData.description);
 
-            // Only append non-empty values
+            // Always append body field since it's required by the server
+            formDataToSend.append('body', formData.body);
+
+            // Only append non-empty values for optional fields
             if (formData.videoUrl) formDataToSend.append('videoUrl', formData.videoUrl);
-            if (formData.body) formDataToSend.append('body', formData.body);
-            if (formData.status) formDataToSend.append('status', formData.status);
+            formDataToSend.append('status', formData.status || 'DEFAULT');
 
             // Add image if selected
             if (selectedImage) {
@@ -103,9 +105,9 @@ const AddLessonPopup: React.FC<AddLessonPopupProps> = ({ courseId, onClose, onSu
 
             // Call API
             const response = await addLesson(courseId, formDataToSend);
-            console.log("API response:", response);
+            console.log("API Response:", response?.status);
 
-            if (response?.status === 201 || response?.status === 200) {
+            if (response?.data) {
                 setNotification({
                     show: true,
                     type: 'success',
@@ -136,6 +138,7 @@ const AddLessonPopup: React.FC<AddLessonPopupProps> = ({ courseId, onClose, onSu
             setIsSubmitting(false);
         }
     };
+
     const handleShowPreviousLessons = () => {
         setShowPreviousLessonsModal(true);
         // Hiện tại chưa có API nên chỉ hiển thị modal
@@ -202,6 +205,19 @@ const AddLessonPopup: React.FC<AddLessonPopupProps> = ({ courseId, onClose, onSu
                     </div>
 
                     <div className={styles.formGroup}>
+                        <label htmlFor="body">Nội dung bài học<span className={styles.required}>*</span></label>
+                        <textarea
+                            id="body"
+                            name="body"
+                            value={formData.body}
+                            onChange={handleChange}
+                            placeholder="Nhập nội dung chi tiết của bài học"
+                            rows={6}
+                            required
+                        />
+                    </div>
+
+                    <div className={styles.formGroup}>
                         <label htmlFor="videoUrl">Đường dẫn video (nếu có)</label>
                         <div className={styles.videoInputContainer}>
                             <FaVideo className={styles.videoIcon} />
@@ -214,18 +230,6 @@ const AddLessonPopup: React.FC<AddLessonPopupProps> = ({ courseId, onClose, onSu
                                 placeholder="Nhập đường dẫn video (YouTube, Vimeo,...)"
                             />
                         </div>
-                    </div>
-
-                    <div className={styles.formGroup}>
-                        <label htmlFor="body">Nội dung bài học</label>
-                        <textarea
-                            id="body"
-                            name="body"
-                            value={formData.body}
-                            onChange={handleChange}
-                            placeholder="Nhập nội dung chi tiết của bài học"
-                            rows={6}
-                        />
                     </div>
 
                     <div className={styles.formGroup}>
@@ -254,6 +258,13 @@ const AddLessonPopup: React.FC<AddLessonPopupProps> = ({ courseId, onClose, onSu
                         {selectedImage && (
                             <div className={styles.selectedImage}>
                                 <span>Đã chọn: {selectedImage.name}</span>
+                                <div className={styles.imagePreview}>
+                                    <img
+                                        src={URL.createObjectURL(selectedImage)}
+                                        alt="Preview"
+                                        className={styles.previewImg}
+                                    />
+                                </div>
                             </div>
                         )}
                     </div>

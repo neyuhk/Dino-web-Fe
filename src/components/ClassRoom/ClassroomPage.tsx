@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from '../../router/path.ts';
 import { Course } from '../../model/classroom.ts';
+import DinoLoading from '../commons/DinoLoading/DinoLoading.tsx'
 
 const ClassroomList: React.FC = () => {
     const [courses, setCourses] = useState<Course[]>([])
@@ -61,12 +62,15 @@ const ClassroomList: React.FC = () => {
 
     if (isLoading) {
         return (
-            <div className={styles.loadingContainer}>
-                <div className={styles.loadingSpinner}>
-                    <GraduationCap size={32} className={styles.loadingIcon} />
-                </div>
-                <p>Đang tải lớp học của bạn...</p>
-            </div>
+            // <div className={styles.loadingContainer}>
+            //     <div className={styles.loadingSpinner}>
+            //         <GraduationCap size={32} className={styles.loadingIcon} />
+            //     </div>
+            //     <p>Đang tải lớp học của bạn...</p>
+            // </div>
+            <DinoLoading
+                message="Đang tải lớp học của bạn...">
+            </DinoLoading>
         )
     }
 

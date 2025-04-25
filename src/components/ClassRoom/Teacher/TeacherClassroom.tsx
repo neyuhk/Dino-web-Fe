@@ -8,6 +8,8 @@ import RequireAuth from '../../commons/RequireAuth/RequireAuth.tsx'
 import { getCourseByTeacherId, addCourse } from '../../../services/course.ts'
 import AddCoursePopup from './AddCoursePopUp/AddCoursePopup.tsx'
 import { FaPlus } from 'react-icons/fa'
+import { GraduationCap, Loader2 } from 'lucide-react'
+import DinoLoading from '../../commons/DinoLoading/DinoLoading.tsx'
 
 interface ToastMessage {
     show: boolean
@@ -54,7 +56,7 @@ const TeacherClassroom: React.FC = () => {
         message: '',
     })
     const [isAddCourseOpen, setIsAddCourseOpen] = useState(false)
-
+    const [isLoading, setIsLoading] = useState(true)
     const { user } = useSelector((state: any) => state.auth)
 
     if (!user) {
@@ -81,6 +83,7 @@ const TeacherClassroom: React.FC = () => {
                     image: '/images/success.png',
                 })
 
+                setIsLoading(false)
                 // Hide toast after 3 seconds
                 setTimeout(() => {
                     setToast((prev) => ({ ...prev, show: false }))
@@ -177,6 +180,13 @@ const TeacherClassroom: React.FC = () => {
         setCourses(prevCourses => [...prevCourses, newCourse]);
     };
 
+    if (isLoading) {
+        return (
+            <DinoLoading
+                message="Đang tải lớp học của bạn..."
+            />
+        )
+    }
     return (
         <div className={styles.container}>
             <div className={styles.header}>

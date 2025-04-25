@@ -26,6 +26,8 @@ import { AlignLeftOutlined, DeleteOutlined, EditOutlined, UploadOutlined } from 
 // @ts-ignore
 import { debounce } from 'lodash'
 import { Lesson } from '../../../model/classroom.ts'
+import DinoLoading from '../../../components/commons/DinoLoading/DinoLoading.tsx'
+import { GraduationCap } from 'lucide-react'
 
 const { Title, Paragraph, Text } = Typography
 const { Search } = Input
@@ -109,7 +111,19 @@ const CourseDetailPage: React.FC = () => {
     const handleImageChange = ({ fileList }) => {
         setSelectedImage(fileList[0])
     }
-
+    if (isLoading) {
+        return (
+            <div className={"loadingContainer"}>
+                <div className={"loadingSpinner"}>
+                    <GraduationCap size={32} className={"loadingIcon"} />
+                </div>
+                <p>Đang tải khoá học...</p>
+            </div>
+            // <DinoLoading
+            //     message="Đang tải lớp học của bạn...">
+            // </DinoLoading>
+        )
+    }
     if (!courseData) {
         return (
             <Card>

@@ -10,6 +10,7 @@ import RequireAuth from '../../commons/RequireAuth/RequireAuth.tsx'
 import { User } from '../../../model/model.ts'
 import { getUserById } from '../../../services/user.ts'
 import LessonList from '../LessonList/LessonList.tsx'
+import DinoLoading from '../../commons/DinoLoading/DinoLoading.tsx'
 
 const ClassroomDetailPage: React.FC = () => {
     const location = useLocation();
@@ -53,12 +54,15 @@ const ClassroomDetailPage: React.FC = () => {
 
     if (isLoading) {
         return (
-            <div className={styles.loadingContainer}>
-                <div className={styles.loadingSpinner}>
-                    <GraduationCap size={32} className={styles.loadingIcon} />
-                </div>
-                <p>Chờ xíuuuu... Hông ai iu anh bằng tôi iu anh..</p>
-            </div>
+            // <div className={styles.loadingContainer}>
+            //     <div className={styles.loadingSpinner}>
+            //         <GraduationCap size={32} className={styles.loadingIcon} />
+            //     </div>
+            //     <p>Chờ xíuuuu... </p>
+            // </div>
+            <DinoLoading
+                message="Chờ xíuuu..."
+            />
         );
     }
     if (!classroom) {
