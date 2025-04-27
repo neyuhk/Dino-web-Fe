@@ -15,11 +15,11 @@ const ProjectsPage: React.FC = () => {
     //     // Implement search logic here
     // };
 
-    if(!user){
-        return (
-            <RequireAuth></RequireAuth>
-        );
-    }
+    // if(!user){
+    //     return (
+    //         <RequireAuth></RequireAuth>
+    //     );
+    // }
 
     return (
         <div className={styles.projectsPage}>

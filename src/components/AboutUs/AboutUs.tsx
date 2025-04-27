@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './AboutUs.module.css';
 import { RocketOutlined, ExperimentOutlined, ToolOutlined, TeamOutlined, MailOutlined, PhoneOutlined, GlobalOutlined } from '@ant-design/icons';
@@ -148,8 +149,176 @@ const AboutUs: React.FC = () => {
                     </div>
                     <div className={`${styles.fieldCard} ${getAnimationClass('fields', 'animateDelay2')}`}>
                         <div className={styles.fieldIcon}>👨‍🏫</div>
-                        <div className={styles.fieldTitle}>Hỗ trợ giáo viên và nhà trường</div>
+                        <div className={styles.fieldTitle}>
+                            Hỗ trợ giáo viên và nhà trường
+                        </div>
                     </div>
+                </div>
+            </section>
+
+            <section
+                ref={sectionRefs.storyRef}
+                data-section="story"
+                className={`${styles.storySection} ${getAnimationClass('story')}`}
+            >
+                <h2 className={styles.sectionTitle}>
+                    <ToolOutlined className={styles.icon} /> Câu Chuyện Hình
+                    Thành
+                </h2>
+
+                <div className={`${styles.storyBlock} ${getAnimationClass('story', 'animateDelay1')}`}>
+                    <h3>💡 Dự án bắt đầu như thế nào?</h3>
+                    <p>
+                        Chúng tôi là hai sinh viên trường{' '}
+                        <strong>Đại học Công nghệ – UET</strong>, cùng thực hiện
+                        dự án này như một phần của{' '}
+                        <strong>khoá luận tốt nghiệp</strong>. Xuất phát từ đam
+                        mê với lập trình phần cứng và mong muốn tạo ra điều gì
+                        đó thật ý nghĩa cho giáo dục.
+                    </p>
+                </div>
+
+                <div className={`${styles.storyBlock} ${getAnimationClass('story', 'animateDelay2')}`}>
+                    <h3>🧩 Vấn đề chúng tôi muốn giải quyết</h3>
+                    <ul>
+                        <li>
+                            Học sinh gặp khó khăn khi học lập trình phần cứng do
+                            rào cản về cú pháp và công cụ.
+                        </li>
+                        <li>
+                            Giáo viên thiếu nền tảng thuận tiện để giao bài,
+                            hướng dẫn, theo dõi và đánh giá học sinh.
+                        </li>
+                    </ul>
+                </div>
+
+                <div className={`${styles.storyBlock} ${getAnimationClass('story', 'animateDelay3')}`}>
+                    <h3>🚀 Hành trình phát triển</h3>
+                    <p>
+                        Từ những ngày đầu với bản phác thảo trên giấy, chúng tôi
+                        đã liên tục cải tiến và xây dựng sản phẩm với tinh thần
+                        học hỏi, sáng tạo và hướng tới người dùng. Dự án hiện
+                        đang được hoàn thiện và trình hội đồng chấm tốt nghiệp.
+                    </p>
+                </div>
+            </section>
+
+            <section
+                ref={sectionRefs.valuesRef}
+                data-section="values"
+                className={`${styles.valuesSection} ${getAnimationClass('values')}`}
+            >
+                <h2 className={styles.sectionTitle}>
+                    <ExperimentOutlined className={styles.icon} /> Giá Trị Cốt
+                    Lõi
+                </h2>
+                <div className={styles.valuesGrid}>
+                    <div className={`${styles.valueCard} ${getAnimationClass('values', 'animateDelay1')}`}>
+                        <div className={styles.valueIcon}>🎓</div>
+                        <h3>Niềm tin vào giáo dục</h3>
+                        <p>
+                            Công nghệ nên phục vụ cho việc học tập dễ dàng và
+                            thú vị hơn.
+                        </p>
+                    </div>
+                    <div className={`${styles.valueCard} ${getAnimationClass('values', 'animateDelay2')}`}>
+                        <div className={styles.valueIcon}>🧠</div>
+                        <h3>Trải nghiệm người dùng là trung tâm</h3>
+                        <p>
+                            Dễ dùng, gọn gàng, phù hợp với học sinh và giáo
+                            viên.
+                        </p>
+                    </div>
+                    <div className={`${styles.valueCard} ${getAnimationClass('values', 'animateDelay3')}`}>
+                        <div className={styles.valueIcon}>🌱</div>
+                        <h3>Vì cộng đồng học tập</h3>
+                        <p>
+                            Hướng tới hỗ trợ trường học, giáo viên và các em học
+                            sinh một cách hiệu quả, miễn phí và bền vững.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section
+                ref={sectionRefs.teamRef}
+                data-section="team"
+                className={`${styles.teamSection} ${getAnimationClass('team')}`}
+            >
+                <h2 className={styles.sectionTitle}>
+                    <TeamOutlined className={styles.icon} /> Nhóm Phát Triển
+                </h2>
+                <div className={styles.teamGrid}>
+                    <div className={`${styles.teamCard} ${getAnimationClass('team', 'animateDelay1')}`}>
+                        <div className={styles.teamMemberImg}>
+                            <img
+                                src="https://i.pinimg.com/736x/18/c2/96/18c29680423dc8ec13e290b7bd9917a5.jpg"
+                                alt="Vũ Khánh Huyền"
+                            />
+                        </div>
+                        <h3>Vũ Khánh Huyền</h3>
+                        <p className={styles.teamRole}>frontend</p>
+                        <p className={styles.teamDesc}>
+                            Thiết kế và phát triển giao diện người dùng. Đam mê
+                            UI/UX và mong muốn tạo ra trải nghiệm học tập trực
+                            quan, dễ dùng.
+                        </p>
+                    </div>
+
+                    <div className={`${styles.teamCard} ${getAnimationClass('team', 'animateDelay2')}`}>
+                        <div className={styles.teamMemberImg}>
+                            <img
+                                src="https://i.pinimg.com/736x/2a/67/91/2a67914c6fd71a84ef102d395e929015.jpg"
+                                alt="Nguyễn Bá Hoàng Kim"
+                            />
+                        </div>
+                        <h3>Nguyễn Bá Hoàng Kim</h3>
+                        <p className={styles.teamRole}>backend</p>
+                        <p className={styles.teamDesc}>
+                            Phụ trách hệ thống máy chủ, API và cơ sở dữ liệu.
+                            Yêu thích phát triển phần mềm giáo dục và các giải
+                            pháp học tập hiệu quả.
+                        </p>
+                    </div>
+                </div>
+                <p className={`${styles.teamNote} ${getAnimationClass('team', 'animateDelay3')}`}>
+                    Cả hai đều là sinh viên năm cuối của{' '}
+                    <strong>Đại học Công nghệ (UET)</strong>, với chung một khát
+                    vọng: biến việc học lập trình phần cứng trở nên dễ dàng và
+                    thú vị hơn bao giờ hết.
+                </p>
+            </section>
+
+            <section
+                ref={sectionRefs.contactRef}
+                data-section="contact"
+                id={'contact'}
+                className={`${styles.contactSection} ${getAnimationClass('contact')}`}
+            >
+                <h2 className={styles.sectionTitle}>
+                    <MailOutlined className={styles.icon} /> Liên Hệ
+                </h2>
+                <div className={styles.contactGrid}>
+                    <div className={`${styles.contactItem} ${getAnimationClass('contact', 'animateDelay1')}`}>
+                        <MailOutlined className={styles.contactIcon} />
+                        <p>Email: lienhe@tenweb.com</p>
+                    </div>
+                    <div className={`${styles.contactItem} ${getAnimationClass('contact', 'animateDelay2')}`}>
+                        <PhoneOutlined className={styles.contactIcon} />
+                        <p>Số điện thoại: 0901 xxx xxx</p>
+                    </div>
+                    <div className={`${styles.contactItem} ${getAnimationClass('contact', 'animateDelay3')}`}>
+                        <GlobalOutlined className={styles.contactIcon} />
+                        <p>
+                            Mạng xã hội: <a href="#">Facebook</a> •{' '}
+                            <a href="#">YouTube</a> • <a href="#">TikTok</a>
+                        </p>
+                    </div>
+                </div>
+                <div className={`${styles.contactButton} ${getAnimationClass('contact', 'animateDelay3')}`}>
+                    <button className={styles.primaryButton}>
+                        Liên Hệ Ngay
+                    </button>
                 </div>
             </section>
 

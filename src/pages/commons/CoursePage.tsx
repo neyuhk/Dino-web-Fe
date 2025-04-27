@@ -12,11 +12,11 @@ import courseBgr from '../../components/CoursePage/CourseSection1/image/course-b
 const CoursePage: React.FC = () => {
     const { user } = useSelector((state: any) => state.auth);
 
-    if(!user){
-        return (
-            <RequireAuth></RequireAuth>
-        );
-    }
+    // if(!user){
+    //     return (
+    //         <RequireAuth></RequireAuth>
+    //     );
+    // }
     return (
         <main>
             <div className={styles.container}>

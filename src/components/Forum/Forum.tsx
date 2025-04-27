@@ -19,6 +19,7 @@ import { getForums, getLikeForum, getMyForums, getRepostForum } from '../../serv
 import { message, Drawer } from 'antd';
 import EmptyState from './EmptyState/EmptyState.tsx'
 import CreatePostModal from './CreatePost/CreatePostModal.tsx'
+import DinoLoading from '../commons/DinoLoading/DinoLoading.tsx'
 
 interface MenuItem {
     id: string;
@@ -363,10 +364,11 @@ const ForumPage: React.FC = () => {
                 <div className={styles.postsContainer} ref={postsContainerRef}>
                     {/* Hiển thị loading state cho lần load đầu tiên */}
                     {isLoading ? (
-                        <div className="flex justify-center items-center h-64">
-                            <Loader size={24} className={styles.loadingIcon} />
-                            <p className="ml-2">Đang tải...</p>
-                        </div>
+                        // <div className="flex justify-center items-center h-64">
+                        //     <Loader size={24} className={styles.loadingIcon} />
+                        //     <p className="ml-2">Đang tải...</p>
+                        // </div>
+                        <DinoLoading message={"Đang tải..."} />
                     ) : hasError ? (
                         <EmptyState
                             selectedMenu={selectedMenu}
