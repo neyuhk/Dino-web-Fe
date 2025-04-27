@@ -44,9 +44,9 @@ const AdminLayout = ({ children }) => {
                 <Sider
                     width={200}
                     style={{ background: colorBgContainer }}
-                    collapsible
-                    collapsed={collapsed}
-                    onCollapse={toggleCollapsed}
+                    //collapsible
+                    //collapsed={collapsed}
+                    //onCollapse={toggleCollapsed}
                 >
                     <SiderAdmin />
                 </Sider>

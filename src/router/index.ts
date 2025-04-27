@@ -37,6 +37,7 @@ import LessonStudentDetail from '../components/ClassRoom/LessonList/LessonDetail
 import AboutUsPage from '../pages/commons/AboutUsPage.tsx'
 import HomePage2 from '../components/Homepage/HomePage2.tsx'
 import OurProduct from '../components/OurProduct/OurProduct.tsx'
+import AdminDashboard from '../page/Admin/AdminDashboard.tsx'
 
 
 export const router = [
@@ -221,7 +222,7 @@ export const router = [
     //admin
     {
         path: PATHS_ADMIN.HOME,
-        component: ProjectList,
+        component: AdminDashboard,
         layout: AdminLayout,
         meta: {
             requiresAuth: false,

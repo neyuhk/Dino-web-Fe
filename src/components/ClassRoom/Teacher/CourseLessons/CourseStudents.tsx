@@ -1,223 +1,224 @@
-import React, { useState, useEffect } from 'react';
-import styles from './CourseStudents.module.css';
-import { User } from '../../../../model/model.ts';
-import { addStudent, getStudentByCourseId } from '../../../../services/course.ts';
+import React, { useState, useEffect } from 'react'
+import styles from './CourseStudents.module.css'
+import { User } from '../../../../model/model.ts'
+import { addStudent, getStudentByCourseId, importStudent, removeStudent } from '../../../../services/course.ts'
 import { findUser, getUserById } from '../../../../services/user.ts'
-import EmptyStateNotification from '../common/EmptyStateNotification/EmptyStateNotification.tsx';
+import EmptyStateNotification from '../common/EmptyStateNotification/EmptyStateNotification.tsx'
 import { GraduationCap } from 'lucide-react'
+
 interface CourseStudentsProps {
     courseId: string;
 }
 
 const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
-    const [students, setStudents] = useState<User[]>([]);
-    const [filteredStudents, setFilteredStudents] = useState<User[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
-    const [searchId, setSearchId] = useState<string>('');
-    const [searchResult, setSearchResult] = useState<User[]>([]);
-    const [pendingStudents, setPendingStudents] = useState<User[]>([]);
-    const [addingStudents, setAddingStudents] = useState<boolean>(false);
-    const [searching, setSearching] = useState<boolean>(false);
-    const [studentFilter, setStudentFilter] = useState<string>('');
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-    const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
+    const [students, setStudents] = useState<User[]>([])
+    const [filteredStudents, setFilteredStudents] = useState<User[]>([])
+    const [loading, setLoading] = useState<boolean>(true)
+    const [error, setError] = useState<string | null>(null)
+    const [successMessage, setSuccessMessage] = useState<string | null>(null)
+    const [searchId, setSearchId] = useState<string>('')
+    const [searchResult, setSearchResult] = useState<User[]>([])
+    const [pendingStudents, setPendingStudents] = useState<User[]>([])
+    const [addingStudents, setAddingStudents] = useState<boolean>(false)
+    const [searching, setSearching] = useState<boolean>(false)
+    const [studentFilter, setStudentFilter] = useState<string>('')
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+    const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null)
     // Pagination states
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const [perPage, setPerPage] = useState<number>(5);
-    const [totalResults, setTotalResults] = useState<number>(0);
-    const [totalPages, setTotalPages] = useState<number>(1);
+    const [currentPage, setCurrentPage] = useState<number>(1)
+    const [perPage, setPerPage] = useState<number>(5)
+    const [totalResults, setTotalResults] = useState<number>(0)
+    const [totalPages, setTotalPages] = useState<number>(1)
     const [studentManagement, setStudentManagement] = useState<{
         open: boolean;
         student: User | null;
     }>({
         open: false,
         student: null,
-    });
+    })
 
     useEffect(() => {
-        fetchStudents();
-    }, [courseId]);
+        fetchStudents()
+    }, [courseId])
 
     // Cleanup timeout on unmount
     useEffect(() => {
         return () => {
             // Cleanup
             if (searchTimeout) {
-                clearTimeout(searchTimeout);
+                clearTimeout(searchTimeout)
             }
-        };
-    }, [searchTimeout]);
+        }
+    }, [searchTimeout])
 
     // Auto-hide success message after 3 seconds
     useEffect(() => {
         if (successMessage) {
             const timer = setTimeout(() => {
-                setSuccessMessage(null);
-            }, 3000);
-            return () => clearTimeout(timer);
+                setSuccessMessage(null)
+            }, 3000)
+            return () => clearTimeout(timer)
         }
-    }, [successMessage]);
+    }, [successMessage])
 
     useEffect(() => {
         // Filter and sort students when the filter text changes or when the student list changes
         const filtered = students.filter(student =>
             student.username?.toLowerCase().includes(studentFilter.toLowerCase()) ||
             student.email?.toLowerCase().includes(studentFilter.toLowerCase()) ||
-            student.name?.toLowerCase().includes(studentFilter.toLowerCase())
-        );
+            student.name?.toLowerCase().includes(studentFilter.toLowerCase()),
+        )
 
         // Sort students by name
         const sorted = [...filtered].sort((a, b) => {
-            const nameA = a.username?.toLowerCase() || '';
-            const nameB = b.username?.toLowerCase() || '';
+            const nameA = a.username?.toLowerCase() || ''
+            const nameB = b.username?.toLowerCase() || ''
 
             if (sortOrder === 'asc') {
-                return nameA.localeCompare(nameB);
+                return nameA.localeCompare(nameB)
             } else {
-                return nameB.localeCompare(nameA);
+                return nameB.localeCompare(nameA)
             }
-        });
+        })
 
-        setFilteredStudents(sorted);
-    }, [studentFilter, students, sortOrder]);
+        setFilteredStudents(sorted)
+    }, [studentFilter, students, sortOrder])
 
     const fetchStudents = async () => {
         try {
-            setLoading(true);
-            const data = await getStudentByCourseId(courseId);
-            const listStudent = data.data;
-            const studentsList = Array.isArray(listStudent) ? listStudent : [];
-            setStudents(studentsList);
-            setFilteredStudents(studentsList);
-            setError(null);
+            setLoading(true)
+            const data = await getStudentByCourseId(courseId)
+            const listStudent = data.data
+            const studentsList = Array.isArray(listStudent) ? listStudent : []
+            setStudents(studentsList)
+            setFilteredStudents(studentsList)
+            setError(null)
         } catch (err) {
-            console.error('Error fetching students:', err);
-            setError('Không thể tải danh sách học sinh');
-            setStudents([]);
-            setFilteredStudents([]);
+            console.error('Error fetching students:', err)
+            setError('Không thể tải danh sách học sinh')
+            setStudents([])
+            setFilteredStudents([])
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
-    };
+    }
 
     const handleSearch = async (searchValue: string = searchId, page: number = currentPage) => {
         if (!searchValue.trim()) {
-            setError('Vui lòng nhập tên/mã học sinh');
-            return;
+            setError('Vui lòng nhập tên/mã học sinh')
+            return
         }
 
         try {
-            setSearching(true);
-            setError(null);
+            setSearching(true)
+            setError(null)
             // Add page and perPage parameters to the findUser call
-            const data = await findUser(searchValue, page, perPage);
-            const users = data.data;
-            const total = data.total || 0; // Assuming API returns total count
+            const data = await findUser(searchValue, page, perPage)
+            const users = data.data
+            const total = data.total || 0 // Assuming API returns total count
 
             // Set total results and calculate total pages
-            setTotalResults(total);
-            setTotalPages(Math.ceil(total / perPage));
+            setTotalResults(total)
+            setTotalPages(Math.ceil(total / perPage))
 
             // Reset currentPage to 1 if this is a new search
             if (page === 1 && searchValue !== searchId) {
-                setCurrentPage(1);
+                setCurrentPage(1)
             }
 
             // Filter users with role "user"
             const studentUsers = Array.isArray(users)
                 ? users.filter(user => user.role === 'user')
-                : [];
+                : []
 
             if (studentUsers.length > 0) {
-                setSearchResult(studentUsers);
+                setSearchResult(studentUsers)
             } else {
                 if (total > 0) {
-                    setError('Không tìm thấy học sinh ở trang này');
+                    setError('Không tìm thấy học sinh ở trang này')
                 } else {
-                    setError('Không tìm thấy học sinh phù hợp');
+                    setError('Không tìm thấy học sinh phù hợp')
                 }
-                setSearchResult([]);
+                setSearchResult([])
             }
         } catch (err) {
-            console.error('Error searching for users:', err);
-            setError('Không tìm thấy học sinh với thông tin đã nhập');
-            setSearchResult([]);
+            console.error('Error searching for users:', err)
+            setError('Không tìm thấy học sinh với thông tin đã nhập')
+            setSearchResult([])
         } finally {
-            setSearching(false);
+            setSearching(false)
         }
-    };
+    }
 
     const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setSearchId(value);
+        const value = e.target.value
+        setSearchId(value)
 
         // Clear previous timeout if exists
         if (searchTimeout) {
-            clearTimeout(searchTimeout);
+            clearTimeout(searchTimeout)
         }
 
         // Reset search results if input is empty
         if (!value.trim()) {
-            setSearchResult([]);
-            setError(null);
-            setCurrentPage(1);
-            setTotalResults(0);
-            setTotalPages(1);
-            return;
+            setSearchResult([])
+            setError(null)
+            setCurrentPage(1)
+            setTotalResults(0)
+            setTotalPages(1)
+            return
         }
 
         // Set new timeout (debounce 1 second)
         const newTimeout = setTimeout(() => {
             // Reset to page 1 for new searches
-            setCurrentPage(1);
-            handleSearch(value, 1);
-        }, 1000);
+            setCurrentPage(1)
+            handleSearch(value, 1)
+        }, 1000)
 
-        setSearchTimeout(newTimeout);
-    };
+        setSearchTimeout(newTimeout)
+    }
 
     const changePage = (page: number) => {
         if (page < 1 || page > totalPages || page === currentPage) {
-            return;
+            return
         }
-        setCurrentPage(page);
-        handleSearch(searchId, page);
-    };
+        setCurrentPage(page)
+        handleSearch(searchId, page)
+    }
 
     const addToPending = (student: User) => {
         // Check if student is already in the course
         if (students.some((s) => s._id === student._id)) {
-            setError('Học sinh này đã có trong lớp học');
-            return;
+            setError('Học sinh này đã có trong lớp học')
+            return
         }
 
         // Check if student is already in pending list
         if (pendingStudents.some((s) => s._id === student._id)) {
-            setError('Học sinh này đã có trong danh sách chờ');
-            return;
+            setError('Học sinh này đã có trong danh sách chờ')
+            return
         }
 
-        setPendingStudents([...pendingStudents, student]);
-        setSuccessMessage(`Đã thêm ${student.username || student.email} vào hàng chờ`);
-    };
+        setPendingStudents([...pendingStudents, student])
+        setSuccessMessage(`Đã thêm ${student.username || student.email} vào hàng chờ`)
+    }
 
     const removePending = (id: string) => {
-        const studentToRemove = pendingStudents.find(s => s._id === id);
-        setPendingStudents(pendingStudents.filter((student) => student._id !== id));
+        const studentToRemove = pendingStudents.find(s => s._id === id)
+        setPendingStudents(pendingStudents.filter((student) => student._id !== id))
         if (studentToRemove) {
-            setSuccessMessage(`Đã xóa ${studentToRemove.username || studentToRemove.email} khỏi hàng chờ`);
+            setSuccessMessage(`Đã xóa ${studentToRemove.username || studentToRemove.email} khỏi hàng chờ`)
         }
-    };
+    }
 
     const handleAddStudents = async () => {
         if (pendingStudents.length === 0) {
-            setError('Không có học sinh nào trong danh sách chờ');
-            return;
+            setError('Không có học sinh nào trong danh sách chờ')
+            return
         }
 
-        setAddingStudents(true);
+        setAddingStudents(true)
 
         try {
             // Add students one by one
@@ -225,107 +226,127 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                 await addStudent({
                     courseId: courseId,
                     studentId: student._id,
-                });
+                })
             }
 
             // Clear pending list and refresh student list
-            const count = pendingStudents.length;
-            setPendingStudents([]);
-            await fetchStudents();
-            setSuccessMessage(`Đã thêm thành công ${count} học sinh vào lớp học`);
+            const count = pendingStudents.length
+            setPendingStudents([])
+            await fetchStudents()
+            setSuccessMessage(`Đã thêm thành công ${count} học sinh vào lớp học`)
         } catch (err) {
-            console.error('Error adding students:', err);
-            setError('Có lỗi khi thêm học sinh');
+            console.error('Error adding students:', err)
+            setError('Có lỗi khi thêm học sinh')
         } finally {
-            setAddingStudents(false);
+            setAddingStudents(false)
         }
-    };
+    }
 
     const openStudentManagement = (student: User) => {
         setStudentManagement({
             open: true,
             student,
-        });
-    };
+        })
+    }
 
     const closeStudentManagement = () => {
         setStudentManagement({
             open: false,
             student: null,
-        });
-    };
+        })
+    }
 
     const handleRemoveStudent = async (studentId: string) => {
         try {
             // Implement remove student API call here
             // For now, just simulating removal from the local state
-            setStudents(students.filter((student) => student._id !== studentId));
-            closeStudentManagement();
-            setSuccessMessage('Đã xóa học sinh khỏi lớp học');
+            setStudents(students.filter((student) => student._id !== studentId))
+            closeStudentManagement()
+            await removeStudent(courseId, studentId)
+            setSuccessMessage('Đã xóa học sinh khỏi lớp học')
         } catch (err) {
-            console.error('Error removing student:', err);
-            setError('Có lỗi khi xóa học sinh');
+            console.error('Error removing student:', err)
+            setError('Có lỗi khi xóa học sinh')
         }
-    };
+    }
 
     const toggleSortOrder = () => {
-        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    };
+        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+    }
 
     const clearSearch = () => {
-        setSearchId('');
-        setSearchResult([]);
-        setError(null);
-        setCurrentPage(1);
-        setTotalResults(0);
-        setTotalPages(1);
-    };
+        setSearchId('')
+        setSearchResult([])
+        setError(null)
+        setCurrentPage(1)
+        setTotalResults(0)
+        setTotalPages(1)
+    }
 
     // Generate array for pagination numbers
     const getPaginationRange = () => {
-        const range = [];
-        const delta = 1; // How many pages to show before and after current page
+        const range = []
+        const delta = 1 // How many pages to show before and after current page
 
-        let start = Math.max(2, currentPage - delta);
-        let end = Math.min(totalPages - 1, currentPage + delta);
+        let start = Math.max(2, currentPage - delta)
+        let end = Math.min(totalPages - 1, currentPage + delta)
 
         // Always show first page
         if (totalPages > 0) {
-            range.push(1);
+            range.push(1)
         }
 
         // Add dots after first page if needed
         if (start > 2) {
-            range.push('...');
+            range.push('...')
         }
 
         // Add pages in the middle
         for (let i = start; i <= end; i++) {
-            range.push(i);
+            range.push(i)
         }
 
         // Add dots before last page if needed
         if (end < totalPages - 1) {
-            range.push('...');
+            range.push('...')
         }
 
         // Always show last page if it exists and is different from first page
         if (totalPages > 1) {
-            range.push(totalPages);
+            range.push(totalPages)
         }
 
-        return range;
-    };
+        return range
+    }
 
     if (loading && students.length === 0) {
         return (
-            <div className={"loadingContainer"} style={{ justifyContent: "flex-start" }}>
-                <div className={"loadingSpinner"}>
-                    <GraduationCap size={32} className={"loadingIcon"} />
+            <div className={'loadingContainer'} style={{ justifyContent: 'flex-start' }}>
+                <div className={'loadingSpinner'}>
+                    <GraduationCap size={32} className={'loadingIcon'} />
                 </div>
                 <p>Đang tải lớp học của bạn...</p>
             </div>
-        );
+        )
+    }
+
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0]
+        if (!file) {
+            setError('Vui lòng chọn một tệp để tải lên')
+            return
+        }
+
+        try {
+            // Parse the file (e.g., using a library like Papaparse for CSV or SheetJS for Excel)
+            const studentsFromFile = await importStudent({ courseId, file })
+            console.log('Parsed students from file:', studentsFromFile)
+            setPendingStudents([...pendingStudents, ...studentsFromFile.student])
+            setSuccessMessage(`Đã thêm ${studentsFromFile.student.length} học sinh từ tệp`)
+        } catch (err) {
+            console.error('Error parsing file:', err)
+            setError('Có lỗi khi xử lý tệp. Vui lòng kiểm tra định dạng tệp.')
+        }
     }
 
     return (
@@ -356,7 +377,28 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
 
             {/* Search for new students */}
             <div className={styles.searchSection}>
-                <h3>Thêm học sinh mới</h3>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <h3>Thêm học sinh mới</h3>
+                    <div className={styles.importFileContainer}>
+                        <label htmlFor="importFile" className={styles.importFileButton}>
+                            Import File
+                        </label>
+                        <input
+                            type="file"
+                            id="importFile"
+                            accept=".csv, .xlsx"
+                            className={styles.fileInput}
+                            onChange={handleFileUpload}
+                        />
+                        <a
+                            href="/mau_import_student.xlsx"
+                            download="mau_import_hocsinh.xlsx"
+                            className={styles.downloadSampleButton}
+                        >
+                            File mẫu
+                        </a>
+                    </div>
+                </div>
                 <div className={styles.searchForm}>
                     <input
                         type="text"
@@ -367,8 +409,8 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                     />
                     <button
                         onClick={() => {
-                            setCurrentPage(1);
-                            handleSearch(searchId, 1);
+                            setCurrentPage(1)
+                            handleSearch(searchId, 1)
                         }}
                         className={styles.searchButton}
                         disabled={searching}
@@ -756,7 +798,7 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                                         Ngày sinh:{' '}
                                         {studentManagement.student.birthday
                                             ? new Date(
-                                                studentManagement.student.birthday
+                                                studentManagement.student.birthday,
                                             ).toLocaleDateString('vi-VN')
                                             : 'N/A'}
                                     </p>
@@ -764,7 +806,7 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                                         Ngày tham gia:{' '}
                                         {studentManagement.student.createdAt
                                             ? new Date(
-                                                studentManagement.student.createdAt
+                                                studentManagement.student.createdAt,
                                             ).toLocaleDateString('vi-VN')
                                             : 'N/A'}
                                     </p>
@@ -775,7 +817,7 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                             <button
                                 onClick={() =>
                                     handleRemoveStudent(
-                                        studentManagement.student?._id || ''
+                                        studentManagement.student?._id || '',
                                     )
                                 }
                                 className={styles.deleteButton}
@@ -793,7 +835,7 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                 </div>
             )}
         </div>
-    );
-};
+    )
+}
 
-export default CourseStudents;
+export default CourseStudents
