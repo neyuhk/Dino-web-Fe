@@ -36,6 +36,14 @@ export const addStudent = async (data: any) => {
     return (await httpAuth.post(COURSE_API.ADD_STUDENT, data)).data
 }
 
+export const importStudent = async (data: any) => {
+    return (await httpFile.post(COURSE_API.IMPORT_STUDENT, data)).data
+}
+
+export const removeStudent = async (courseId: string, studentId: string) => {
+    return (await httpAuth.post(COURSE_API.REMOVE_STUDENT, {courseId, studentId})).data
+}
+
 export const getCourseByUserId = async (userId: string) => {
     return (await httpAuth.get(COURSE_API.GET_COUESE_BY_STUDENT_ID + userId)).data
 }

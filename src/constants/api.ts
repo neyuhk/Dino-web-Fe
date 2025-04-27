@@ -46,7 +46,9 @@ export const COURSE_API = {
     UPDATE_COURSE: '/course/',
     DELETE_COURSE: '/course/',
     GET_STUDENT_BY_COURSE_ID: '/course/member/list-member/',
-    ADD_STUDENT: '/course/add-student'
+    ADD_STUDENT: '/course/add-student',
+    IMPORT_STUDENT: '/course/import-student',
+    REMOVE_STUDENT: '/course/remove-student',
 }
 
 export const LESSON_API = {
