@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './SavedProjects.module.css';
 import { Project } from '../../../model/model.ts';
 import Toast from '../../commons/Toast/Toast.tsx'
-import { Bookmark } from 'lucide-react'
+import { Bookmark, GraduationCap } from 'lucide-react'
 import { searchProject, setFavoriteProject } from '../../../services/project.ts'
 import { useSelector } from 'react-redux'
 
@@ -35,7 +35,7 @@ const SavedProjects: React.FC<SavedProjectsProps> = ({ projects: initialProjects
     const [projects, setProjects] = useState<Project[]>(initialProjects);
     const [unsaveProjectId, setUnsaveProjectId] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
     const [toast, setToast] = useState<ToastMessage>({
         show: false,
         type: 'info',
@@ -45,7 +45,9 @@ const SavedProjects: React.FC<SavedProjectsProps> = ({ projects: initialProjects
     const navigate = useNavigate();
 
     useEffect(() => {
+        setLoading(true);
         setProjects(initialProjects);
+        setLoading(false);
     }, [initialProjects]);
 
     const showToast = (
@@ -91,6 +93,7 @@ const SavedProjects: React.FC<SavedProjectsProps> = ({ projects: initialProjects
 
     const handleUnsaveConfirm = async () => {
         if (unsaveProjectId) {
+            setLoading(true);
             try {
                 // In the actual implementation, you would use the imported setFavoriteProject
                 await setFavoriteProject(unsaveProjectId, user._id);
@@ -103,10 +106,12 @@ const SavedProjects: React.FC<SavedProjectsProps> = ({ projects: initialProjects
                 // Call the original onSaveToggle callback
                 onSaveToggle(unsaveProjectId);
                 showToast('success', 'Thành công', 'Đã bỏ lưu dự án');
+                setLoading(false);
             } catch (error) {
                 showToast('error', 'Lỗi', 'Không thể bỏ lưu dự án');
                 console.error('Unsave error:', error);
             } finally {
+
                 setUnsaveProjectId(null);
             }
         }
@@ -121,6 +126,16 @@ const SavedProjects: React.FC<SavedProjectsProps> = ({ projects: initialProjects
 
     const getProjectImage = (images: string[]) =>
         images.length > 0 ? images[0] : '/placeholder-image.png';
+
+    if (loading)
+        return (
+            <div className={"loadingContainer"} style={{ justifyContent: "flex-start" }}>
+                <div className={"loadingSpinner"}>
+                    <GraduationCap size={32} className={"loadingIcon"} />
+                </div>
+                <p>Đang tải dự án đã lưu...</p>
+            </div>
+        );
 
     return (
         <div className={styles.container}>
@@ -140,7 +155,7 @@ const SavedProjects: React.FC<SavedProjectsProps> = ({ projects: initialProjects
                 />
             </div>
 
-            {projects.length === 0 ? (
+            {!loading && projects.length === 0? (
                 <Empty description="Không tìm thấy dự án nào" />
             ) : (
                 <div className={styles.grid}>

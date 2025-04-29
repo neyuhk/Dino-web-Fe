@@ -6,7 +6,13 @@ import { getListProjectsByUser, deleteProjectById } from '../../../services/proj
 import { useSelector } from 'react-redux'
 import { Project } from '../../../model/model.ts'
 import Toast, { ToastMessage } from '../../commons/Toast/Toast.tsx'
-import { DeleteOutlined } from '@ant-design/icons'
+import { ClockCircleOutlined, DeleteOutlined } from '@ant-design/icons'
+import { Button, Card, Empty, Space, Typography } from 'antd'
+import Meta from 'antd/es/card/Meta'
+import Paragraph from 'antd/es/skeleton/Paragraph'
+import { format } from 'date-fns'
+import { GraduationCap } from 'lucide-react'
+const { Text } = Typography;
 
 interface ProjectResponse {
     data: Project[];
@@ -328,181 +334,97 @@ const ProjectList: React.FC = () => {
         );
     };
 
-    // Render desktop or mobile view based on screen size
     const renderProjectsGrid = () => {
         if (isMobile) {
             return (
                 <div className={styles.grid}>
                     {mobileProjects.length > 0 ? (
                         mobileProjects.map((project, index) => {
-                            const projectImage = project.images && project.images[0] !== '' && project.images[0]
-                                ? project.images[0]
-                                : 'https://i.pinimg.com/474x/95/6f/0f/956f0fef63faac5be7b95715f6207fea.jpg';
-
-                            // If this is the last item, attach the ref for infinite scrolling
-                            if (index === mobileProjects.length - 1) {
-                                return (
-                                    <div
-                                        className={styles.card}
-                                        key={project._id}
-                                        ref={lastProjectElementRef}
-                                        onClick={() => handleProjectClick(project._id)}
-                                    >
-                                        <div className={styles.imageWrapper}>
-                                            <img
-                                                src={projectImage}
-                                                alt={project.name}
-                                                className={styles.image}
-                                                loading="lazy"
-                                            />
-                                            <div className={styles.cardOverlay}>
-                                                <div className={styles.viewDetailsText}>View Details</div>
-                                            </div>
-                                        </div>
-                                        <div className={styles.cardContent}>
-                                            <h3 className={styles.name}>{project.name}</h3>
-                                            <div className={styles.cardFooter}>
-                                                <p className={styles.time}>
-                                                    {formatDate(project.createdAt)}
-                                                </p>
-                                                <button
-                                                    className={styles.deleteButton}
-                                                    onClick={(e) => openDeleteConfirmation(e, project._id, project.name, projectImage)}
-                                                    aria-label={`Delete project ${project.name}`}
-                                                >
-                                                    <DeleteOutlined
-                                                        style={{
-                                                            fontSize: '18px',
-                                                            color: '#ff4d4f',
-                                                        }}
-                                                    />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )
-                            } else {
-                                return (
-                                    <div
-                                        className={styles.card}
-                                        key={project._id}
-                                        onClick={() => handleProjectClick(project._id)}
-                                    >
-                                        <div className={styles.imageWrapper}>
-                                            <img
-                                                src={projectImage}
-                                                alt={project.name}
-                                                className={styles.image}
-                                                loading="lazy"
-                                            />
-                                            <div className={styles.cardOverlay}>
-                                                <div className={styles.viewDetailsText}>View Details</div>
-                                            </div>
-                                        </div>
-                                        <div className={styles.cardContent}>
-                                            <h3 className={styles.name}>{project.name}</h3>
-                                            <div className={styles.cardFooter}>
-                                                <p className={styles.time}>
-                                                    {formatDate(project.createdAt)}
-                                                </p>
-                                                <button
-                                                    className={styles.deleteButton}
-                                                    onClick={(e) => openDeleteConfirmation(e, project._id, project.name, projectImage)}
-                                                    aria-label={`Delete project ${project.name}`}
-                                                >
-                                                    <DeleteOutlined
-                                                        style={{
-                                                            fontSize: '18px',
-                                                            color: '#ff4d4f',
-                                                        }}
-                                                    />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )
-                            }
-                        })
-                    ) : (
-                        <div className={styles.noProjects}>
-                            <div className={styles.noProjectsContent}>
-                                <svg className={styles.emptyIcon} xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="9" cy="7" r="4"></circle>
-                                    <line x1="23" y1="11" x2="17" y2="11"></line>
-                                </svg>
-                                <h3>No projects found</h3>
-                                <p>Create a new project to get started</p>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            )
-        } else {
-            return (
-                <div className={styles.grid}>
-                    {projects.length > 0 ? (
-                        projects.map((project) => {
                             const projectImage =
-                                project.images && project.images[0] !== '' && project.images[0]
+                                project.images &&
+                                project.images[0] !== '' &&
+                                project.images[0]
                                     ? project.images[0]
                                     : 'https://i.pinimg.com/474x/95/6f/0f/956f0fef63faac5be7b95715f6207fea.jpg'
 
+                            // If this is the last item, attach the ref for infinite scrolling
+                            const refProp =
+                                index === mobileProjects.length - 1
+                                    ? { ref: lastProjectElementRef }
+                                    : {}
+
                             return (
-                                <div
-                                    className={styles.card}
+                                <Card
                                     key={project._id}
+                                    hoverable
+                                    {...refProp}
+                                    cover={
+                                        <div className={styles.cardCover}>
+                                            <img
+                                                alt={project.name}
+                                                src={projectImage}
+                                                className={styles.cardImage}
+                                                onClick={() =>
+                                                    handleProjectClick(
+                                                        project._id
+                                                    )
+                                                }
+                                                loading="lazy"
+                                            />
+                                        </div>
+                                    }
                                     onClick={() =>
                                         handleProjectClick(project._id)
                                     }
                                 >
-                                    <div className={styles.imageWrapper}>
-                                        <img
-                                            src={projectImage}
-                                            alt={project.name}
-                                            className={styles.image}
-                                            loading="lazy"
-                                        />
-                                        <div className={styles.cardOverlay}>
-                                            <div
-                                                className={
-                                                    styles.viewDetailsText
-                                                }
+                                    <Meta
+                                        title={project.name}
+                                        description={
+                                            <Space
+                                                direction="vertical"
+                                                size="small"
+                                                style={{ width: '100%' }}
                                             >
-                                                View Details
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className={styles.cardContent}>
-                                        <h3 className={styles.name}>
-                                            {project.name}
-                                        </h3>
-                                        <div className={styles.cardFooter}>
-                                            <p className={styles.time}>
-                                                {formatDate(project.createdAt)}
-                                            </p>
-                                            <button
-                                                className={styles.deleteButton}
-                                                onClick={(e) =>
-                                                    openDeleteConfirmation(
-                                                        e,
-                                                        project._id,
-                                                        project.name,
-                                                        projectImage
-                                                    )
-                                                }
-                                                aria-label={`Delete project ${project.name}`}
-                                            >
-                                                <DeleteOutlined
-                                                    style={{
-                                                        fontSize: '18px',
-                                                        color: '#ff4d4f',
-                                                    }}
-                                                />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                                                <div
+                                                    className={
+                                                        styles.actionButton
+                                                    }
+                                                >
+                                                    <Space>
+                                                        <ClockCircleOutlined />
+                                                        <Text type="secondary">
+                                                            {formatDate(
+                                                                project.createdAt
+                                                            )}
+                                                        </Text>
+                                                    </Space>
+                                                    <Button
+                                                        type="primary"
+                                                        icon={
+                                                            <DeleteOutlined
+                                                                style={{
+                                                                    fontSize:
+                                                                        '16px',
+                                                                }}
+                                                            />
+                                                        }
+                                                        danger
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            openDeleteConfirmation(
+                                                                e,
+                                                                project._id,
+                                                                project.name,
+                                                                projectImage
+                                                            )
+                                                        }}
+                                                        aria-label={`Delete project ${project.name}`}
+                                                    />
+                                                </div>
+                                            </Space>
+                                        }
+                                    />
+                                </Card>
                             )
                         })
                     ) : (
@@ -536,14 +458,121 @@ const ProjectList: React.FC = () => {
                     )}
                 </div>
             )
+        } else {
+            return (
+                <div className={styles.container}>
+                    {projects.length > 0 ? (
+                        <div className={styles.grid}>
+                            {projects.map((project) => {
+                                const projectImage =
+                                    project.images &&
+                                    project.images[0] !== '' &&
+                                    project.images[0]
+                                        ? project.images[0]
+                                        : 'https://i.pinimg.com/474x/95/6f/0f/956f0fef63faac5be7b95715f6207fea.jpg'
+
+                                return (
+                                    <Card
+                                        key={project._id}
+                                        hoverable
+                                        cover={
+                                            <div className={styles.cardCover}>
+                                                <img
+                                                    alt={project.name}
+                                                    src={projectImage}
+                                                    className={styles.cardImage}
+                                                    onClick={() =>
+                                                        handleProjectClick(
+                                                            project._id
+                                                        )
+                                                    }
+                                                    loading="lazy"
+                                                />
+                                            </div>
+                                        }
+                                        onClick={() =>
+                                            handleProjectClick(project._id)
+                                        }
+                                    >
+                                        <Meta
+                                            title={project.name}
+                                            description={
+                                                <Space
+                                                    direction="vertical"
+                                                    size="small"
+                                                    style={{ width: '100%' }}
+                                                >
+                                                    <div
+                                                        className={
+                                                            styles.actionButton
+                                                        }
+                                                    >
+                                                        <Space>
+                                                            <ClockCircleOutlined />
+                                                            <Text type="secondary">
+                                                                {format(
+                                                                    new Date(
+                                                                        project.createdAt
+                                                                    ),
+                                                                    'dd/MM/yyyy'
+                                                                )}
+                                                            </Text>
+                                                        </Space>
+                                                        <Button
+                                                            type="primary"
+                                                            icon={
+                                                                <DeleteOutlined
+                                                                    style={{
+                                                                        fontSize:
+                                                                            '16px',
+                                                                    }}
+                                                                />
+                                                            }
+                                                            danger
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                openDeleteConfirmation(
+                                                                    e,
+                                                                    project._id,
+                                                                    project.name,
+                                                                    projectImage
+                                                                )
+                                                            }}
+                                                            aria-label={`Delete project ${project.name}`}
+                                                        />
+                                                    </div>
+                                                </Space>
+                                            }
+                                        />
+                                    </Card>
+                                )
+                            })}
+                        </div>
+                    ) : (
+                        <div className={styles.emptyWrapper}>
+                            <Empty description="Không tìm thấy dự án nào" />
+                        </div>
+                    )}
+                </div>
+            )
         }
     }
+    if (isLoading)
+        return (
+            <div
+                className={'loadingContainer'}
+                style={{ justifyContent: 'flex-start' }}
+            >
+                <div className={'loadingSpinner'}>
+                    <GraduationCap size={32} className={'loadingIcon'} />
+                </div>
+                <p>Đang tải dự án của bạn...</p>
+            </div>
+        )
 
     return (
         <div className={styles.projectList}>
-            <div className={styles.sectionTitle}>
-                Dự án của tôi
-            </div>
+            <div className={styles.sectionTitle}>Dự án của tôi</div>
             {isLoading && !hasMore && (
                 <div className={styles.loading}>
                     <div className={styles.spinner}></div>
@@ -564,9 +593,19 @@ const ProjectList: React.FC = () => {
 
             {/* Custom delete confirmation popup */}
             {showDeletePopup && (
-                <div className={styles.popupOverlay} onClick={closeDeleteConfirmation}>
-                    <div className={styles.popupContent} onClick={e => e.stopPropagation()}>
-                        <button className={styles.closeButton} onClick={closeDeleteConfirmation} aria-label="Close popup">
+                <div
+                    className={styles.popupOverlay}
+                    onClick={closeDeleteConfirmation}
+                >
+                    <div
+                        className={styles.popupContent}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            className={styles.closeButton}
+                            onClick={closeDeleteConfirmation}
+                            aria-label="Close popup"
+                        >
                             &times;
                         </button>
                         <div className={styles.popupImageContainer}>
@@ -576,30 +615,34 @@ const ProjectList: React.FC = () => {
                                 className={styles.popupImage}
                             />
                         </div>
-                        <h3 className={styles.popupTitle}>Delete Project</h3>
+                        <h3 className={styles.popupTitle}>Xoá dự án</h3>
                         <p className={styles.popupMessage}>
-                            Are you sure you want to delete <span className={styles.highlightText}>"{projectNameToDelete}"</span>?
+                            Bạn có chắc muốn xoá dự án{' '}
+                            <span className={styles.highlightText}>
+                                "{projectNameToDelete}"
+                            </span>
+                            ?
                             <br />
-                            This action cannot be undone.
+                            Không thể hoàn tác sau khi xoá.
                         </p>
                         <div className={styles.popupButtons}>
                             <button
                                 className={styles.cancelButton}
                                 onClick={closeDeleteConfirmation}
                             >
-                                Cancel
+                                Huỷ
                             </button>
                             <button
                                 className={styles.confirmButton}
                                 onClick={handleDeleteProject}
-                            >
-                                Delete
-                            </button>
+                            ></button>
                         </div>
                     </div>
                 </div>
             )}
-            {toast.show && <Toast toast={toast} onClose={hideToast} type={''} />}
+            {toast.show && (
+                <Toast toast={toast} onClose={hideToast} type={''} />
+            )}
         </div>
     )
 };

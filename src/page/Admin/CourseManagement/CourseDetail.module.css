@@ -1,0 +1,59 @@
+.courseHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.courseImage {
+    object-fit: cover;
+    border-radius: 8px;
+    width: 100%;
+    height: 400px;
+}
+
+.infoCard {
+    width: 100%;
+}
+
+.infoItem {
+    margin-bottom: 8px;
+}
+
+.descriptionSection {
+    margin-top: 16px;
+}
+
+.tabsSection {
+    margin-top: 16px;
+}
+
+.searchBar {
+    width: 300px;
+}
+
+.tableActions {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+.tabContent {
+    min-height: 300px;
+}
+
+.tabLoadingContainer {
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

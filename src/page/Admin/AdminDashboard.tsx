@@ -5,6 +5,7 @@ import {
     ArrowRight, TrendingUp, Award, Settings, Check, AlertCircle
 } from 'lucide-react';
 import './AdminDashboard.css';
+import { useNavigate } from 'react-router-dom'
 
 // Định nghĩa types
 type SectionProps = {
@@ -17,10 +18,11 @@ type SectionProps = {
 
 const AdminDashboard: React.FC = () => {
     // Xử lý chuyển hướng
+    const navigate = useNavigate()
     const handleNavigate = (section: string): void => {
         console.log(`Navigating to ${section}`);
         // Thực tế sẽ sử dụng router để điều hướng
-        // navigate(`/admin/${section}`);
+        navigate(`/admin/${section}`);
     };
 
     return (

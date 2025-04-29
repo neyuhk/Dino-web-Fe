@@ -20,7 +20,6 @@ const SiderAdmin = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false)
 
     useEffect(() => {
-        // Đặt selected key dựa trên đường dẫn hiện tại
         if (location.pathname.includes('/admin/projects')) {
             setSelectedKey('1');
         } else if (location.pathname.includes('/admin/users')) {

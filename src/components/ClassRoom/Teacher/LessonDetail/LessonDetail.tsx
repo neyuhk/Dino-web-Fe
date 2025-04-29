@@ -5,10 +5,10 @@ import Toast from '../../../commons/Toast/Toast.tsx'
 import { Exercise, Lesson } from '../../../../model/classroom.ts'
 import { useSelector } from 'react-redux'
 import RequireAuth from '../../../commons/RequireAuth/RequireAuth.tsx'
-import { deleteExercise } from '../../../../services/lesson.ts'
+import { deleteExercise, getLessonById } from '../../../../services/lesson.ts'
 import DeleteConfirmPopup from './DeletePopup/DeleteConfirmPopup.tsx'
 import { convertDateTimeToDate } from '../../../../helpers/convertDateTime.ts'
-import { getExerciseForTeacher } from '../../../../services/exercise.ts'
+import { getExerciseForStudent, getExerciseForTeacher } from '../../../../services/exercise.ts'
 import { getScoreForExercise } from '../../../../services/score.ts'
 import { FaTimes } from 'react-icons/fa'
 
@@ -60,6 +60,10 @@ const LessonDetail: React.FC = () => {
                     // Otherwise you would fetch it from your API
                     // This is a placeholder for your actual API call
                     console.log('Would fetch lesson with ID:', lessonId)
+                    if(lessonId){
+                        const data = await getLessonById(lessonId)
+                        setCurrentLesson(data.data)
+                    }
                 }
 
                 setLoading(false)
@@ -91,9 +95,11 @@ const LessonDetail: React.FC = () => {
         //fetch exercise by lessonId for teacher
         const fetchExercises = async () => {
             try {
-                const listExercise = await getExerciseForTeacher(lesson._id)
-                console.log(listExercise.data)
-                setExercises(listExercise.data)
+                if(lessonId){
+                    const listExercise = await getExerciseForTeacher(lessonId)
+                    console.log(listExercise.data)
+                    setExercises(listExercise.data)
+                }
             } catch (error) {
                 console.error('Error fetching exercises:', error)
             }
@@ -302,7 +308,7 @@ const LessonDetail: React.FC = () => {
                                     Bài tập:
                                 </span>
                                 <span className={styles.metadataValue}>
-                                    {currentLesson.exercises.length} bài
+                                    {exercises.length} bài
                                 </span>
                             </div>
                             <div className={styles.metadataItem}>
@@ -316,20 +322,6 @@ const LessonDetail: React.FC = () => {
                                 </span>
                             </div>
                         </div>
-
-                        {/*<div className={styles.progressContainer}>*/}
-                        {/*<div className={styles.progressLabel}>*/}
-                        {/*    Tiến độ hoàn thành: {currentLesson.progress}%*/}
-                        {/*</div>*/}
-                        {/*<div className={styles.progressBar}>*/}
-                        {/*    <div*/}
-                        {/*        className={styles.progressFill}*/}
-                        {/*        style={{*/}
-                        {/*            width: `${currentLesson.progress}%`,*/}
-                        {/*        }}*/}
-                        {/*    />*/}
-                        {/*</div>*/}
-                        {/*</div>*/}
                     </div>
                 </div>
             )}

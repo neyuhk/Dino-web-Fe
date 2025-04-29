@@ -27,8 +27,8 @@ import {
     UserOutlined,
     FilterOutlined,
     ReloadOutlined,
-    QuestionCircleOutlined
-} from '@ant-design/icons';
+    QuestionCircleOutlined, ClearOutlined,
+} from '@ant-design/icons'
 import './ListUser.css';
 import UserDetailComponent from './UserDetail';
 
@@ -330,9 +330,24 @@ const ListUserManagement: React.FC = () => {
             <div className="user-management-header">
                 <div className="header-title">
                     <Title level={4}>Quản lý người dùng</Title>
-                    <Badge count={totalUsers} showZero color="#108ee9" overflowCount={999} />
+                    <Badge
+                        count={totalUsers}
+                        showZero
+                        color="#108ee9"
+                        overflowCount={999}
+                    />
                 </div>
+
                 <div className="header-actions">
+                    <Button
+                        type="default"
+                        icon={<FilterOutlined />}
+                        onClick={() =>
+                            setAdvancedFilterVisible(!advancedFilterVisible)
+                        }
+                    >
+                        Bộ lọc
+                    </Button>
                     <Tooltip title="Làm mới dữ liệu">
                         <Button
                             icon={<ReloadOutlined />}
@@ -351,13 +366,6 @@ const ListUserManagement: React.FC = () => {
                         allowClear
                         style={{ width: 250 }}
                     />
-                    <Button
-                        type="default"
-                        icon={<FilterOutlined />}
-                        onClick={() => setAdvancedFilterVisible(!advancedFilterVisible)}
-                    >
-                        Bộ lọc
-                    </Button>
                 </div>
 
                 {advancedFilterVisible && (
@@ -386,9 +394,11 @@ const ListUserManagement: React.FC = () => {
                             </div>
                             <div className="filter-actions">
                                 <Button
+                                    icon={<ClearOutlined />}
                                     onClick={resetFilters}
+                                    className="clear-filter-button"
                                 >
-                                    Đặt lại
+                                    Xóa bộ lọc
                                 </Button>
                             </div>
                         </div>
@@ -426,13 +436,20 @@ const ListUserManagement: React.FC = () => {
                     {selectedUser && (
                         <div className="selected-user-info">
                             <Avatar
-                                src={selectedUser.avatar?.[0] || "https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg"}
+                                src={
+                                    selectedUser.avatar?.[0] ||
+                                    'https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg'
+                                }
                                 icon={!selectedUser.avatar && <UserOutlined />}
                                 size={64}
                             />
                             <div className="user-info-text">
-                                <div className="user-name">{selectedUser.username || 'N/A'}</div>
-                                <div className="user-email">{selectedUser.email}</div>
+                                <div className="user-name">
+                                    {selectedUser.username || 'N/A'}
+                                </div>
+                                <div className="user-email">
+                                    {selectedUser.email}
+                                </div>
                                 <Tag color={getRoleTagColor(selectedUser.role)}>
                                     {selectedUser.role?.toUpperCase()}
                                 </Tag>
@@ -449,22 +466,32 @@ const ListUserManagement: React.FC = () => {
                             value={selectedRole}
                         >
                             <Select.Option value="admin">Admin</Select.Option>
-                            <Select.Option value="user">Người dùng</Select.Option>
-                            <Select.Option value="teacher">Giáo viên</Select.Option>
+                            <Select.Option value="user">
+                                Người dùng
+                            </Select.Option>
+                            <Select.Option value="teacher">
+                                Giáo viên
+                            </Select.Option>
                         </Select>
 
                         <div className="role-descriptions">
                             <div className="role-desc-item">
                                 <Tag color="red">ADMIN</Tag>
-                                <Text type="secondary">Quyền quản trị hệ thống, toàn quyền truy cập</Text>
+                                <Text type="secondary">
+                                    Quyền quản trị hệ thống, toàn quyền truy cập
+                                </Text>
                             </div>
                             <div className="role-desc-item">
                                 <Tag color="blue">TEACHER</Tag>
-                                <Text type="secondary">Quyền giáo viên, quản lý lớp học và nội dung</Text>
+                                <Text type="secondary">
+                                    Quyền giáo viên, quản lý lớp học và nội dung
+                                </Text>
                             </div>
                             <div className="role-desc-item">
                                 <Tag color="green">USER</Tag>
-                                <Text type="secondary">Quyền người dùng cơ bản</Text>
+                                <Text type="secondary">
+                                    Quyền người dùng cơ bản
+                                </Text>
                             </div>
                         </div>
                     </div>
@@ -473,7 +500,10 @@ const ListUserManagement: React.FC = () => {
                         <Button
                             type="primary"
                             onClick={() => setIsConfirmVisible(true)}
-                            disabled={!selectedRole || selectedRole === selectedUser?.role}
+                            disabled={
+                                !selectedRole ||
+                                selectedRole === selectedUser?.role
+                            }
                         >
                             Xác nhận
                         </Button>
@@ -497,8 +527,14 @@ const ListUserManagement: React.FC = () => {
                 okText="Đồng ý"
                 cancelText="Hủy bỏ"
             >
-                <p>Bạn có chắc chắn muốn thay đổi vai trò của người dùng thành "{selectedRole?.toUpperCase()}"?</p>
-                <p className="warning-text">Lưu ý: Thay đổi vai trò sẽ ảnh hưởng đến quyền truy cập của người dùng trong hệ thống.</p>
+                <p>
+                    Bạn có chắc chắn muốn thay đổi vai trò của người dùng thành
+                    "{selectedRole?.toUpperCase()}"?
+                </p>
+                <p className="warning-text">
+                    Lưu ý: Thay đổi vai trò sẽ ảnh hưởng đến quyền truy cập của
+                    người dùng trong hệ thống.
+                </p>
             </Modal>
 
             <Modal
@@ -518,12 +554,23 @@ const ListUserManagement: React.FC = () => {
                 <p>Bạn có chắc chắn muốn xóa người dùng này?</p>
                 {userToDelete && (
                     <div className="delete-user-info">
-                        <p><strong>Tên người dùng:</strong> {userToDelete.username || 'N/A'}</p>
-                        <p><strong>Email:</strong> {userToDelete.email}</p>
-                        <p><strong>Vai trò:</strong> {userToDelete.role?.toUpperCase()}</p>
+                        <p>
+                            <strong>Tên người dùng:</strong>{' '}
+                            {userToDelete.username || 'N/A'}
+                        </p>
+                        <p>
+                            <strong>Email:</strong> {userToDelete.email}
+                        </p>
+                        <p>
+                            <strong>Vai trò:</strong>{' '}
+                            {userToDelete.role?.toUpperCase()}
+                        </p>
                     </div>
                 )}
-                <p className="warning-text">Lưu ý: Hành động này không thể hoàn tác. Tất cả dữ liệu liên quan đến người dùng này sẽ bị xóa vĩnh viễn.</p>
+                <p className="warning-text">
+                    Lưu ý: Hành động này không thể hoàn tác. Tất cả dữ liệu liên
+                    quan đến người dùng này sẽ bị xóa vĩnh viễn.
+                </p>
             </Modal>
 
             <Drawer
@@ -537,11 +584,14 @@ const ListUserManagement: React.FC = () => {
                 destroyOnClose={true}
             >
                 {selectedUserId && (
-                    <UserDetailComponent userId={selectedUserId} inDrawer={true} />
+                    <UserDetailComponent
+                        userId={selectedUserId}
+                        inDrawer={true}
+                    />
                 )}
             </Drawer>
         </div>
-    );
+    )
 };
 
 export default ListUserManagement;

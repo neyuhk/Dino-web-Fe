@@ -48,6 +48,7 @@ export interface Course {
     createdAt: string;
     images: string[];
     user_id: User;
+    teacher_id: string;
 }
 
 export interface Comment {

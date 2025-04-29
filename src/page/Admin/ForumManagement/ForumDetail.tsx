@@ -1,29 +1,36 @@
 import React, { useEffect, useState } from 'react'
-import { Card, Typography, Row, Col, Image, Space } from 'antd'
-import { useParams } from 'react-router-dom'
+import { Card, Typography, Row, Col, Image, Space, Skeleton, Divider, Avatar, Tag } from 'antd'
 import moment from 'moment'
 import { getForumById } from '../../../services/forum.ts'
-import { Forum } from '../../../model/model.ts'
+import { Forum, User } from '../../../model/model.ts'
 import CommentComponent from '../../../components/Comment/Comment.tsx'
-import { addComment } from '../../../services/comment.ts'
+import { UserOutlined, CalendarOutlined } from '@ant-design/icons'
+import { getUserById } from '../../../services/user.ts'
 
 const { Title, Paragraph, Text } = Typography
 
-const ForumDetailPage: React.FC = () => {
-    const { forumId } = useParams<{ forumId: string }>()
+interface ForumDetailProps {
+    forumId: string;
+}
+
+const ForumDetail: React.FC<ForumDetailProps> = ({ forumId }) => {
     const [forumData, setForumData] = useState<Forum | null>(null)
     const [isLoading, setLoading] = useState(true)
-    const userId = '6716836ed25d75774c39730d' // Replace with actual userId from local storage
+    const [user, setUser] = useState<User>()
 
     useEffect(() => {
         const fetchForumData = async () => {
+            if (!forumId) return;
+
+            setLoading(true);
             try {
-                const forumResponse = await getForumById(forumId ? forumId : '')
+                const forumResponse = await getForumById(forumId)
                 setForumData(forumResponse.data)
-                console.log('fetchdata forum', forumData)
+                const userData = await getUserById(forumResponse.data.user_id)
+                setUser(userData.data)
                 setLoading(false)
             } catch (error) {
-                console.error('Failed to fetch forum data:', error)
+                console.error('Không thể tải dữ liệu diễn đàn:', error)
                 setLoading(false)
             }
         }
@@ -31,96 +38,94 @@ const ForumDetailPage: React.FC = () => {
         fetchForumData()
     }, [forumId])
 
+    if (isLoading) {
+        return <Skeleton active paragraph={{ rows: 10 }} />
+    }
+
     if (!forumData) {
         return (
             <Card>
-                <div className="text-center">No forum data available</div>
+                <div style={{ textAlign: 'center' }}>Không có dữ liệu diễn đàn</div>
             </Card>
         )
     }
 
-    const handleAddComment = async (values: { content: string }) => {
-        try {
-            const comment = {
-                content: values.content,
-                commentableId: forumId || '', // Provide a fallback value
-                commentableType: 'FORUM',
-                userId: userId, // Replace with actual userId from local storage
-                parentId: '', // Use an empty string instead of null
-            }
-            await addComment(comment)
-        } catch (error) {
-            console.error('Failed to add comment:', error)
-        }
-    }
-
     const {
-        title = 'Unknown',
-        description = 'Unknown',
+        title = 'Không xác định',
+        description = 'Không xác định',
         images = [],
-        user_id = { username: 'Unknown' },
-        createdAt = 'Unknown',
+        user_id = { username: 'Không xác định' },
+        createdAt = 'Không xác định',
     } = forumData
 
     return (
-        <Card className="max-w-4xl mx-auto">
-            <Row gutter={[16, 16]}>
+        <div>
+            <Row gutter={[0, 16]}>
                 <Col span={24}>
-                    <Title level={2}>{title}</Title>
-                </Col>
-            </Row>
-            <Row gutter={[16, 16]}>
-                <Col xs={24} sm={16}>
-                    {images[0] ? (
-                        <Image
-                            width="100%"
-                            height={400}
-                            src={images[0]}
-                            alt={title}
-                            preview={false}
-                            style={{ objectFit: 'cover', borderRadius: '8px' }}
-                        />
-                    ) : (
-                        <Image
-                            width="100%"
-                            height={400}
-                            preview={false}
-                            src={'/MockData/default-forum.jpg'}
-                            alt={'default'}
-                            style={{ objectFit: 'cover', borderRadius: '8px' }}
-                        />
-                    )}
-                </Col>
-                <Col xs={24} sm={8}>
-                    <Space direction="vertical" size="large" style={{ width: '100%' }}>
-                        <Card>
-                            <Text strong>Author: </Text>
-                            <Text>{user_id.username}</Text>
-                            <br />
-                            <Text strong>Created At: </Text>
-                            <Text>{moment(createdAt).format('DD/MM/YYYY')}</Text>
-                        </Card>
+                    <Space>
+                        {user ? (
+                            <Avatar
+                                src={user.avatar?.[0]}
+                                icon={!user.avatar?.[0] && <UserOutlined />}
+                            />
+                        ) : (
+                            <Avatar icon={<UserOutlined />} />
+                        )}
+                        {user && user.username &&(
+                            <Text strong>{user.username}</Text>
+                            )}
+                        <Divider type="vertical" />
+                        <Space>
+                            <CalendarOutlined />
+                            <Text>
+                                {moment(createdAt).format('DD/MM/YYYY HH:mm')}
+                            </Text>
+                        </Space>
                     </Space>
                 </Col>
             </Row>
-            <Row gutter={[16, 16]} style={{ marginTop: '16px' }}>
+
+            <Divider />
+
+            <Row gutter={[0, 16]}>
                 <Col span={24}>
-                    <Card>
-                        <Title level={4}>Forum Description</Title>
+                    <Title level={3}>{title}</Title>
+                    {images && images.length > 0 && (
+                        <Image
+                            width="100%"
+                            src={images[0]}
+                            alt={title}
+                            style={{
+                                maxHeight: '300px',
+                                objectFit: 'cover',
+                                borderRadius: '8px',
+                            }}
+                        />
+                    )}
+                </Col>
+            </Row>
+
+            <Row style={{ marginTop: '16px' }}>
+                <Col span={24}>
+                    <Card title="Nội dung" bordered={false}>
                         <Paragraph>{description}</Paragraph>
                     </Card>
                 </Col>
             </Row>
-            <Row gutter={[16, 16]} style={{ marginTop: '16px' }}>
+
+            <Divider />
+
+            <Row>
                 <Col span={24}>
-                    <Card>
-                        <Title level={2}>Bình luận</Title>
-                        <CommentComponent commentableId={forumId ? forumId : ''} commentableType={'FORUM'} />
-                    </Card>
+                    <Title level={4}>Bình luận</Title>
+                    <CommentComponent
+                        commentableId={forumId}
+                        commentableType={'FORUM'}
+                    />
                 </Col>
             </Row>
-        </Card>
+        </div>
     )
 }
 
-export default ForumDetailPage
+export default ForumDetail

@@ -368,7 +368,6 @@ const CourseDetail: React.FC = () => {
                 ) : activeTab === 'students' ? (
                     <CourseStudents
                         courseId={courseId ? courseId : ''}
-                        // students={listStudent}
                     />
                 ) : (
                     <CourseScore courseId={courseId ? courseId : ''} />

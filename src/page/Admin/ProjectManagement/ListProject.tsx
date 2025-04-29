@@ -407,6 +407,15 @@ const ListProjectManagement: React.FC = () => {
                     >
                         {filterVisible ? 'Ẩn bộ lọc' : 'Hiện bộ lọc'}
                     </Button>
+                    <Tooltip title="Làm mới dữ liệu">
+                        <Button
+                            type="primary"
+                            icon={<ReloadOutlined />}
+                            onClick={() => fetchData(1, pagination.pageSize, searchName, selectedType)}
+                            className="clear-filter-button"
+                        >
+                        </Button>
+                    </Tooltip>
                 </div>
             </div>
 
@@ -422,14 +431,6 @@ const ListProjectManagement: React.FC = () => {
                             className="clear-filter-button"
                         >
                             Xóa bộ lọc
-                        </Button>
-                        <Button
-                            type="primary"
-                            icon={<ReloadOutlined />}
-                            onClick={() => fetchData(1, pagination.pageSize, searchName, selectedType)}
-                            className="clear-filter-button"
-                        >
-                            Áp dụng
                         </Button>
                     </div>
                 </div>

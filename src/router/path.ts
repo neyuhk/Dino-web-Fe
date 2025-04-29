@@ -53,6 +53,7 @@ export const PATHS_ADMIN = {
 
     COURSES: '/admin/courses',
     COURSES_DETAIL: '/admin/course/detail/:courseId',
+    LESSON_DETAIL: '/admin/course/detail/:courseId/:lessonId',
 
     FORUM: '/admin/forum',
     FORUM_DETAIL: '/admin/forum/detail/:forumId',

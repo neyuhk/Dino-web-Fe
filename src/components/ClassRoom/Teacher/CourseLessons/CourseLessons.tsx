@@ -279,7 +279,7 @@ const CourseLessons: React.FC<CourseLessonsProps> = ({ courseId }) => {
                 <div className={"loadingSpinner"}>
                     <GraduationCap size={32} className={"loadingIcon"} />
                 </div>
-                <p>Đang tải lớp học của bạn...</p>
+                <p>Đang tải...</p>
             </div>
         );
     }

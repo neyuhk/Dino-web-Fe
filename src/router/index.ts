@@ -276,6 +276,14 @@ export const router = [
             requiresAuth: false,
         },
     },
+    {
+        path: PATHS_ADMIN.LESSON_DETAIL,
+        component: LessonDetail,
+        layout: AdminLayout,
+        meta: {
+            requiresAuth: false,
+        },
+    },
 
     {
         path: PATHS_ADMIN.FORUM,

@@ -1,19 +1,30 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import styles from './CourseStudents.module.css'
 import { User } from '../../../../model/model.ts'
 import { addStudent, getStudentByCourseId, importStudent, removeStudent } from '../../../../services/course.ts'
 import { findUser, getUserById } from '../../../../services/user.ts'
 import EmptyStateNotification from '../common/EmptyStateNotification/EmptyStateNotification.tsx'
-import { GraduationCap } from 'lucide-react'
+import { GraduationCap, Loader2 } from 'lucide-react'
+import DinoLoading from '../../../commons/DinoLoading/DinoLoading.tsx'
 
 interface CourseStudentsProps {
     courseId: string;
+}
+interface ErrorStudent{
+    username: string;
+    email: string;
+    message: string;
+}
+
+function SpinnerIcon(props: { className: any }) {
+    return null
 }
 
 const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
     const [students, setStudents] = useState<User[]>([])
     const [filteredStudents, setFilteredStudents] = useState<User[]>([])
     const [loading, setLoading] = useState<boolean>(true)
+    const [loadingImport, setLoadingImport] = useState<boolean>(false)
     const [error, setError] = useState<string | null>(null)
     const [successMessage, setSuccessMessage] = useState<string | null>(null)
     const [searchId, setSearchId] = useState<string>('')
@@ -22,20 +33,25 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
     const [addingStudents, setAddingStudents] = useState<boolean>(false)
     const [searching, setSearching] = useState<boolean>(false)
     const [studentFilter, setStudentFilter] = useState<string>('')
+    const [errorStudents, setErrorStudent] = useState<ErrorStudent[]>([])
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
-    const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null)
+    const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
+        null
+    )
+    const [showErrorPopup, setShowErrorPopup] = useState(false)
     // Pagination states
     const [currentPage, setCurrentPage] = useState<number>(1)
     const [perPage, setPerPage] = useState<number>(5)
     const [totalResults, setTotalResults] = useState<number>(0)
     const [totalPages, setTotalPages] = useState<number>(1)
     const [studentManagement, setStudentManagement] = useState<{
-        open: boolean;
-        student: User | null;
+        open: boolean
+        student: User | null
     }>({
         open: false,
         student: null,
     })
+    const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         fetchStudents()
@@ -63,10 +79,17 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
 
     useEffect(() => {
         // Filter and sort students when the filter text changes or when the student list changes
-        const filtered = students.filter(student =>
-            student.username?.toLowerCase().includes(studentFilter.toLowerCase()) ||
-            student.email?.toLowerCase().includes(studentFilter.toLowerCase()) ||
-            student.name?.toLowerCase().includes(studentFilter.toLowerCase()),
+        const filtered = students.filter(
+            (student) =>
+                student.username
+                    ?.toLowerCase()
+                    .includes(studentFilter.toLowerCase()) ||
+                student.email
+                    ?.toLowerCase()
+                    .includes(studentFilter.toLowerCase()) ||
+                student.name
+                    ?.toLowerCase()
+                    .includes(studentFilter.toLowerCase())
         )
 
         // Sort students by name
@@ -103,7 +126,10 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
         }
     }
 
-    const handleSearch = async (searchValue: string = searchId, page: number = currentPage) => {
+    const handleSearch = async (
+        searchValue: string = searchId,
+        page: number = currentPage
+    ) => {
         if (!searchValue.trim()) {
             setError('Vui lòng nhập tên/mã học sinh')
             return
@@ -128,7 +154,7 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
 
             // Filter users with role "user"
             const studentUsers = Array.isArray(users)
-                ? users.filter(user => user.role === 'user')
+                ? users.filter((user) => user.role === 'user')
                 : []
 
             if (studentUsers.length > 0) {
@@ -150,7 +176,9 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
         }
     }
 
-    const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSearchInputChange = (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
         const value = e.target.value
         setSearchId(value)
 
@@ -201,14 +229,20 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
         }
 
         setPendingStudents([...pendingStudents, student])
-        setSuccessMessage(`Đã thêm ${student.username || student.email} vào hàng chờ`)
+        setSuccessMessage(
+            `Đã thêm ${student.username || student.email} vào hàng chờ`
+        )
     }
 
     const removePending = (id: string) => {
-        const studentToRemove = pendingStudents.find(s => s._id === id)
-        setPendingStudents(pendingStudents.filter((student) => student._id !== id))
+        const studentToRemove = pendingStudents.find((s) => s._id === id)
+        setPendingStudents(
+            pendingStudents.filter((student) => student._id !== id)
+        )
         if (studentToRemove) {
-            setSuccessMessage(`Đã xóa ${studentToRemove.username || studentToRemove.email} khỏi hàng chờ`)
+            setSuccessMessage(
+                `Đã xóa ${studentToRemove.username || studentToRemove.email} khỏi hàng chờ`
+            )
         }
     }
 
@@ -222,6 +256,7 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
 
         try {
             // Add students one by one
+            setLoading(true)
             for (const student of pendingStudents) {
                 await addStudent({
                     courseId: courseId,
@@ -233,11 +268,14 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
             const count = pendingStudents.length
             setPendingStudents([])
             await fetchStudents()
-            setSuccessMessage(`Đã thêm thành công ${count} học sinh vào lớp học`)
+            setSuccessMessage(
+                `Đã thêm thành công ${count} học sinh vào lớp học`
+            )
         } catch (err) {
             console.error('Error adding students:', err)
             setError('Có lỗi khi thêm học sinh')
         } finally {
+            setLoading(false)
             setAddingStudents(false)
         }
     }
@@ -258,6 +296,7 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
 
     const handleRemoveStudent = async (studentId: string) => {
         try {
+            setLoading(true)
             // Implement remove student API call here
             // For now, just simulating removal from the local state
             setStudents(students.filter((student) => student._id !== studentId))
@@ -268,6 +307,7 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
             console.error('Error removing student:', err)
             setError('Có lỗi khi xóa học sinh')
         }
+        setLoading(false)
     }
 
     const toggleSortOrder = () => {
@@ -321,32 +361,47 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
 
     if (loading && students.length === 0) {
         return (
-            <div className={'loadingContainer'} style={{ justifyContent: 'flex-start' }}>
+            <div
+                className={'loadingContainer'}
+                style={{ justifyContent: 'flex-start' }}
+            >
                 <div className={'loadingSpinner'}>
                     <GraduationCap size={32} className={'loadingIcon'} />
                 </div>
-                <p>Đang tải lớp học của bạn...</p>
+                <p>Đang tải...</p>
             </div>
         )
     }
 
-    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileUpload = async (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
         const file = event.target.files?.[0]
         if (!file) {
             setError('Vui lòng chọn một tệp để tải lên')
             return
         }
-
+        setLoadingImport(true)
         try {
             // Parse the file (e.g., using a library like Papaparse for CSV or SheetJS for Excel)
             const studentsFromFile = await importStudent({ courseId, file })
             console.log('Parsed students from file:', studentsFromFile)
-            setPendingStudents([...pendingStudents, ...studentsFromFile.student])
-            setSuccessMessage(`Đã thêm ${studentsFromFile.student.length} học sinh từ tệp`)
+            setPendingStudents([
+                ...pendingStudents,
+                ...studentsFromFile.student,
+            ])
+            setErrorStudent(studentsFromFile.errorStudent)
+            console.log("error Student", studentsFromFile.errorStudent)
+            console.log("error Students", errorStudents)
+            setSuccessMessage(
+                `Đã thêm ${studentsFromFile.student.length} học sinh từ tệp`
+            )
+            event.target.value = '';
         } catch (err) {
             console.error('Error parsing file:', err)
             setError('Có lỗi khi xử lý tệp. Vui lòng kiểm tra định dạng tệp.')
         }
+        setLoadingImport(false)
     }
 
     return (
@@ -377,12 +432,42 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
 
             {/* Search for new students */}
             <div className={styles.searchSection}>
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}
+                >
                     <h3>Thêm học sinh mới</h3>
+                    {/* Thêm nút hiển thị học sinh lỗi */}
+                    {errorStudents && errorStudents.length > 0 && !loadingImport && (
+                        <button
+                            onClick={() => setShowErrorPopup(true)}
+                            className={styles.errorButton}
+                            title="Xem danh sách học sinh lỗi"
+                        >
+                                    <span className={styles.warningIcon}>
+                                        ⚠️
+                                    </span>
+                            Học sinh lỗi ({errorStudents.length})
+                        </button>
+                    )}
                     <div className={styles.importFileContainer}>
-                        <label htmlFor="importFile" className={styles.importFileButton}>
-                            Import File
+                        <label
+                            htmlFor="importFile"
+                            className={styles.importFileButton}
+                        >
+                            {loadingImport ? (
+                                <div className={styles.loadingInline}>
+                                    <Loader2 size={10} className="spinner" />
+                                    Đang tải...
+                                </div>
+                            ) : (
+                                'Thêm danh sách'
+                            )}
                         </label>
+
                         <input
                             type="file"
                             id="importFile"
@@ -395,7 +480,7 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                             download="mau_import_hocsinh.xlsx"
                             className={styles.downloadSampleButton}
                         >
-                            File mẫu
+                            Tải tệp mẫu
                         </a>
                     </div>
                 </div>
@@ -436,7 +521,9 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                                     Kết quả tìm kiếm ({totalResults} học sinh)
                                 </h4>
                                 <div className={styles.searchResultInfo}>
-                                    <span>Trang {currentPage}/{totalPages}</span>
+                                    <span>
+                                        Trang {currentPage}/{totalPages}
+                                    </span>
                                     <button
                                         onClick={clearSearch}
                                         className={styles.cancelSearchButton}
@@ -455,7 +542,8 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                                     <div className={styles.avatarContainer}>
                                         <img
                                             src={
-                                                student.avatar && student.avatar.length != 0
+                                                student.avatar &&
+                                                student.avatar.length != 0
                                                     ? student.avatar[0]
                                                     : 'https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg'
                                             }
@@ -533,7 +621,8 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                                                             styles.infoValue
                                                         }
                                                     >
-                                                        {student.phoneNumber || 'Chưa cập nhật số điện thoại'}
+                                                        {student.phoneNumber ||
+                                                            'Chưa cập nhật số điện thoại'}
                                                     </span>
                                                 </div>
                                             )}
@@ -541,7 +630,9 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                                     </div>
                                     <div className={styles.studentActions}>
                                         <button
-                                            onClick={() => addToPending(student)}
+                                            onClick={() =>
+                                                addToPending(student)
+                                            }
                                             className={styles.addButton}
                                         >
                                             <span className={styles.addIcon}>
@@ -558,29 +649,40 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                                 <div className={styles.pagination}>
                                     <button
                                         className={`${styles.pageButton} ${currentPage === 1 ? styles.disabled : ''}`}
-                                        onClick={() => changePage(currentPage - 1)}
+                                        onClick={() =>
+                                            changePage(currentPage - 1)
+                                        }
                                         disabled={currentPage === 1}
                                     >
                                         &laquo; Trước
                                     </button>
 
-                                    {getPaginationRange().map((page, index) => (
+                                    {getPaginationRange().map((page, index) =>
                                         page === '...' ? (
-                                            <span key={`ellipsis-${index}`} className={styles.ellipsis}>...</span>
+                                            <span
+                                                key={`ellipsis-${index}`}
+                                                className={styles.ellipsis}
+                                            >
+                                                ...
+                                            </span>
                                         ) : (
                                             <button
                                                 key={`page-${page}`}
                                                 className={`${styles.pageButton} ${currentPage === page ? styles.activePage : ''}`}
-                                                onClick={() => changePage(Number(page))}
+                                                onClick={() =>
+                                                    changePage(Number(page))
+                                                }
                                             >
                                                 {page}
                                             </button>
                                         )
-                                    ))}
+                                    )}
 
                                     <button
                                         className={`${styles.pageButton} ${currentPage === totalPages ? styles.disabled : ''}`}
-                                        onClick={() => changePage(currentPage + 1)}
+                                        onClick={() =>
+                                            changePage(currentPage + 1)
+                                        }
                                         disabled={currentPage === totalPages}
                                     >
                                         Sau &raquo;
@@ -606,24 +708,35 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                                     <div className={styles.pendingInfo}>
                                         <img
                                             src={
-                                                student.avatar && student.avatar.length != 0
+                                                student.avatar &&
+                                                student.avatar.length != 0
                                                     ? student.avatar[0]
                                                     : 'https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg'
                                             }
                                             className={styles.smallAvatar}
-                                            alt={student.username || student.email}
+                                            alt={
+                                                student.username ||
+                                                student.email
+                                            }
                                         />
                                         <div className={styles.pendingDetails}>
-                                            <span className={styles.pendingName}>
-                                                {student.username || student.email}
+                                            <span
+                                                className={styles.pendingName}
+                                            >
+                                                {student.username ||
+                                                    student.email}
                                             </span>
-                                            <span className={styles.pendingEmail}>
+                                            <span
+                                                className={styles.pendingEmail}
+                                            >
                                                 {student.email}
                                             </span>
                                         </div>
                                     </div>
                                     <button
-                                        onClick={() => removePending(student._id)}
+                                        onClick={() =>
+                                            removePending(student._id)
+                                        }
                                         className={styles.removeButton}
                                         title="Xóa khỏi danh sách chờ"
                                     >
@@ -632,27 +745,99 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                                 </div>
                             ))}
                         </div>
-                        <button
-                            onClick={handleAddStudents}
-                            className={styles.addAllButton}
-                            disabled={addingStudents}
-                        >
-                            {addingStudents ? (
-                                <>
-                                    <span className={styles.loadingIcon}>
-                                        ●
-                                    </span>
-                                    Đang thêm...
-                                </>
-                            ) : (
-                                <>
-                                    <span className={styles.plusIcon}>+</span>
-                                    Thêm tất cả học sinh vào lớp
-                                </>
-                            )}
-                        </button>
+                        <div className={styles.buttonGroup}>
+                            <button
+                                onClick={handleAddStudents}
+                                className={styles.addAllButton}
+                                disabled={addingStudents}
+                            >
+                                {addingStudents ? (
+                                    <>
+                                        <span className={styles.loadingIcon}>
+                                            ●
+                                        </span>
+                                        Đang thêm...
+                                    </>
+                                ) : (
+                                    <>
+                                        <span className={styles.plusIcon}>
+                                            +
+                                        </span>
+                                        Thêm tất cả học sinh vào lớp
+                                    </>
+                                )}
+                            </button>
+
+
+                        </div>
                     </div>
                 )}
+
+                {/* Popup hiển thị học sinh lỗi */}
+                {showErrorPopup &&
+                    errorStudents &&
+                    errorStudents.length > 0 && (
+                        <div className={styles.popupOverlay}>
+                            <div className={styles.errorPopup}>
+                                <div className={styles.popupHeader}>
+                                    <h3>
+                                        Danh sách học sinh lỗi (
+                                        {errorStudents.length})
+                                    </h3>
+                                    <button
+                                        onClick={() => setShowErrorPopup(false)}
+                                        className={styles.closePopupButton}
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+                                <div className={styles.errorTableContainer}>
+                                    <table className={styles.errorTable}>
+                                        <thead>
+                                            <tr>
+                                                <th>Tên học sinh</th>
+                                                <th>Email</th>
+                                                <th>Lỗi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {errorStudents.map(
+                                                (student, index) => (
+                                                    <tr
+                                                        key={index}
+                                                        className={
+                                                            styles.errorRow
+                                                        }
+                                                    >
+                                                        <td>
+                                                            {student.username ||
+                                                                '(Không có tên)'}
+                                                        </td>
+                                                        <td>{student.email}</td>
+                                                        <td
+                                                            className={
+                                                                styles.errorMessage
+                                                            }
+                                                        >
+                                                            {student.message}
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div className={styles.popupFooter}>
+                                    <button
+                                        onClick={() => setShowErrorPopup(false)}
+                                        className={styles.closeButton}
+                                    >
+                                        Đóng
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
             </div>
 
             {/* Current Students List with Search and Filter */}
@@ -665,7 +850,9 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                                 type="text"
                                 placeholder="Tìm kiếm học sinh..."
                                 value={studentFilter}
-                                onChange={(e) => setStudentFilter(e.target.value)}
+                                onChange={(e) =>
+                                    setStudentFilter(e.target.value)
+                                }
                                 className={styles.filterInput}
                             />
                             {studentFilter && (
@@ -713,40 +900,50 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                     <div className={styles.studentsTable}>
                         <table>
                             <thead>
-                            <tr>
-                                <th>Họ tên học sinh</th>
-                                <th>Email</th>
-                                <th>Số điện thoại</th>
-                                <th>Thao tác</th>
-                            </tr>
+                                <tr>
+                                    <th>Họ tên học sinh</th>
+                                    <th>Email</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Thao tác</th>
+                                </tr>
                             </thead>
                             <tbody>
-                            {filteredStudents.map((student) => (
-                                <tr key={student._id}>
-                                    <td className={styles.studentCell}>
-                                        <img
-                                            src={
-                                                student.avatar && student.avatar.length != 0
-                                                    ? student.avatar[0]
-                                                    : 'https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg'
-                                            }
-                                            alt={student.username}
-                                            className={styles.tableAvatar}
-                                        />
-                                        <span>{student.username}</span>
-                                    </td>
-                                    <td>{student.email}</td>
-                                    <td>{student.phoneNumber || 'Chưa cập nhật số điện thoại'}</td>
-                                    <td>
-                                        <button
-                                            onClick={() => openStudentManagement(student)}
-                                            className={styles.tableActionButton}
-                                        >
-                                            Chi tiết
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
+                                {filteredStudents.map((student) => (
+                                    <tr key={student._id}>
+                                        <td className={styles.studentCell}>
+                                            <img
+                                                src={
+                                                    student.avatar &&
+                                                    student.avatar.length != 0
+                                                        ? student.avatar[0]
+                                                        : 'https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg'
+                                                }
+                                                alt={student.username}
+                                                className={styles.tableAvatar}
+                                            />
+                                            <span>{student.username}</span>
+                                        </td>
+                                        <td>{student.email}</td>
+                                        <td>
+                                            {student.phoneNumber ||
+                                                'Chưa cập nhật số điện thoại'}
+                                        </td>
+                                        <td>
+                                            <button
+                                                onClick={() =>
+                                                    openStudentManagement(
+                                                        student
+                                                    )
+                                                }
+                                                className={
+                                                    styles.tableActionButton
+                                                }
+                                            >
+                                                Chi tiết
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
@@ -771,8 +968,10 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                                 <img
                                     src={
                                         studentManagement.student.avatar &&
-                                        studentManagement.student.avatar.length != 0
-                                            ? studentManagement.student.avatar[0]
+                                        studentManagement.student.avatar
+                                            .length != 0
+                                            ? studentManagement.student
+                                                  .avatar[0]
                                             : 'https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg'
                                     }
                                     alt={studentManagement.student.username}
@@ -792,22 +991,23 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                                     </p>
                                     <p>
                                         Số điện thoại:{' '}
-                                        {studentManagement.student.phoneNumber || 'N/A'}
+                                        {studentManagement.student
+                                            .phoneNumber || 'N/A'}
                                     </p>
                                     <p>
                                         Ngày sinh:{' '}
                                         {studentManagement.student.birthday
                                             ? new Date(
-                                                studentManagement.student.birthday,
-                                            ).toLocaleDateString('vi-VN')
+                                                  studentManagement.student.birthday
+                                              ).toLocaleDateString('vi-VN')
                                             : 'N/A'}
                                     </p>
                                     <p>
                                         Ngày tham gia:{' '}
                                         {studentManagement.student.createdAt
                                             ? new Date(
-                                                studentManagement.student.createdAt,
-                                            ).toLocaleDateString('vi-VN')
+                                                  studentManagement.student.createdAt
+                                              ).toLocaleDateString('vi-VN')
                                             : 'N/A'}
                                     </p>
                                 </div>
@@ -817,7 +1017,7 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                             <button
                                 onClick={() =>
                                     handleRemoveStudent(
-                                        studentManagement.student?._id || '',
+                                        studentManagement.student?._id || ''
                                     )
                                 }
                                 className={styles.deleteButton}
@@ -834,6 +1034,7 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                     </div>
                 </div>
             )}
+            {loading && <DinoLoading message="Đang tải..." />}
         </div>
     )
 }

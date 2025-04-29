@@ -3,7 +3,7 @@
 .section3 {
     display: flex;
     /*min-height: 100vh;*/
-    background-color: var(--background-primary);
+    background-color: white;
 }
 
 .imageContainer {

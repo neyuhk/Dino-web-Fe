@@ -534,3 +534,168 @@
         width: 100%;
     }
 }
+.container {
+    padding: 20px;
+    padding-top: 0px;
+}
+
+.title {
+    margin-bottom: 24px;
+    font-size: 24px !important;
+    color: var(--primary-color) !important;
+    font-weight: bold !important;
+}
+
+.searchContainer {
+    margin-bottom: 24px;
+}
+
+.searchInput {
+    width: 100%;
+}
+
+.space {
+    width: 100%;
+}
+
+.actionButton {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 24px;
+}
+
+@media (min-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.cardCover {
+    position: relative;
+    cursor: pointer;
+}
+
+.cardImage {
+    border-radius: 10px 10px 0px 0px;
+    height: 192px;
+    object-fit: cover;
+    width: 100%;
+}
+
+/* Styles for delete button */
+:global(.ant-btn-dangerous.ant-btn-primary) {
+    background-color: #ff4d4f;
+    border-color: #ff4d4f;
+}
+
+:global(.ant-btn-dangerous.ant-btn-primary:hover) {
+    background-color: #ff7875;
+    border-color: #ff7875;
+}
+
+/* Empty projects styles */
+.noProjects {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 48px 0;
+}
+
+.noProjectsContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.emptyIcon {
+    margin-bottom: 16px;
+    color: #d9d9d9;
+}
+
+.noProjectsContent h3 {
+    margin-bottom: 8px;
+    font-size: 18px;
+    color: rgba(0, 0, 0, 0.85);
+}
+
+.noProjectsContent p {
+    color: rgba(0, 0, 0, 0.45);
+}
+
+/* Modal styles */
+.modalContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 16px;
+}
+
+.modalImage {
+    width: 150px;
+    height: 150px;
+    margin-bottom: 16px;
+}
+
+.modalTitle {
+    margin-bottom: 16px !important;
+    color: #ff4d4f !important;
+}
+
+.modalText {
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.85);
+}
+
+.confirmModal :global(.ant-modal-content) {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Add these new styles for the Card component */
+:global(.ant-card) {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+}
+
+:global(.ant-card:hover) {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+:global(.ant-card-meta-title) {
+    font-size: 16px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.85);
+    margin-bottom: 8px;
+}
+
+:global(.ant-card-meta-description) {
+    color: rgba(0, 0, 0, 0.65);
+}
+.emptyWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%; /* Chiếm hết chiều ngang */
+    margin: 0 auto; /* Căn giữa */
+    padding: 20px 0; /* Tùy chỉnh khoảng cách */
+}

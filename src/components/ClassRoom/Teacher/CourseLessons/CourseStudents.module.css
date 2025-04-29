@@ -950,3 +950,154 @@
         grid-template-columns: repeat(2, 1fr);
     }
 }
+/* Thêm vào file CSS/module của bạn */
+
+.buttonGroup {
+    display: flex;
+    margin-top: 15px;
+    gap: 10px;
+}
+
+.errorButton {
+    display: flex;
+    align-items: center;
+    background-color: #fff0f0;
+    border: 1px solid #ffcccc;
+    color: #e74c3c;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.errorButton:hover {
+    background-color: #ffe0e0;
+}
+
+.warningIcon {
+    margin-right: 6px;
+}
+
+.popupOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.errorPopup {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.popupHeader {
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f8f8f8;
+}
+
+.popupHeader h3 {
+    margin: 0;
+    color: #e74c3c;
+    font-size: 18px;
+}
+
+.closePopupButton {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #777;
+    cursor: pointer;
+}
+
+.closePopupButton:hover {
+    color: #e74c3c;
+}
+
+.errorTableContainer {
+    padding: 15px;
+    overflow-y: auto;
+    max-height: 60vh;
+}
+
+.errorTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.errorTable th,
+.errorTable td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.errorTable th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    color: #444;
+}
+
+.errorRow:hover {
+    background-color: #f9f9f9;
+}
+
+.errorMessage {
+    color: #e74c3c;
+    font-weight: 500;
+}
+
+.popupFooter {
+    padding: 15px 20px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.closeButton {
+    background-color: #e0e0e0;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.closeButton:hover {
+    background-color: #d0d0d0;
+}
+.loadingInline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.spinner {
+    color: white;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+

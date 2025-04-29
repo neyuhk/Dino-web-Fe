@@ -453,7 +453,7 @@ const CommentComponent: React.FC<CommentProps> = ({ commentableId, commentableTy
 
     // Check if user is the owner of the comment
     const isCommentOwner = (comment: CommentInterface) => {
-        return comment.user_id._id === user._id;
+        return comment.user_id._id === user._id || user.role === "admin";
     };
 
     const replyComment = (commentId: string, username: string) => {
