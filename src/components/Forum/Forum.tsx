@@ -69,7 +69,7 @@ const ForumPage: React.FC = () => {
     };
 
     const fetchData = async (page: number, reset: boolean = false) => {
-        setLoading(true);
+        setLoadingMore(true)
         try {
             let endpoint;
             let loadingState = page === 1 ? setLoading : setLoadingMore;
@@ -113,6 +113,8 @@ const ForumPage: React.FC = () => {
             setLoading(false);
             setLoadingMore(false);
         }
+        setLoading(false);
+        setLoadingMore(false)
     };
 
     // Khởi tạo và thiết lập Intersection Observer
@@ -364,10 +366,6 @@ const ForumPage: React.FC = () => {
                 <div className={styles.postsContainer} ref={postsContainerRef}>
                     {/* Hiển thị loading state cho lần load đầu tiên */}
                     {isLoading ? (
-                        // <div className="flex justify-center items-center h-64">
-                        //     <Loader size={24} className={styles.loadingIcon} />
-                        //     <p className="ml-2">Đang tải...</p>
-                        // </div>
                         <DinoLoading message={"Đang tải..."} />
                     ) : hasError ? (
                         <EmptyState

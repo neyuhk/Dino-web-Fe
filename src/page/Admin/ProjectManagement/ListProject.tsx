@@ -45,6 +45,7 @@ import {
 import moment from 'moment';
 import ProjectDetailComponent from './ProjectDetail.tsx'
 import RequireAuth from '../../../components/commons/RequireAuth/RequireAuth.tsx'
+import { Loader2 } from 'lucide-react'
 
 const { Option } = Select;
 const { Title, Text } = Typography;
@@ -53,6 +54,7 @@ const ListProjectManagement: React.FC = () => {
     const { user } = useSelector((state: any) => state.auth);
     const [data, setData] = useState<Project[]>([]);
     const [isLoading, setLoading] = useState(true);
+    const [loadingUpdate, setLoadingUpdate] = useState(false);
     const [filteredData, setFilteredData] = useState<Project[]>([]);
     const [selectedType, setSelectedType] = useState<string | undefined>(undefined);
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -148,6 +150,7 @@ const ListProjectManagement: React.FC = () => {
     };
 
     const changeType = async () => {
+        setLoadingUpdate(true)
         try {
             const values = await form.validateFields();
             await changeProjectType(selectedProject?._id ?? '', values.type);
@@ -158,6 +161,7 @@ const ListProjectManagement: React.FC = () => {
             console.error('Failed to update project type:', error);
             message.error('Không thể cập nhật loại dự án');
         }
+        setLoadingUpdate(false)
     };
 
     const handleCancel = () => {
@@ -177,6 +181,7 @@ const ListProjectManagement: React.FC = () => {
 
     const handleDeleteProject = async () => {
         if (!projectToDelete) return;
+        setLoadingUpdate(true)
         try {
             await deleteProjectById(projectToDelete);
             message.success('Đã xóa dự án thành công');
@@ -192,6 +197,7 @@ const ListProjectManagement: React.FC = () => {
             message.error('Không thể xóa dự án');
             console.error('Failed to delete project:', error);
         }
+        setLoadingUpdate(false)
     };
 
     // Drawer handling functions
@@ -518,7 +524,13 @@ const ListProjectManagement: React.FC = () => {
                 open={isModalVisible}
                 onOk={changeType}
                 onCancel={handleCancel}
-                okText="Cập nhật"
+                okText={
+                    loadingUpdate ? (
+                        <Loader2 size={20} className="spinner" />
+                    ) : (
+                        'Cập nhật'
+                    )
+                }
                 cancelText="Hủy"
                 className="type-modal"
             >
@@ -545,7 +557,13 @@ const ListProjectManagement: React.FC = () => {
                 open={isDeleteModalVisible}
                 onOk={handleDeleteProject}
                 onCancel={handleDeleteCancel}
-                okText="Xóa"
+                okText={
+                    loadingUpdate ? (
+                        <Loader2 size={20} className="spinner" />
+                    ) : (
+                        'Xóa'
+                    )
+                }
                 cancelText="Hủy"
                 okButtonProps={{ danger: true }}
                 className="delete-modal"
