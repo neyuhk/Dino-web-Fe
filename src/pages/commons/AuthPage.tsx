@@ -8,7 +8,7 @@ import {
     Typography,
 } from 'antd'
 import { GoogleOutlined, LockOutlined, UserOutlined } from '@ant-design/icons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux'
 import { login, register } from '../../services/auth';
 // @ts-ignore
 import { PATHS } from '@/router/path';
@@ -18,6 +18,7 @@ import styles from '../../pages/commons/styles/AuthPage.module.css'
 import { PATHS_ADMIN } from '../../router/path.ts'
 import loginBgr from '../../assets/login.png'
 import loginBgr2 from '../../assets/login2.png'
+import { useNavigate } from 'react-router-dom'
 
 const { Title, Paragraph } = Typography;
 
@@ -28,9 +29,13 @@ const AuthPage = () => {
     const [isLoginView, setIsLoginView] = useState(true);
     const [isAnimating, setIsAnimating] = useState(false);
     const dispatch: AppDispatch = useDispatch();
-
+    const navigate = useNavigate();
+    const { user } = useSelector((state: any) => state.auth);
     // Reset animation flag
     useEffect(() => {
+        if (user){
+            navigate('/');
+        }
         if (isAnimating) {
             const timer = setTimeout(() => {
                 setIsAnimating(false);
