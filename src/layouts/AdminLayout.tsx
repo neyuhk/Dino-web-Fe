@@ -5,6 +5,7 @@ import { useLocation } from 'react-router-dom';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux'
 import RequireAuth from '../components/commons/RequireAuth/RequireAuth.tsx'
+import logo from '../../assets/dinologo-nobgr.png'
 
 const { Header, Content, Sider } = Layout;
 // @ts-ignore

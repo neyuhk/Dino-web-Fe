@@ -57,15 +57,29 @@ const HeaderAdmin = () => {
     return (
         <header className={styles.headerContainer}>
             <div className={styles.logoSection}>
-                <img src={dinoLogo} alt="Logo" className={styles.logo} />
+                <img
+                    src={dinoLogo}
+                    alt="Logo"
+                    className={styles.logo}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => navigate('/')}
+                />
                 <h2 className={styles.logoText}>Hệ Thống Quản Trị</h2>
             </div>
 
             <div className={styles.userSection}>
                 {isAuthenticated ? (
-                    <Dropdown menu={{ items: dropdownItems }} placement="bottomRight" trigger={['click']}>
+                    <Dropdown
+                        menu={{ items: dropdownItems }}
+                        placement="bottomRight"
+                        trigger={['click']}
+                    >
                         <div className={styles.userInfo}>
-                            <Avatar icon={<UserOutlined />} className={styles.avatar} size="large" />
+                            <Avatar
+                                icon={<UserOutlined />}
+                                className={styles.avatar}
+                                size="large"
+                            />
                             <span className={styles.username}>Admin</span>
                         </div>
                     </Dropdown>
@@ -94,12 +108,21 @@ const HeaderAdmin = () => {
                         <LogoutOutlined />
                     </div>
                     <h3 className={styles.modalTitle}>Xác nhận đăng xuất</h3>
-                    <p className={styles.modalText}>Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?</p>
+                    <p className={styles.modalText}>
+                        Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?
+                    </p>
                     <div className={styles.modalActions}>
-                        <Button className={styles.cancelButton} onClick={cancelLogout}>
+                        <Button
+                            className={styles.cancelButton}
+                            onClick={cancelLogout}
+                        >
                             Hủy bỏ
                         </Button>
-                        <Button type="primary" className={styles.confirmButton} onClick={handleLogout}>
+                        <Button
+                            type="primary"
+                            className={styles.confirmButton}
+                            onClick={handleLogout}
+                        >
                             Đồng ý
                         </Button>
                     </div>

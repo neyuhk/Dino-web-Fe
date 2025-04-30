@@ -7,6 +7,7 @@ import { PATHS } from '../../router/path.ts';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { logout } from '../../stores/authSlice';
 import { AppDispatch } from '../../stores';
+import logo from '../../assets/dinologo-nobgr.png'
 
 const HeaderComponent: React.FC = () => {
     const { isAuthenticated, user } = useSelector((state: any) => state.auth);
@@ -16,6 +17,7 @@ const HeaderComponent: React.FC = () => {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
     const [isTransitioning, setIsTransitioning] = useState(false);
+
 
     const confirmLogout = () => {
         setShowLogoutModal(true);
@@ -82,9 +84,9 @@ const HeaderComponent: React.FC = () => {
         },
         {
             key: 'classroom',
-            title: 'Khóa học của tôi',
-            href: PATHS.CLASSROOM || '/classroom',
-        },
+            title: user.role === 'admin' ? 'Quản lý hệ thống' : 'Khóa học của tôi',
+            href: user.role === 'admin' ? '/admin' : (PATHS.CLASSROOM || '/classroom'),
+        }
     ];
 
     // Tạo menu dropdown cho tab Giới thiệu
@@ -129,7 +131,7 @@ const HeaderComponent: React.FC = () => {
                         className="logo"
                         onClick={(e) => handleNavigation(e, '/')}
                     >
-                        <img className="logo" src={'https://raw.githubusercontent.com/NguyenBaHoangKim/store-image/main/quiz/dinologo-nobgr.pngcbfecc1c-0b6c-4fab-abb8-00fbd9dc97f0-1744633033359'}/>
+                        <img className="logo" src={logo}/>
                     </Link>
 
                     <div className="mobile-toggle" onClick={toggleMobileMenu}>

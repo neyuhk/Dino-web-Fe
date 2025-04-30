@@ -2,11 +2,14 @@ import React, { useRef, useState } from 'react'
 import { Button, Input, Dropdown, Menu, MenuProps, Space, Avatar } from 'antd'
 import { DownOutlined, UserOutlined } from '@ant-design/icons'
 import './styles/headerBlockly.css'
+import { useNavigate } from 'react-router-dom'
+import logo from '../../assets/dinologo-nobgr.png'
 
 const HeaderBlocklyComponent: React.FC = () => {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [projectName, setProjectName] = React.useState('')
     const [isFileActive, setIsFileActive] = useState(false)
+    const navigate = useNavigate();
     const isLogin = true
 
     const handleUploadClick = () => {
@@ -92,7 +95,12 @@ const HeaderBlocklyComponent: React.FC = () => {
 
     return (
         <div style={{ display: 'flex', alignItems: 'center' }}>
-            <img src="https://i.pinimg.com/736x/1c/4d/13/1c4d134082403ddc3172a177458e14fa.jpg" alt="Logo" style={{ marginRight: '16px' }} />
+            <img
+                src={logo}
+                alt="Logo"
+                style={{ marginRight: '16px', cursor: 'pointer' }}
+                onClick={() => navigate('/')}
+            />
             <div style={{ marginRight: '16px' }}>
                 <Dropdown menu={{ items: taptinn }} trigger={['click']} onOpenChange={handleMenuClick}>
                     <a className={`white-text `} onClick={(e) => e.preventDefault()}>

@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import './AdminDashboard.css';
 import { useNavigate } from 'react-router-dom'
+import logo from '../../assets/dinologo-nobgr.png'
 
 // Định nghĩa types
 type SectionProps = {
