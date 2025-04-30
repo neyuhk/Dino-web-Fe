@@ -62,7 +62,7 @@ const HeaderComponent: React.FC = () => {
     const navItems = [
         {
             key: 'blockly',
-            title: 'Tạo khối',
+            title: 'Dino Blocks',
             href: PATHS.BLOCKLY || '/blockly',
         },
         {
