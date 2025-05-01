@@ -5,7 +5,7 @@ import { deleteForum, getForumAdmin, getForumById } from '../../../services/foru
 import { Forum } from '../../../model/model.ts'
 import moment from 'moment'
 import { AlignLeftOutlined, DeleteOutlined } from '@ant-design/icons'
-import ForumDetail from './ForumDetail'
+import ForumDetail from './ForumDetail.tsx'
 
 const { Search } = Input
 

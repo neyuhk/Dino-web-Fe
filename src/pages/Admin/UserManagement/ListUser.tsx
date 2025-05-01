@@ -30,7 +30,7 @@ import {
     QuestionCircleOutlined, ClearOutlined,
 } from '@ant-design/icons'
 import './ListUser.css';
-import UserDetailComponent from './UserDetail';
+import UserDetailComponent from './UserDetail.tsx';
 
 const { Search } = Input;
 const { Option } = Select;

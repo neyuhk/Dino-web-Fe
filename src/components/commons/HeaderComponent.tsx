@@ -19,6 +19,7 @@ const HeaderComponent: React.FC = () => {
     const [isTransitioning, setIsTransitioning] = useState(false);
 
 
+
     const confirmLogout = () => {
         setShowLogoutModal(true);
     };
@@ -84,8 +85,8 @@ const HeaderComponent: React.FC = () => {
         },
         {
             key: 'classroom',
-            title: user.role === 'admin' ? 'Quản lý hệ thống' : 'Khóa học của tôi',
-            href: user.role === 'admin' ? '/admin' : (PATHS.CLASSROOM || '/classroom'),
+            title: user && user.role === 'admin' ? 'Quản lý hệ thống' : 'Khóa học của tôi',
+            href: user && user.role === 'admin' ? '/admin' : (PATHS.CLASSROOM || '/classroom'),
         }
     ];
 

@@ -5,6 +5,7 @@ import Section3 from './Section3/Section3.tsx'
 import Section5 from './Section5/Section5.tsx'
 import { useNavigate } from 'react-router-dom'
 import homepageSs1 from '../../components/Homepage/image/homepage-ss1.png'
+import { useSelector } from 'react-redux'
 
 const HomePage2 = () => {
     const sectionRef = useRef<HTMLDivElement>(null);
