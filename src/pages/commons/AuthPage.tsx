@@ -100,23 +100,23 @@ const AuthPage = () => {
     };
 
     // Password validation rules
-    // const validatePassword = (rule: any, value: string) => {
-    //     if (!value) {
-    //         return Promise.reject('Vui lòng nhập mật khẩu của bạn!');
-    //     }
-    //
-    //     if (value.length < 8) {
-    //         return Promise.reject('Mật khẩu phải có ít nhất 8 ký tự!');
-    //     }
-    //
-    //     // Check for at least one special character
-    //     const specialCharRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
-    //     if (!specialCharRegex.test(value)) {
-    //         return Promise.reject('Mật khẩu phải chứa ít nhất một ký tự đặc biệt!');
-    //     }
-    //
-    //     return Promise.resolve();
-    // };
+    const validatePassword = (rule: any, value: string) => {
+        if (!value) {
+            return Promise.reject('Vui lòng nhập mật khẩu của bạn!');
+        }
+
+        if (value.length < 8) {
+            return Promise.reject('Mật khẩu phải có ít nhất 8 ký tự!');
+        }
+
+        // Check for at least one special character
+        const specialCharRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+        if (!specialCharRegex.test(value)) {
+            return Promise.reject('Mật khẩu phải chứa ít nhất một ký tự đặc biệt!');
+        }
+
+        return Promise.resolve();
+    };
 
     return (
         <div className={styles.authPage}>
@@ -191,7 +191,7 @@ const AuthPage = () => {
                             <Form.Item
                                 name="password"
                                 label="Mật khẩu"
-                                // rules={[{ validator: validatePassword }]}
+                                rules={[{ validator: validatePassword }]}
                                 validateTrigger={['onChange', 'onBlur']}
                             >
                                 <Input.Password
@@ -260,7 +260,7 @@ const AuthPage = () => {
                             <Form.Item
                                 name="password"
                                 label="Mật khẩu"
-                                // rules={[{ validator: validatePassword }]}
+                                rules={[{ validator: validatePassword }]}
                                 validateTrigger={['onChange', 'onBlur']}
                                 help="Mật khẩu phải có ít nhất 8 ký tự và chứa ít nhất 1 ký tự đặc biệt"
                             >
