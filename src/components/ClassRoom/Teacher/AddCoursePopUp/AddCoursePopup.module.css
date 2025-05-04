@@ -373,6 +373,7 @@
 /* Clone Button styles */
 .cloneButtonContainer {
     margin-bottom: 24px;
+    justify-content: right;
     display: flex;
     align-items: center;
     gap: 12px;

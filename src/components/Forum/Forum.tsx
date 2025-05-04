@@ -20,6 +20,7 @@ import { message, Drawer } from 'antd';
 import EmptyState from './EmptyState/EmptyState.tsx'
 import CreatePostModal from './CreatePost/CreatePostModal.tsx'
 import DinoLoading from '../commons/DinoLoading/DinoLoading.tsx'
+import defaultAvatar from '../../assets/default-avatar.jpg'
 
 interface MenuItem {
     id: string;
@@ -238,7 +239,6 @@ const ForumPage: React.FC = () => {
                 onClose={() => setIsCreateModalOpen(false)}
                 userId={user._id}
                 onSuccess={() => {
-                    // Refresh lại danh sách bài post sau khi tạo mới
                     setCurrentPage(1);
                     fetchData(1, true);
                 }}
@@ -248,7 +248,7 @@ const ForumPage: React.FC = () => {
                 <nav className={styles.desktopNav}>
                     <div className={styles.avatarContainer}>
                         <img
-                            src={user.avatar[0]? user.avatar :"https://i.pinimg.com/474x/0b/10/23/0b10236ae55b58dceaef6a1d392e1d15.jpg"}
+                            src={user.avatar && user.avatar[0]? user.avatar : defaultAvatar}
                             alt="User Avatar"
                             className={styles.userAvatar}
                         />

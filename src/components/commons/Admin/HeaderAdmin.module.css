@@ -6,9 +6,10 @@
     height: 64px;
     background: var(--primary-color);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    width: 100%; /* Đảm bảo header chiếm toàn bộ chiều rộng */
+    max-width: 1200px;
     border-radius: 0; /* Loại bỏ border radius để không có góc */
-    margin: 0; /* Không có margin */
+    margin: 0 auto; /* Không có margin */
+    padding: 0 24px; /* Thay đổi padding để không có góc */
 }
 
 /* Khắc phục góc đen của Ant Design khi overlay */
@@ -25,7 +26,7 @@
 }
 
 .logo {
-    height: 40px;
+    height: 64px;
     margin-right: 12px;
 }
 
@@ -43,16 +44,28 @@
 }
 
 .userInfo {
+    background-color: white;
+    color: var(--primary-color);
+    text-decoration: none;
+    padding: 4px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
     display: flex;
+    justify-content: space-between;
+    gap: 8px;
     align-items: center;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 8px;
-    transition: background-color 0.3s;
+    height: 40px;
+    line-height: 24px;
+    background-color: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .userInfo:hover {
-    background-color: var(--primary-dark);
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
 }
 
 .avatar {
@@ -61,10 +74,13 @@
 }
 
 .username {
-    color: var(--text-lighter);
+    color: var(--text-lighter) !important;
     font-weight: 500;
-    margin-left: 8px;
+    height: 30px;
     font-family: var(--font-secondary);
+    letter-spacing: 0.3px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    padding-right: 2px;
 }
 
 .loginButton {

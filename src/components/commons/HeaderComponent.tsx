@@ -173,9 +173,8 @@ const HeaderComponent: React.FC = () => {
                                 placement="bottomRight"
                                 arrow
                             >
-                                <div className="header-user-profile">
+                                <div className="user-info">
                                     <Avatar
-                                        size="small"
                                         icon={<UserOutlined />}
                                         src={user.avatar}
                                     />

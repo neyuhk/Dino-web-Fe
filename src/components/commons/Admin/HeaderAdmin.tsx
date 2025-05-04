@@ -78,7 +78,6 @@ const HeaderAdmin = () => {
                             <Avatar
                                 icon={<UserOutlined />}
                                 className={styles.avatar}
-                                size="large"
                             />
                             <span className={styles.username}>Admin</span>
                         </div>

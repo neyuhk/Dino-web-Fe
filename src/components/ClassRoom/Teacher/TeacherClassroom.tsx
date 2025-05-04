@@ -13,7 +13,7 @@ import DinoLoading from '../../commons/DinoLoading/DinoLoading.tsx'
 
 interface ToastMessage {
     show: boolean
-    type: 'success' | 'error' | 'info'
+    type: 'success' | 'error' | 'info' | 'warning'
     title: string
     message: string
     image?: string
@@ -82,7 +82,6 @@ const TeacherClassroom: React.FC = () => {
                     message: 'Đã tải danh sách lớp học',
                     image: '/images/success.png',
                 })
-
                 setIsLoading(false)
                 // Hide toast after 3 seconds
                 setTimeout(() => {

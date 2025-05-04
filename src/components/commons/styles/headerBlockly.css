@@ -22,15 +22,15 @@ body {
     align-items: center;
     justify-content: space-between;
     height: 64px;
-    max-width: 1920px;
+    max-width: 1200px;
     margin: 0 auto;
+    padding: 0 24px;
 }
 
 /* Logo section improvements */
 .logo-title {
     display: flex;
     align-items: center;
-    padding: 8px 12px;
     border-radius: 8px;
     transition: background-color 0.3s;
 }
@@ -52,6 +52,26 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
+.sign-in-btn {
+    background-color: white;
+    color: var(--primary-color);
+    text-decoration: none;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: inline-block;
+    height: 36px;
+    line-height: 24px;
+}
+
+.sign-in-btn:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
 
 /* Menu section improvements */
 .menu-section {
@@ -111,17 +131,23 @@ body {
 }
 
 .white-text {
-    color: var(--text-lighter) !important;
-    font-size: 15px;
+    background-color: white;
+    color: var(--primary-color);
+    text-decoration: none;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
     font-weight: 500;
-    transition: all 0.3s;
-    letter-spacing: 0.3px;
+    transition: all 0.2s ease;
+    display: inline-block;
+    height: 36px;
+    line-height: 24px;
 }
 
 .white-text:hover {
-    color: var(--secondary-light) !important;
+    background-color: rgba(255, 255, 255, 0.9);
     transform: translateY(-1px);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* Project name input improvements */
@@ -153,7 +179,7 @@ body {
     background-color: white;
     color: var(--primary-color);
     text-decoration: none;
-    padding: 6px;
+    padding: 4px;
     border-radius: 20px;
     font-size: 0.9rem;
     font-weight: 500;
@@ -174,13 +200,14 @@ body {
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
 }
 
-.username {
-    color: var(--text-lighter);
+.username-blockly {
+    color: var(--text-lighter) !important;
     font-weight: 500;
     height: 30px;
     font-family: var(--font-secondary);
     letter-spacing: 0.3px;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    padding-right: 2px;
 }
 
 /* The rest of the CSS remains the same */

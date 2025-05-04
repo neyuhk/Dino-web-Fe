@@ -641,7 +641,7 @@ fi
                             <Dropdown overlay={userMenu} trigger={['click']}>
                                 <div className="user-info">
                                     <Avatar icon={<UserOutlined />} />
-                                    <span className="username">
+                                    <span className="username-blockly">
                                         {user.username}
                                     </span>
                                 </div>

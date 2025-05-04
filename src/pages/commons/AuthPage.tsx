@@ -77,8 +77,11 @@ const AuthPage = () => {
             message.success('Đăng ký thành công! Vui lòng đăng nhập.');
             setIsLoginView(true);
         } catch (e: any) {
-            console.error(e);
-            setError(e.message);
+            console.error(e.status);
+            if(e.status === 400) {
+                setError("Email đã được đăng ký!");
+            }
+            else setError(e.message);
         } finally {
             setSubmitLoading(false);
         }

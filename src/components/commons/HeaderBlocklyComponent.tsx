@@ -1,9 +1,10 @@
 import React, { useRef, useState } from 'react'
-import { Button, Input, Dropdown, Menu, MenuProps, Space, Avatar } from 'antd'
+import { Input, Dropdown, Menu, MenuProps, Space, Avatar } from 'antd'
 import { DownOutlined, UserOutlined } from '@ant-design/icons'
 import './styles/headerBlockly.css'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import logo from '../../assets/dinologo-nobgr.png'
+import { color } from 'framer-motion'
 
 const HeaderBlocklyComponent: React.FC = () => {
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -39,6 +40,22 @@ const HeaderBlocklyComponent: React.FC = () => {
     const handleMenuClick = () => {
         setIsFileActive(!isFileActive)
     }
+    const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
+        e.preventDefault();
+
+        if (location.pathname === path) return;
+
+        // Thêm class để bắt đầu hiệu ứng fade-out
+        document.body.classList.add('page-transitioning');
+
+        // Đợi hiệu ứng hoàn thành trước khi chuyển trang
+        setTimeout(() => {
+            navigate(path);
+            setTimeout(() => {
+                document.body.classList.remove('page-transitioning');
+            }, 100);
+        }, 300);
+    };
 
     const userMenu = (
         <Menu>
@@ -94,16 +111,29 @@ const HeaderBlocklyComponent: React.FC = () => {
     ]
 
     return (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                margin: '0px 16px',
+            }}
+        >
             <img
                 src={logo}
                 alt="Logo"
-                style={{ marginRight: '16px', cursor: 'pointer' }}
+                style={{ cursor: 'pointer' }}
                 onClick={() => navigate('/')}
             />
             <div style={{ marginRight: '16px' }}>
-                <Dropdown menu={{ items: taptinn }} trigger={['click']} onOpenChange={handleMenuClick}>
-                    <a className={`white-text `} onClick={(e) => e.preventDefault()}>
+                <Dropdown
+                    menu={{ items: taptinn }}
+                    trigger={['click']}
+                    onOpenChange={handleMenuClick}
+                >
+                    <a
+                        className={`white-text `}
+                        onClick={(e) => e.preventDefault()}
+                    >
                         <Space>
                             File
                             <DownOutlined />
@@ -112,8 +142,15 @@ const HeaderBlocklyComponent: React.FC = () => {
                 </Dropdown>
             </div>
             <div style={{ marginRight: '16px' }}>
-                <Dropdown menu={{ items: chinhsuaa }} trigger={['click']} onOpenChange={handleMenuClick}>
-                    <a className={`white-text`} onClick={(e) => e.preventDefault()}>
+                <Dropdown
+                    menu={{ items: chinhsuaa }}
+                    trigger={['click']}
+                    onOpenChange={handleMenuClick}
+                >
+                    <a
+                        className={`white-text`}
+                        onClick={(e) => e.preventDefault()}
+                    >
                         <Space>
                             Edit
                             <DownOutlined />
@@ -127,8 +164,12 @@ const HeaderBlocklyComponent: React.FC = () => {
                 onChange={(e) => setProjectName(e.target.value)}
                 style={{ width: '200px' }}
             />
-            <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange} />
-
+            <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
+            />
 
             <div style={{ marginLeft: 'auto' }}>
                 {isLogin ? (
@@ -137,12 +178,23 @@ const HeaderBlocklyComponent: React.FC = () => {
                             className="user-info"
                             onClick={(e) => e.preventDefault()}
                         >
-                            <Avatar icon={<UserOutlined />} />
-                            <span className="username">{'Name'}</span>
+                            <Avatar size={'small'} icon={<UserOutlined />} />
+                            <span
+                                style={{ color: 'white' }}
+                                className="username-blockly"
+                            >
+                                {'Name'}
+                            </span>
                         </div>
                     </Dropdown>
                 ) : (
-                    <div>chua dnag nhap</div>
+                    <Link
+                        to="/auth"
+                        className="sign-in-btn"
+                        onClick={(e) => handleNavigation(e, '/auth')}
+                    >
+                        Đăng nhập
+                    </Link>
                 )}
             </div>
         </div>

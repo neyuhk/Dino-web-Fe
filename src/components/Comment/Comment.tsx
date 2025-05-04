@@ -5,6 +5,7 @@ import { Comment as CommentInterface, CommentReq } from '../../model/model.ts';
 import { addComment, getCommentsByCommentableId, likeComment, deleteComment, getSubComment } from '../../services/comment.ts';
 import { useSelector } from 'react-redux';
 import styles from './Comment.module.css';
+import { Loader2 } from 'lucide-react'
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -19,6 +20,7 @@ const CommentComponent: React.FC<CommentProps> = ({ commentableId, commentableTy
     const [comments, setComments] = useState<CommentInterface[]>([]);
     const [subComments, setSubComments] = useState<{[key: string]: CommentInterface[]}>({});
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isAddComment, setIsAddComment] = useState<boolean>(false);
     const [loadingSubComments, setLoadingSubComments] = useState<{[key: string]: boolean}>({});
     const [form] = Form.useForm();
     const { user } = useSelector((state: any) => state.auth);
@@ -145,6 +147,7 @@ const CommentComponent: React.FC<CommentProps> = ({ commentableId, commentableTy
     };
 
     const handleAddComment = async (values: { content: string, parentId: string }) => {
+        setIsAddComment(true)
         try {
             if (!values.content.trim()) {
                 message.error('Comment content cannot be empty');
@@ -300,9 +303,10 @@ const CommentComponent: React.FC<CommentProps> = ({ commentableId, commentableTy
                     onCommentCountChange(getTotalCommentCount(updatedComments));
                 }
             }
-
+            setIsAddComment(false)
             message.success('Bình luận thành công');
         } catch (error) {
+            setIsAddComment(false)
             console.error("Error adding comment:", error);
             message.error('Có lỗi khi tải lên bình luận');
         }
@@ -615,7 +619,7 @@ const CommentComponent: React.FC<CommentProps> = ({ commentableId, commentableTy
                 </Form.Item>
                 <Space>
                     <Button type="primary" htmlType="submit" size="small">
-                        Reply
+                        Thêm bình luận
                     </Button>
                     <Button
                         size="small"
@@ -625,7 +629,7 @@ const CommentComponent: React.FC<CommentProps> = ({ commentableId, commentableTy
                             setTextareaValue('');
                         }}
                     >
-                        Cancel
+                        Huỷ
                     </Button>
                 </Space>
             </Form>
@@ -818,9 +822,17 @@ const CommentComponent: React.FC<CommentProps> = ({ commentableId, commentableTy
                             />
                         </Form.Item>
                         <Form.Item>
-                            <Button type="primary" htmlType="submit">
-                                Add Comment
+                            <Button type="primary" htmlType="submit" disabled={isAddComment}>
+                                {isAddComment ? (
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <Loader2 size={20} className="spinner" />
+      Đang tải
+    </span>
+                                ) : (
+                                    'Thêm bình luận'
+                                )}
                             </Button>
+
                         </Form.Item>
                     </Form>
                 </div>
