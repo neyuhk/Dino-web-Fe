@@ -61,7 +61,7 @@ const ClassroomDetailPage: React.FC = () => {
             //     <p>Chờ xíuuuu... </p>
             // </div>
             <DinoLoading
-                message="Chờ xíuuu..."
+                message="Chờ xíuuu"
             />
         );
     }

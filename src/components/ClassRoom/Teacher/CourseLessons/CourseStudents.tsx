@@ -1034,7 +1034,7 @@ const CourseStudents: React.FC<CourseStudentsProps> = ({ courseId }) => {
                     </div>
                 </div>
             )}
-            {loading && <DinoLoading message="Đang tải..." />}
+            {loading && <DinoLoading message="Đang tải" />}
         </div>
     )
 }

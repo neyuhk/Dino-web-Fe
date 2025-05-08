@@ -182,7 +182,7 @@ const TeacherClassroom: React.FC = () => {
     if (isLoading) {
         return (
             <DinoLoading
-                message="Đang tải lớp học của bạn..."
+                message="Đang tải lớp học của bạn"
             />
         )
     }

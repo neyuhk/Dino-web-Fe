@@ -366,7 +366,7 @@ const ForumPage: React.FC = () => {
                 <div className={styles.postsContainer} ref={postsContainerRef}>
                     {/* Hiển thị loading state cho lần load đầu tiên */}
                     {isLoading ? (
-                        <DinoLoading message={"Đang tải..."} />
+                        <DinoLoading message={"Đang tải"} />
                     ) : hasError ? (
                         <EmptyState
                             selectedMenu={selectedMenu}

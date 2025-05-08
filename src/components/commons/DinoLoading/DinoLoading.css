@@ -1,160 +1,242 @@
-.dino-loading-container {
+.dino-loading-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    background-color: transparent;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.dino-content {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 60vh;
-    gap: 1.5rem;
-    color: #6c757d;
-    font-family: system-ui, sans-serif;
-}
-
-.dino-loading-spinner {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: white;
+    border-radius: 12px;
+    padding: 24px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    position: relative;
-    overflow: visible;
 }
 
-.dino-container {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    animation: bounce 1.5s ease-in-out infinite;
+.dino-content.sm {
+    width: 160px;
+    min-height: 190px;
 }
 
-.dino {
+.dino-content.md {
+    width: 190px;
+    min-height: 230px;
+}
+
+.dino-content.lg {
+    width: 230px;
+    min-height: 270px;
+}
+
+/* DINO Letters container - moved below dinosaur image */
+.dino-letters {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    justify-content: center;
     width: 100%;
-    height: 100%;
 }
 
-.dino-body {
-    fill: #50b848; /* Green dino */
+.dino-image-wrapper {
+    position: relative;
+    margin-bottom: 4px;
+    margin-top: 8px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
 
-.dino-accent {
-    fill: #3a8a34;
+.dino-image {
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 3px 8px rgba(0, 150, 136, 0.3);
+    z-index: 10;
+    position: relative;
+    animation: pulse 2s infinite, glow 6s infinite;
 }
 
-.dino-eye {
-    fill: white;
+.dino-content.sm .dino-image {
+    width: 56px;
+    height: 56px;
 }
 
-.dino-pupil {
-    fill: #333;
+.dino-content.md .dino-image {
+    width: 70px;
+    height: 70px;
 }
 
-.letter {
+.dino-content.lg .dino-image {
+    width: 84px;
+    height: 84px;
+}
+
+.dino-shadow {
     position: absolute;
-    font-weight: bold;
-    font-size: 18px;
+    bottom: -3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 10%;
+    background-color: rgba(0, 150, 136, 0.2);
+    border-radius: 50%;
+    filter: blur(3px);
+    animation: shadow-pulse 1.5s infinite alternate ease-in-out;
+}
+
+.loading-message {
+    color: #009688;
+    font-weight: 600;
+    margin-top: 2px;
+    text-align: center;
+    width: 100%;
+    line-height: 1.2;
+}
+
+.dino-content.sm .loading-message {
+    font-size: 0.75rem;
+}
+
+.dino-content.md .loading-message {
+    font-size: 0.875rem;
+}
+
+.dino-content.lg .loading-message {
+    font-size: 1rem;
+}
+
+.loading-dots {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    margin-top: 2px;
+}
+
+.loading-dots span {
+    display: inline-block;
+    animation: dots 1.4s infinite ease-in-out;
+    color: #009688;
+    opacity: 0.7;
+}
+
+.loading-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.loading-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+.bubble {
+    position: absolute;
+    background-color: rgba(178, 223, 219, 0.7);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.dino-letter-bubble {
+    background-color: #009688;
     color: white;
-    background: #50b848;
-    width: 24px;
-    height: 24px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    animation: float 3s ease-in-out infinite;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 150, 136, 0.4);
+    position: relative;
+    /* Remove vertical translation from regular float animation */
+    animation: gentle-pulse 2s infinite alternate ease-in-out !important;
 }
 
-.letter:nth-child(1) {
-    top: -10px;
-    left: 0;
-    animation-delay: 0s;
+.dino-content.sm .dino-letter-bubble {
+    width: 26px;
+    height: 26px;
+    font-size: 13px;
 }
 
-.letter:nth-child(2) {
-    top: -10px;
-    right: 0;
-    animation-delay: 0.3s;
+.dino-content.md .dino-letter-bubble {
+    width: 32px;
+    height: 32px;
+    font-size: 15px;
 }
 
-.letter:nth-child(3) {
-    bottom: -10px;
-    left: 0;
-    animation-delay: 0.6s;
+.dino-content.lg .dino-letter-bubble {
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
 }
 
-.letter:nth-child(4) {
-    bottom: -10px;
-    right: 0;
-    animation-delay: 0.9s;
-}
-
-.track {
-    position: absolute;
-    bottom: 10px;
-    width: 100%;
-    height: 2px;
-    background: rgba(80, 184, 72, 0.2);
-}
-
-.footprint {
-    position: absolute;
-    width: 8px;
-    height: 12px;
-    border-radius: 4px 4px 0 0;
-    background: rgba(80, 184, 72, 0.4);
-    opacity: 0;
-    animation: footprint 3s infinite linear;
-}
-
-.footprint:nth-child(2) {
-    animation-delay: 0.5s;
-}
-
-.footprint:nth-child(3) {
-    animation-delay: 1s;
-}
-
-.footprint:nth-child(4) {
-    animation-delay: 1.5s;
-}
-
-.footprint:nth-child(5) {
-    animation-delay: 2s;
-}
-
-@keyframes bounce {
-    0%, 100% {
-        transform: translateY(0);
+/* Animations */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
     }
     50% {
-        transform: translateY(-10px);
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes gentle-pulse {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes glow {
+    0%, 100% {
+        box-shadow: 0 0 5px 1px rgba(56, 178, 172, 0);
+    }
+    50% {
+        box-shadow: 0 0 10px 3px rgba(56, 178, 172, 0.6);
+    }
+}
+
+@keyframes shadow-pulse {
+    0% {
+        width: 60%;
+        opacity: 0.2;
+    }
+    100% {
+        width: 80%;
+        opacity: 0.3;
+    }
+}
+
+@keyframes dots {
+    0%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-5px);
     }
 }
 
 @keyframes float {
-    0%, 100% {
-        transform: translateY(0) rotate(0deg);
+    0% {
+        transform: translate(-50%, -50%) translateY(0);
     }
     50% {
-        transform: translateY(-8px) rotate(5deg);
-    }
-}
-
-@keyframes footprint {
-    0% {
-        left: 0;
-        opacity: 0;
-    }
-    10% {
-        opacity: 1;
-    }
-    90% {
-        opacity: 1;
+        transform: translate(-50%, -50%) translateY(-8px);
     }
     100% {
-        left: 100%;
-        opacity: 0;
+        transform: translate(-50%, -50%) translateY(0);
     }
 }

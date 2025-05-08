@@ -104,7 +104,7 @@ const LessonList: React.FC<LessonListProps> = ({ courseId }) => {
             //     <p>Chờ xíuuuu...</p>
             // </div>
             <DinoLoading
-                message="Chờ xíuuuu..."
+                message="Chờ xíuuuu"
             />
         );
     }

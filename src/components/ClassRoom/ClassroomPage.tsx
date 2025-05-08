@@ -69,7 +69,7 @@ const ClassroomList: React.FC = () => {
             //     <p>Đang tải lớp học của bạn...</p>
             // </div>
             <DinoLoading
-                message="Đang tải lớp học của bạn...">
+                message="Đang tải lớp học của bạn">
             </DinoLoading>
         )
     }
