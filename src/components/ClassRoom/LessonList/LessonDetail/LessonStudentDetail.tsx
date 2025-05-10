@@ -10,12 +10,14 @@ import {convertDateTimeToDate} from '../../../../helpers/convertDateTime.ts'
 import {getExerciseForStudent} from "../../../../services/exercise.ts";
 import ExerciseDetail from '../../ExerciseDetail/ExerciseDetail.tsx'
 import { getLessonById } from '../../../../services/lesson.ts'
+import DinoLoading from '../../../commons/DinoLoading/DinoLoading.tsx'
 
 const LessonStudentDetail: React.FC = () => {
     const { lessonId } = useParams<{ lessonId: string }>();
     console.log(lessonId);
     const navigate = useNavigate();
     const {user} = useSelector((state: any) => state.auth);
+    const [isLoading, setLoading] = useState<boolean>(true)
     const [lesson, setLesson] = useState<Lesson | null>(null);
     const [exercises, setExercises] = useState<Exercise[] | null>([]);
     const [showExerciseDetail, setShowExerciseDetail] = useState(false);
@@ -31,18 +33,32 @@ const LessonStudentDetail: React.FC = () => {
             console.log("lesson navigate detail", lessonId);
             if(lessonId){
                 const data = await getLessonById(lessonId)
+                setLoading(false)
                 setLesson(data.data)
                 const response = await getExerciseForStudent(lessonId, user._id);
                 setExercises(response.data);
             }
             else{
+                setLoading(false)
                 setLesson(null);
                 setExercises(null);
             }
         }
         fetchData()
     }, [lessonId, navigate]);
-
+    if (isLoading) {
+        return (
+            // <div className={styles.loadingContainer}>
+            //     <div className={styles.loadingSpinner}>
+            //         <GraduationCap size={32} className={styles.loadingIcon} />
+            //     </div>
+            //     <p>Đang tải lớp học của bạn...</p>
+            // </div>
+            <DinoLoading
+                message="Đang tải lớp học của bạn">
+            </DinoLoading>
+        )
+    }
     if (!lesson) {
         return (
             <div className={styles.errorContainer}>

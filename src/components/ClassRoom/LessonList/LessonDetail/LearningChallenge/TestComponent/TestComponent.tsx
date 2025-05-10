@@ -34,7 +34,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
     const [quizResults, setQuizResults] = useState<Record<string, any>>({});
     const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
     const [showDetailedResults, setShowDetailedResults] = useState<boolean>(false);
-
+    const [quizNumber, setQuizNumber] = useState<number>(1);
     useEffect(() => {
         const initialAnswers: Record<string, string[]> = {};
         quizList.forEach(quiz => {
@@ -170,7 +170,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                             className={`${styles.button} ${styles.submitButton}`}
                             onClick={performSubmit}
                         >
-                            Nộp bài
+                            {isSubmitting ? 'Đang nộp...' : 'Nộp bài'}
                         </button>
                         <button
                             className={`${styles.button} ${styles.cancelButton}`}
@@ -188,7 +188,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         return (
             <div className={styles.detailedResultsContainer}>
                 <h2 className={styles.resultTitle}>Chi tiết bài làm</h2>
-                {quizList.map((quiz) => {
+                {quizList.map((quiz : Quiz, index : number) => {
                     const quizResult = quizResults[quiz._id];
 
                     // If no quiz result, return null or handle accordingly
@@ -199,7 +199,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                     return (
                         <div key={quiz._id} className={styles.quizResultItem}>
                             <div className={styles.questionHeader}>
-                                <h3 className={styles.questionNumber}>Câu {quiz.index}:</h3>
+                                <h3 className={styles.questionNumber}>Câu {index+1}:</h3>
                                 <h3 className={styles.questionText}>{quiz.question}</h3>
                                 <div className={`${
                                     isCorrect
@@ -276,10 +276,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
                     </div>
 
                     <div className={styles.quizContainer}>
-                        {quizList.map((quiz) => (
+                        {quizList.map((quiz : Quiz, index : number) => (
                             <div key={quiz._id} className={styles.quizItem}>
                                 <div className={styles.questionHeader}>
-                                    <h3 className={styles.questionNumber}>Câu {quiz.index}:</h3>
+                                    <h3 className={styles.questionNumber}>Câu {index+1}:</h3>
                                     <h3 className={styles.questionText}>{quiz.question}</h3>
                                 </div>
 

@@ -44,7 +44,7 @@ const ConfirmationPopup: React.FC<ConfirmationPopupProps> = ({
                             <p>
                                 {exercise.type === 'quiz'
                                     ? `${exercise.time || 0} giây / câu hỏi`
-                                    : `${exercise.time || 0} phút cho cả bài`}
+                                    : `${exercise.time/60 || 0} phút cho cả bài`}
                             </p>
                         </div>
                     </div>

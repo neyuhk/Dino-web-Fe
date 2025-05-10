@@ -668,7 +668,7 @@ fi
                             id="saveCodeBlockToDB"
                             onClick={saveCodeBlockToDB}
                         >
-                            <PlayCircleOutlined /> Chạy trên thiết bị
+                            <PlayCircleOutlined /> Chạy thử
                         </button>
 
                         <button

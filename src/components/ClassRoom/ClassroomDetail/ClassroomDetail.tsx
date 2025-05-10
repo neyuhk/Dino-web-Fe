@@ -25,8 +25,8 @@ const ClassroomDetailPage: React.FC = () => {
             try{
                 console.log( 'classroomId', classroom ,classroom.teacher_id);
                 const data = await getUserById(classroom.teacher_id)
+                setIsLoading(false);
                 setTeacher(data.data)
-                // setClassroom('') //test null data
             } catch (error){
                 console.log('Error fetching courses',error)
             } finally {

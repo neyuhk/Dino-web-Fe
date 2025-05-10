@@ -320,9 +320,9 @@ const ExerciseDetail: React.FC = () => {
                                                 className={styles.questionType}
                                             >
                                                 {question.type_answer ===
-                                                'multiple_choice'
-                                                    ? 'Nhiều lựa chọn'
-                                                    : 'Một lựa chọn'}
+                                                'one_choice'
+                                                    ? 'Một lựa chọn'
+                                                    : 'Nhiều lựa chọn'}
                                             </div>
                                             <div className={styles.expandIcon}>
                                                 {isQuestionExpanded(
