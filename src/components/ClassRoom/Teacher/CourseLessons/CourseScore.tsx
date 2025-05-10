@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import styles from './CourseScore.module.css';
 import { getScoreForCourse, editScore, deleteScore } from '../../../../services/score.ts';
-import { Search, X, RotateCcw, Edit, Filter, MoreVertical, Eye, Trash2, GraduationCap } from 'lucide-react'
+import { Search, X, RotateCcw, Edit, Filter, MoreVertical, Eye, Trash2, GraduationCap, Loader2 } from 'lucide-react'
 import Toast from '../../../commons/Toast/Toast.tsx'
 import ExerciseDetail from '../../ExerciseDetail/ExerciseDetail.tsx'
 
@@ -28,6 +28,7 @@ const CourseScore: React.FC<Props> = ({ courseId }) => {
     const [data, setData] = useState<any[]>([]);
     const [courseTitle, setCourseTitle] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(true);
+    const [isDelete, setIsDelete] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [editingScore, setEditingScore] = useState<{ userId: string, exerciseId: string } | null>(null);
     const [editScoreValue, setEditScoreValue] = useState<string>('');
@@ -261,6 +262,7 @@ const CourseScore: React.FC<Props> = ({ courseId }) => {
 
         try {
             // Update score via API
+            setIsDelete(true);
             await editScore(scoreEntry.scoreId, score);
 
             // Update UI
@@ -278,11 +280,13 @@ const CourseScore: React.FC<Props> = ({ courseId }) => {
                 return item;
             });
 
+            setIsDelete(false);
             setData(updatedData);
             updateStats(updatedData);
             setEditingScore(null);
             showToast('success', 'Thành công', 'Điểm số đã được cập nhật.');
         } catch (error) {
+            setIsDelete(false);
             console.error("Error updating score:", error);
             showToast('error', 'Lỗi', 'Có lỗi khi cập nhật điểm số. Vui lòng thử lại.');
         }
@@ -324,6 +328,7 @@ const CourseScore: React.FC<Props> = ({ courseId }) => {
         }
 
         try {
+            setIsDelete(true);
             await deleteScore(scoreEntry.scoreId);
 
             // Update UI
@@ -341,6 +346,7 @@ const CourseScore: React.FC<Props> = ({ courseId }) => {
                 return item;
             });
 
+            setIsDelete(false);
             setData(updatedData);
             updateStats(updatedData);
             showToast('success', 'Thành công', 'Điểm số đã được xóa.');
@@ -349,6 +355,7 @@ const CourseScore: React.FC<Props> = ({ courseId }) => {
             showToast('error', 'Lỗi', 'Có lỗi khi xóa điểm số. Vui lòng thử lại.');
         } finally {
             // Close confirmation popup
+            setIsDelete(false);
             setDeleteConfirm({ show: false, userId: null, exerciseId: null });
         }
     };
@@ -773,7 +780,11 @@ const CourseScore: React.FC<Props> = ({ courseId }) => {
                                 className={styles.deleteButton}
                                 onClick={confirmDeleteScore}
                             >
-                                Xóa
+                                {isDelete ? (
+                                    <Loader2 size={20} className="spinner" />
+                                ) : (
+                                    'Xóa'
+                                )}
                             </button>
                         </div>
                     </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './TestComponent.module.css';
 import { Quiz, Exercise, SubmitAnswerReq } from '../../../../../../model/classroom.ts'
+import { Loader2 } from 'lucide-react'
 
 interface TestComponentProps {
     exercise: Exercise;
@@ -170,7 +171,11 @@ const TestComponent: React.FC<TestComponentProps> = ({
                             className={`${styles.button} ${styles.submitButton}`}
                             onClick={performSubmit}
                         >
-                            {isSubmitting ? 'Đang nộp...' : 'Nộp bài'}
+                            {isSubmitting ? (
+                                <Loader2 size={20} className="spinner" />
+                            ) : (
+                                'Nộp bài'
+                            )}
                         </button>
                         <button
                             className={`${styles.button} ${styles.cancelButton}`}
@@ -335,7 +340,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                             onClick={handleSubmit}
                             disabled={isSubmitting}
                         >
-                            {isSubmitting ? 'Đang nộp...' : 'Nộp bài'}
+                            Nộp bài
                         </button>
                     </div>
                 </>

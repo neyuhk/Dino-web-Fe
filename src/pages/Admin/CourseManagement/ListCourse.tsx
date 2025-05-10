@@ -1,19 +1,37 @@
 import React, { useEffect, useState } from 'react';
-import { Space, Table, Input, Button, Modal, Form, Upload, DatePicker, message, Tooltip, Card, Select, Typography, Row, Col, Collapse } from 'antd';
+import { Space, Table, Input, Button, Modal, Form, Upload, DatePicker, message, Tooltip, Card, Select, Typography, Row, Col } from 'antd';
 import type { TableProps } from 'antd';
 import { getCourses, addCourse, deleteCourse, editCourse } from '../../../services/course.ts';
-import { getUserById } from '../../../services/user.ts';
-import { Course } from '../../../model/model.ts';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
-import { AlignLeftOutlined, DeleteOutlined, EditOutlined, UploadOutlined, FilterOutlined, ReloadOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
+import { AlignLeftOutlined, DeleteOutlined, EditOutlined, UploadOutlined, FilterOutlined, ReloadOutlined } from '@ant-design/icons';
 import { GraduationCap, Loader2 } from 'lucide-react'
+import { User } from '../../../model/model.ts'
 
 const { Search } = Input;
 const { Title } = Typography;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
-
+export interface Teacher{
+    _id: string;
+    username: string;
+    avatar: string[];
+}
+export interface Course {
+    _id: string;
+    title: string;
+    description: string;
+    imageUrl: string;
+    level: 'Beginner' | 'Intermediate' | 'Advanced';
+    startDate: string;
+    certification: string
+    end_date: string;
+    start_date: string;
+    createdAt: string;
+    images: string[];
+    user_id: User;
+    teacher_id: Teacher;
+}
 const ListCourseManagement: React.FC = () => {
     const [data, setData] = useState<Course[]>([]);
     const [originalData, setOriginalData] = useState<Course[]>([]);
@@ -29,7 +47,6 @@ const ListCourseManagement: React.FC = () => {
     const [editingCourse, setEditingCourse] = useState<Course | null>(null);
     const [courseToDelete, setCourseToDelete] = useState<string | null>(null);
     const [isFilterVisible, setIsFilterVisible] = useState(false);
-    const [teacherNames, setTeacherNames] = useState<{[key: string]: string}>({});
     const [uniqueTeachers, setUniqueTeachers] = useState<{id: string, name: string}[]>([]);
     const [filters, setFilters] = useState({
         title: '',
@@ -45,29 +62,27 @@ const ListCourseManagement: React.FC = () => {
             setData(courses.data);
             setPagination({ current: page, pageSize: perPage, total: courses.totalCourses });
 
-            // Fetch teacher names for each course
-            const teacherIds = data.map(course => course.teacher_id).filter(id => id);
-            const uniqueTeacherIds = [...new Set(teacherIds)];
-            console.log('id',teacherIds);
-            const teacherData: {[key: string]: string} = {};
+            // Extract unique teachers from the courses data
             const teachersList: {id: string, name: string}[] = [];
+            const teachersMap = new Map();
 
-            await Promise.all(uniqueTeacherIds.map(async (id) => {
-                try {
-                    const teacher = await getUserById(id);
-                    teacherData[id] = teacher.data.username;
-                    console.log('name',teacher.data.username);
-                    teachersList.push({
-                        id: id,
-                        name: teacher.data.username
-                    });
-                } catch (error) {
-                    console.error(`Không thể tải thông tin giáo viên có ID ${id}:`, error);
-                    teacherData[id] = 'Không xác định';
-                }
-            }));
+            if (Array.isArray(courses.data) && courses.data.length > 0) {
+                courses.data.forEach((course: Course) => {
+                    if (course.teacher_id && typeof course.teacher_id === 'object' && course.teacher_id._id) {
+                        const teacherId = course.teacher_id._id;
+                        const teacherName = course.teacher_id.username;
 
-            setTeacherNames(teacherData);
+                        if (!teachersMap.has(teacherId)) {
+                            teachersMap.set(teacherId, true);
+                            teachersList.push({
+                                id: teacherId,
+                                name: teacherName
+                            });
+                        }
+                    }
+                });
+            }
+
             setUniqueTeachers(teachersList);
         } catch (error) {
             console.error('Không thể tải danh sách khóa học:', error);
@@ -162,13 +177,19 @@ const ListCourseManagement: React.FC = () => {
 
     const handleEditCourse = (course: Course) => {
         setEditingCourse(course);
+
+        let teacherId = '';
+        if (course.teacher_id) {
+            teacherId = typeof course.teacher_id === 'object' ? course.teacher_id._id : course.teacher_id;
+        }
+
         form.setFieldsValue({
             title: course.title,
             description: course.description,
             startDate: moment(course.start_date),
             endDate: moment(course.end_date),
             certification: course.certification,
-            teacher_id: course.teacher_id,
+            teacher_id: teacherId,
         });
         setIsModalVisible(true);
     };
@@ -183,21 +204,31 @@ const ListCourseManagement: React.FC = () => {
     };
 
     const applyFilters = (filterValues: any) => {
+        if (!Array.isArray(originalData) || originalData.length === 0) {
+            return;
+        }
+
         let filteredData = [...originalData];
 
         // Lọc theo tên khóa học
         if (filterValues.title) {
             const searchTerm = filterValues.title.toLowerCase();
             filteredData = filteredData.filter(course =>
-                course.title.toLowerCase().includes(searchTerm)
+                course && course.title && course.title.toLowerCase().includes(searchTerm)
             );
         }
 
         // Lọc theo tên giáo viên
         if (filterValues.teacher_id) {
-            filteredData = filteredData.filter(course =>
-                course.teacher_id === filterValues.teacher_id
-            );
+            filteredData = filteredData.filter(course => {
+                if (course && course.teacher_id) {
+                    if (typeof course.teacher_id === 'object') {
+                        return course.teacher_id._id === filterValues.teacher_id;
+                    }
+                    return course.teacher_id === filterValues.teacher_id;
+                }
+                return false;
+            });
         }
 
         // Lọc theo khoảng thời gian
@@ -206,6 +237,10 @@ const ListCourseManagement: React.FC = () => {
             const endDate = filterValues.dateRange[1].endOf('day');
 
             filteredData = filteredData.filter(course => {
+                if (!course || !course.start_date || !course.end_date) {
+                    return false;
+                }
+
                 const courseStartDate = moment(course.start_date);
                 const courseEndDate = moment(course.end_date);
 
@@ -252,9 +287,16 @@ const ListCourseManagement: React.FC = () => {
         },
         {
             title: 'Giáo viên',
-            dataIndex: 'teacher_id',
             key: 'teacher_id',
-            render: (teacherId) => teacherId ? teacherNames[teacherId] || 'Đang tải...' : 'Không xác định',
+            render: (record) => {
+                if (record && record.teacher_id) {
+                    if (typeof record.teacher_id === 'object' && record.teacher_id.username) {
+                        return record.teacher_id.username;
+                    }
+                    return 'Không xác định';
+                }
+                return 'Không xác định';
+            },
         },
         {
             title: 'Mô tả',
@@ -375,9 +417,13 @@ const ListCourseManagement: React.FC = () => {
 
                             <Form.Item name="teacher_id" label="Giáo viên" style={{ marginBottom: 8, minWidth: '200px' }}>
                                 <Select allowClear placeholder="Chọn giáo viên" style={{ width: '100%' }}>
-                                    {uniqueTeachers.map(teacher => (
-                                        <Option key={teacher.id} value={teacher.id}>{teacher.name}</Option>
-                                    ))}
+                                    {Array.isArray(uniqueTeachers) && uniqueTeachers.length > 0 ? (
+                                        uniqueTeachers.map(teacher => (
+                                            <Option key={teacher.id} value={teacher.id}>{teacher.name}</Option>
+                                        ))
+                                    ) : (
+                                        <Option value="" disabled>Không có giáo viên nào</Option>
+                                    )}
                                 </Select>
                             </Form.Item>
 
@@ -449,11 +495,13 @@ const ListCourseManagement: React.FC = () => {
                         rules={[{ required: true, message: 'Vui lòng chọn giáo viên!' }]}
                     >
                         <Select placeholder="Chọn giáo viên">
-                            {uniqueTeachers.map(teacher => (
-                                <Option key={teacher.id} value={teacher.id}>{teacher.name}</Option>
-                            ))}
-                            <Option value="teacher1">Giáo viên 1</Option>
-                            <Option value="teacher2">Giáo viên 2</Option>
+                            {Array.isArray(uniqueTeachers) && uniqueTeachers.length > 0 ? (
+                                uniqueTeachers.map(teacher => (
+                                    <Option key={teacher.id} value={teacher.id}>{teacher.name}</Option>
+                                ))
+                            ) : (
+                                <Option value="" disabled>Không có giáo viên nào</Option>
+                            )}
                         </Select>
                     </Form.Item>
                     <Form.Item

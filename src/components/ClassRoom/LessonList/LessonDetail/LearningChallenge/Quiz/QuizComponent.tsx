@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { CheckCircle, XCircle, Timer, ArrowRight, Clock, AlertTriangle } from 'lucide-react';
+import { CheckCircle, XCircle, Timer, ArrowRight, Clock, AlertTriangle, Loader2 } from 'lucide-react'
 import styles from './QuizComponent.module.css';
 import { Quiz, SubmitAnswerReq } from '../../../../../../model/classroom.ts'
 import { getAnsweredQuiz } from '../../../../../../services/lesson.ts'
@@ -36,7 +36,7 @@ const QuizComponent: React.FC<QuizComponentProps> = ({ quiz, quizNumber, onSubmi
     const [isTimeOut, setIsTimeOut] = useState(false);
     const [nextQuestionCountdown, setNextQuestionCountdown] = useState<number | null>(null);
     const { user } = useSelector((state: any) => state.auth);
-
+    const [isSubmittedAnswer, setIsSubmittedAnswer] = useState(false);
     if(!user){
         return (
             <RequireAuth></RequireAuth>
@@ -118,6 +118,7 @@ const QuizComponent: React.FC<QuizComponentProps> = ({ quiz, quizNumber, onSubmi
             .filter((answer) => answer !== null) as string[];
 
         try {
+            setIsSubmittedAnswer(true);
             // Call the onSubmitAnswer prop function instead of making a direct API call
             const response = await onSubmitAnswer(quiz, answerArray);
 
@@ -134,6 +135,7 @@ const QuizComponent: React.FC<QuizComponentProps> = ({ quiz, quizNumber, onSubmi
             setIsSubmitted(true);
             setIsCorrect(false);
         }
+        setIsSubmittedAnswer(false);
     };
 
     const handleNextQuestion = () => {
@@ -278,8 +280,16 @@ const QuizComponent: React.FC<QuizComponentProps> = ({ quiz, quizNumber, onSubmi
                     disabled={!selectedAnswers.some(answer => answer)}
                     style={{ backgroundColor: theme.accent }}
                 >
-                    <span>Kiểm tra đáp án</span>
-                    <ArrowRight size={20} className={styles.submitIcon} />
+                    {isSubmittedAnswer ? (
+                        <span>
+            <Loader2 size={20} className="spinner" />
+        </span>
+                    ) : (
+                        <>
+                            <span>Kiểm tra đáp án</span>
+                            <ArrowRight size={20} className={styles.submitIcon} />
+                        </>
+                    )}
                 </button>
             ) : (
                 <div className={styles.nextQuestionContainer}>

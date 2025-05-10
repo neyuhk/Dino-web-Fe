@@ -105,7 +105,7 @@ const ClassroomDetailPage: React.FC = () => {
 
             {/* Teacher Section */}
             <div className={styles.teacherSection}>
-                <h2>Giảng viên</h2>
+                <h2>Giáo viên</h2>
                 <div className={styles.teacherCard}>
                     <img
                         src={
