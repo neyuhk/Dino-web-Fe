@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './QuestionForm.module.css';
 import { addQuiz } from '../../../../../services/lesson.ts';
 import { importQuizExcel } from '../../../../../services/exercise.ts'
+import { Loader2 } from 'lucide-react'
 
 type AnswerType = 'multiple_choice' | 'one_choice';
 
@@ -239,6 +240,10 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
         setCurrentQuestion({ ...questions[index] });
         setIsEditing(true);
         setEditIndex(index);
+        const element = document.getElementById('question-frame');
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     };
 
     const deleteQuestion = (index: number) => {
@@ -333,10 +338,10 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                     )}
                 </div>
 
-                <h3 className={styles.sectionTitle}>Thông tin câu hỏi</h3>
+                <h3 className={styles.sectionTitle} id={"question-frame"}>Thông tin câu hỏi</h3>
                 {error && <div className={styles.error}>{error}</div>}
 
-                <div className={styles.formGroup}>
+                <div className={styles.formGroup} >
                     <label htmlFor="question" className={styles.label}>Câu hỏi:</label>
                     <textarea
                         id="question"
@@ -499,7 +504,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                     onClick={handleSubmit}
                     disabled={questions.length === 0 || isSubmitting}
                 >
-                    {isSubmitting ? 'Đang gửi...' : 'Gửi tất cả câu hỏi'}
+                    {isSubmitting ?  <Loader2 size={20} className="spinner" /> : 'Gửi tất cả câu hỏi'}
                 </button>
             </div>
         </div>
