@@ -273,7 +273,7 @@ const CourseLessons: React.FC<CourseLessonsProps> = ({ courseId }) => {
         return `${mins} phút`;
     };
 
-    if (!loading) {
+    if (loading) {
         return (
             <div className={"loadingContainer"} style={{ justifyContent: "flex-start" }}>
                 <div className={"loadingSpinner"}>
