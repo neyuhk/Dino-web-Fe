@@ -18,3 +18,7 @@ export const register = async (payload: any) => {
 export const refreshToken = async () => {
     return await httpAuth.post(AUTH_API.REFRESH_TOKEN)
 }
+
+export const resetPassword = async (userId: string) => {
+    return await httpAuth.post(AUTH_API.RESET_PASSWORD + userId)
+}

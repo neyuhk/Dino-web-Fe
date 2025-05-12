@@ -6,6 +6,7 @@ export const AUTH_API = {
     FORGOT_PASSWORD: '/auth/forgot-password',
     RESEND_CONFIRMATION: '/auth/resend-confirmation',
     CONFIRM_REGISTRATION: '/auth/confirm-registration',
+    RESET_PASSWORD: '/auth/reset-password/',
 }
 
 export const USER_API = {

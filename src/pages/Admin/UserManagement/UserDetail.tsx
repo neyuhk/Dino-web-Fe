@@ -40,6 +40,7 @@ import {
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
 import './UserDetail.css';
+import { resetPassword } from '../../../services/auth.ts'
 
 interface UserDetailProps {
     userId: string;
@@ -106,9 +107,18 @@ const UserDetailComponent: React.FC<UserDetailProps> = ({ userId, inDrawer = fal
         }
     };
 
-    const handleResetPassword = () => {
-        message.success('Đã gửi email đặt lại mật khẩu đến người dùng');
-        setIsResetPasswordModalVisible(false);
+    const handleResetPassword = async () => {
+        // message.success('Đã gửi email đặt lại mật khẩu đến người dùng');
+        // setIsResetPasswordModalVisible(false);
+        try {
+            await resetPassword(userId);
+            message.success('Đã gửi email đặt lại mật khẩu đến người dùng');
+        } catch (error) {
+            message.error('Không thể gửi email đặt lại mật khẩu');
+            console.error('Failed to reset password:', error);
+        } finally {
+            setIsResetPasswordModalVisible(false);
+        }
     };
 
     const handleCancel = () => {
@@ -404,7 +414,7 @@ const UserDetailComponent: React.FC<UserDetailProps> = ({ userId, inDrawer = fal
                         Hủy bỏ
                     </Button>,
                     <Button key="submit" type="primary" onClick={handleResetPassword}>
-                        Gửi email đặt lại mật khẩu
+                        Đặt lại mật khẩu
                     </Button>,
                 ]}
             >
@@ -412,17 +422,16 @@ const UserDetailComponent: React.FC<UserDetailProps> = ({ userId, inDrawer = fal
                     <div className="reset-warning">
                         <ExclamationCircleOutlined className="warning-icon" />
                         <Text>
-                            Bạn sắp gửi email đặt lại mật khẩu cho người dùng này.
-                            Người dùng sẽ nhận được một email với hướng dẫn đặt lại mật khẩu của họ.
+                            Đặt lại mật khẩu cho tài khoản này về mặc định
                         </Text>
                     </div>
 
-                    <div className="reset-user-info">
-                        <Text strong>Gửi email đặt lại mật khẩu tới:</Text>
-                        <div className="user-email-info">
-                            <Text>{email}</Text>
-                        </div>
-                    </div>
+                    {/*<div className="reset-user-info">*/}
+                    {/*    <Text strong>Gửi email đặt lại mật khẩu tới:</Text>*/}
+                    {/*    <div className="user-email-info">*/}
+                    {/*        <Text>{email}</Text>*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
                 </div>
             </Modal>
         </div>
