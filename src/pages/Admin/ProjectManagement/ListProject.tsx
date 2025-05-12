@@ -43,9 +43,9 @@ import {
     BarsOutlined, ClearOutlined, ReloadOutlined,
 } from '@ant-design/icons'
 import moment from 'moment';
-import ProjectDetailComponent from './ProjectDetail.tsx'
 import RequireAuth from '../../../components/commons/RequireAuth/RequireAuth.tsx'
 import { Loader2 } from 'lucide-react'
+import ProjectDetailComponent from './ProjectDetail.tsx'
 
 const { Option } = Select;
 const { Title, Text } = Typography;

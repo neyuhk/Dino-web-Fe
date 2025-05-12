@@ -26,9 +26,20 @@ import { Project } from '../../model/model.ts'
 import CommentComponent from '../Comment/Comment.tsx'
 import { getProjectById, isLikedProject, likeProject, updateProject } from '../../services/project.ts'
 import styles from './ProjectDetail.module.css'
+// Import Toast component
+import Toast from '../commons/Toast/Toast.tsx'
 
 const { Title, Paragraph, Text } = Typography
 const { TextArea: AntTextArea } = Input;
+
+// Define Toast message interface
+interface ToastMessage {
+    show: boolean
+    type: 'success' | 'error' | 'info' | 'warning'
+    title: string
+    message: string
+    image?: string
+}
 
 const ProjectDetail: React.FC = () => {
     const { user } = useSelector((state: any) => state.auth)
@@ -37,6 +48,7 @@ const ProjectDetail: React.FC = () => {
     const [isLiked, setIsLiked] = useState(false)
     const [isEditing, setIsEditing] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [showComments, setShowComments] = useState(false)
     const [editFormData, setEditFormData] = useState({
         name: '',
         description: '',
@@ -44,9 +56,16 @@ const ProjectDetail: React.FC = () => {
     })
     const [previewImage, setPreviewImage] = useState<string | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
-    const userId = user._id
+    const userId = user?._id || ''
     const navigate = useNavigate()
     const [form] = Form.useForm()
+    // Add toast state
+    const [toast, setToast] = useState<ToastMessage>({
+        show: false,
+        type: 'info',
+        title: '',
+        message: '',
+    })
 
     useEffect(() => {
         const fetchProjectData = async () => {
@@ -61,11 +80,16 @@ const ProjectDetail: React.FC = () => {
                     description: response.data.description || '',
                     image: null
                 })
-                const liked = await isLikedProject(
-                    projectId ? projectId : '',
-                    userId
-                )
-                setIsLiked(liked.data)
+
+                // Check if user is logged in before checking if project is liked
+                if (userId) {
+                    const liked = await isLikedProject(
+                        projectId ? projectId : '',
+                        userId
+                    )
+                    setIsLiked(liked.data)
+                }
+
                 setIsLoading(false)
             } catch (error) {
                 setIsLoading(false)
@@ -74,21 +98,60 @@ const ProjectDetail: React.FC = () => {
         }
 
         fetchProjectData()
-    }, [projectId])
+    }, [projectId, userId])
 
     const handleViewInBlockly = () => {
         navigate(`/blockly/${projectId}`)
     }
 
-    const isOwner = projectData?.user_id?._id === userId
+    const isOwner = userId && projectData?.user_id?._id === userId
 
+    // Show toast function
+    const showToast = (
+        type: 'success' | 'error' | 'info' | 'warning',
+        title: string,
+        message: string,
+        image?: string
+    ) => {
+        setToast({
+            show: true,
+            type,
+            title,
+            message,
+            image
+        })
+
+        // Hide toast after 3 seconds
+        setTimeout(() => {
+            setToast((prev) => ({ ...prev, show: false }))
+        }, 3000)
+    }
+
+    // Close toast function
+    const hideToast = () => {
+        setToast((prev) => ({ ...prev, show: false }))
+    }
+
+    const handleCommentsVisibility = () => {
+        if (!userId) {
+            // Show login required toast
+            showToast(
+                'error',
+                'Cần đăng nhập',
+                'Bạn cần đăng nhập để xem bình luận',
+                '/images/error.png'
+            )
+            return
+        }
+        setShowComments(!showComments)
+    }
     if (isLoading) {
         return <div className={styles.noDataContainer}>
             <Loader2 size={20} className="dark-spinner" />
             <Title level={3}>Đang tải dữ liệu...</Title>
-
         </div>;
     }
+
     if (!projectData) {
         return (
             <div className={styles.noDataContainer}>
@@ -99,17 +162,28 @@ const ProjectDetail: React.FC = () => {
 
     const {
         name = 'Unknown',
-        description = 'Unknown',
+        description = 'Không có mô ',
         images = [],
         like_count = 0,
         view_count = 0,
-        user_id: projectUserId = { username: 'Unknown' },
+        user_id: projectUserId = { username: 'tảown' },
         createdAt = 'Unknown',
     } = projectData
 
     const username = projectUserId ? projectUserId.username : 'Unknown'
 
     const handleLikeProject = async () => {
+        // Check if user is logged in
+        if (!userId) {
+            showToast(
+                'error',
+                'Cần đăng nhập',
+                'Bạn cần đăng nhập để thích dự án này',
+                '/images/error.png'
+            )
+            return
+        }
+
         try {
             if (isLiked) {
                 setProjectData((prevData) =>
@@ -128,10 +202,27 @@ const ProjectDetail: React.FC = () => {
             await likeProject(projectId ? projectId : '', userId)
         } catch (error) {
             console.error('Failed to like project:', error)
+            showToast(
+                'error',
+                'Lỗi',
+                'Không thể thích dự án này',
+                '/images/error.png'
+            )
         }
     }
 
     const handleEditClick = () => {
+        // Check if user is logged in
+        if (!userId) {
+            showToast(
+                'error',
+                'Cần đăng nhập',
+                'Bạn cần đăng nhập để chỉnh sửa dự án',
+                '/images/error.png'
+            )
+            return
+        }
+
         setIsEditing(true)
         form.setFieldsValue({
             name: projectData.name,
@@ -175,6 +266,17 @@ const ProjectDetail: React.FC = () => {
     }
 
     const handleSaveChanges = async () => {
+        // Check if user is logged in
+        if (!userId) {
+            showToast(
+                'error',
+                'Cần đăng nhập',
+                'Bạn cần đăng nhập để lưu thay đổi',
+                '/images/error.png'
+            )
+            return
+        }
+
         try {
             setIsLoading(true)
 
@@ -201,12 +303,22 @@ const ProjectDetail: React.FC = () => {
             const updatedProject = await getProjectById(projectId || '')
             setProjectData(updatedProject.data)
 
-            message.success('Project updated successfully')
+            showToast(
+                'success',
+                'Thành công',
+                'Dự án đã được cập nhật thành công',
+                '/images/success.png'
+            )
             setIsEditing(false)
             setPreviewImage(null)
         } catch (error) {
             console.error('Failed to update project:', error)
-            message.error('Failed to update project')
+            showToast(
+                'error',
+                'Lỗi',
+                'Không thể cập nhật dự án',
+                '/images/error.png'
+            )
         } finally {
             setIsLoading(false)
         }
@@ -224,14 +336,20 @@ const ProjectDetail: React.FC = () => {
                     {isEditing ? (
                         <div className={styles.editImageContainer}>
                             <img
-                                src={previewImage || images[0] || 'https://i.pinimg.com/736x/95/6f/0f/956f0fef63faac5be7b95715f6207fea.jpg'}
+                                src={
+                                    previewImage ||
+                                    images[0] ||
+                                    'https://i.pinimg.com/736x/95/6f/0f/956f0fef63faac5be7b95715f6207fea.jpg'
+                                }
                                 alt={name}
                                 className={styles.projectImage}
                             />
                             <div className={styles.imageOverlay}>
                                 <Button
                                     icon={<UploadOutlined />}
-                                    onClick={() => fileInputRef.current?.click()}
+                                    onClick={() =>
+                                        fileInputRef.current?.click()
+                                    }
                                     className={styles.uploadButton}
                                 >
                                     Change Image
@@ -247,7 +365,10 @@ const ProjectDetail: React.FC = () => {
                         </div>
                     ) : (
                         <img
-                            src={images[0] || 'https://i.pinimg.com/736x/95/6f/0f/956f0fef63faac5be7b95715f6207fea.jpg'}
+                            src={
+                                images[0] ||
+                                'https://i.pinimg.com/736x/95/6f/0f/956f0fef63faac5be7b95715f6207fea.jpg'
+                            }
                             alt={name}
                             className={styles.projectImage}
                         />
@@ -257,13 +378,26 @@ const ProjectDetail: React.FC = () => {
                 <div className={styles.infoSection}>
                     <div className={styles.profileSection}>
                         <Space className={styles.userInfo}>
-                            <Avatar icon={<UserOutlined />} className={styles.avatar} />
+                            <Avatar
+                                icon={<UserOutlined />}
+                                className={styles.avatar}
+                            />
                             <div className={styles.titleSection}>
                                 {isEditing ? (
-                                    <Form form={form} layout="vertical" className={styles.editForm}>
+                                    <Form
+                                        form={form}
+                                        layout="vertical"
+                                        className={styles.editForm}
+                                    >
                                         <Form.Item
                                             name="name"
-                                            rules={[{ required: true, message: 'Please enter project name' }]}
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message:
+                                                        'Please enter project name',
+                                                },
+                                            ]}
                                             className={styles.formItem}
                                         >
                                             <Input
@@ -276,17 +410,27 @@ const ProjectDetail: React.FC = () => {
                                         </Form.Item>
                                     </Form>
                                 ) : (
-                                    <Title level={2} className={styles.projectTitle}>
+                                    <Title
+                                        level={2}
+                                        className={styles.projectTitle}
+                                    >
                                         {name}
                                     </Title>
                                 )}
-                                <Text strong className={styles.authorName}>by {username}</Text>
+                                <Text strong className={styles.authorName}>
+                                    Tác giả: {username}
+                                </Text>
                                 <div>
-                                    <Text type="secondary" className={styles.dateText}>
-                                        Created on{' '}
-                                        {createdAt !== 'Unknown'
-                                            ? moment(createdAt).format('DD/MM/YYYY')
-                                            : 'Unknown'}
+                                    <Text
+                                        type="secondary"
+                                        className={styles.dateText}
+                                    >
+                                        Thời gian: {' '}
+                                        {createdAt !== 'Chưa cập nhật'
+                                            ? moment(createdAt).format(
+                                                  'DD/MM/YYYY'
+                                              )
+                                            : 'Chưa cập nhật'}
                                     </Text>
                                 </div>
                             </div>
@@ -331,7 +475,7 @@ const ProjectDetail: React.FC = () => {
                                     onClick={handleViewInBlockly}
                                     className={styles.blocklyButton}
                                 >
-                                    View in Blockly
+                                    Mở trong Dino Blocks
                                 </Button>
                             )}
                         </div>
@@ -346,28 +490,40 @@ const ProjectDetail: React.FC = () => {
                 >
                     <Heart
                         size={20}
-                        className={isLiked ? styles.likeActive : styles.likeInactive}
+                        className={
+                            isLiked ? styles.likeActive : styles.likeInactive
+                        }
                     />
                     <span className={styles.actionCount}>{like_count}</span>
                 </button>
 
-                <div className={`${styles.actionButton} ${styles.disabledAction}`}>
+                <div
+                    className={`${styles.actionButton} ${styles.disabledAction}`}
+                >
                     <Eye size={20} className={styles.viewIcon} />
                     <span className={styles.actionCount}>{view_count}</span>
                 </div>
 
-                <div className={`${styles.actionButton} ${styles.disabledAction}`}>
+                <div
+                    className={styles.actionButton}
+                    onClick={handleCommentsVisibility}
+                >
                     <MessageSquare size={20} className={styles.commentIcon} />
                     <span className={styles.actionCount}>0</span>
                 </div>
             </div>
 
             <div className={styles.descriptionContainer}>
-                <Title level={4} className={styles.sectionTitle}>Project Description</Title>
+                <Title level={4} className={styles.sectionTitle}>
+                    Mô tả dự án
+                </Title>
 
                 {isEditing ? (
                     <Form form={form} layout="vertical">
-                        <Form.Item name="description" className={styles.formItem}>
+                        <Form.Item
+                            name="description"
+                            className={styles.formItem}
+                        >
                             <AntTextArea
                                 name="description"
                                 value={editFormData.description}
@@ -379,17 +535,26 @@ const ProjectDetail: React.FC = () => {
                         </Form.Item>
                     </Form>
                 ) : (
-                    <Paragraph className={styles.descriptionText}>{description}</Paragraph>
+                    <Paragraph className={styles.descriptionText}>
+                        {description}
+                    </Paragraph>
                 )}
             </div>
 
-            <div className={styles.commentsContainer}>
-                <Title level={2} className={styles.sectionTitle}>Bình luận</Title>
-                <CommentComponent
-                    commentableId={projectId ? projectId : ''}
-                    commentableType={'PROJECT'}
-                />
-            </div>
+            {showComments && userId && (
+                <div className={styles.commentsContainer}>
+                    <Title level={2} className={styles.sectionTitle}>Bình luận</Title>
+                    <CommentComponent
+                        commentableId={projectId ? projectId : ''}
+                        commentableType={'PROJECT'}
+                    />
+                </div>
+            )}
+
+            {/* Toast notification */}
+            {toast.show && (
+                <Toast toast={toast} onClose={hideToast} type={toast.type} />
+            )}
         </div>
     )
 }
