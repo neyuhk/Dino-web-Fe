@@ -55,9 +55,9 @@ const ForumPage: React.FC = () => {
     const loadMoreTriggerRef = useRef<HTMLDivElement>(null);
 
     const myClasses: ClassItem[] = [
-        { id: 'class1', name: 'Lớp Toán', image: 'https://i.pinimg.com/474x/f0/97/91/f097913bdf5b919f5d336036f06ebc15.jpg' },
-        { id: 'class2', name: 'Lớp Văn', image: 'https://i.pinimg.com/474x/f0/97/91/f097913bdf5b919f5d336036f06ebc15.jpg' },
-        { id: 'class3', name: 'Lớp Anh', image: 'https://i.pinimg.com/474x/f0/97/91/f097913bdf5b919f5d336036f06ebc15.jpg' },
+        { id: 'class1', name: 'Lập trình Arduino', image: 'https://i.pinimg.com/474x/f0/97/91/f097913bdf5b919f5d336036f06ebc15.jpg' },
+        { id: 'class2', name: 'Dự án Arduino thực tế', image: 'https://i.pinimg.com/474x/f0/97/91/f097913bdf5b919f5d336036f06ebc15.jpg' },
+        { id: 'class3', name: 'Lập trình Arduino nâng cao', image: 'https://i.pinimg.com/474x/f0/97/91/f097913bdf5b919f5d336036f06ebc15.jpg' },
     ];
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
