@@ -36,7 +36,7 @@ export const getListProjectsByUser = async (userId: string, page: number = 1, pe
 
 
 export const likeProject = async (projectId: string, userId: string) => {
-    return await http.post(PROJECT_API.LIKE_PROJECT, {projectId, userId })
+    return await httpAuth.post(PROJECT_API.LIKE_PROJECT, {projectId, userId })
 }
 
 export const isLikedProject = async (projectId: string, userId: string) => {

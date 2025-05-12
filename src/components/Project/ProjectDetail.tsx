@@ -166,6 +166,7 @@ const ProjectDetail: React.FC = () => {
         images = [],
         like_count = 0,
         view_count = 0,
+        comment_count = 0,
         user_id: projectUserId = { username: 'tảown' },
         createdAt = 'Unknown',
     } = projectData
@@ -509,7 +510,7 @@ const ProjectDetail: React.FC = () => {
                     onClick={handleCommentsVisibility}
                 >
                     <MessageSquare size={20} className={styles.commentIcon} />
-                    <span className={styles.actionCount}>0</span>
+                    <span className={styles.actionCount}>{comment_count}</span>
                 </div>
             </div>
 
